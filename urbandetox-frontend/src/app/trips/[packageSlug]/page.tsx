@@ -27,7 +27,7 @@ export default async function TripPackagePage({ params }: { params: Promise<{ pa
               {tripPackage.highlights.map((highlight) => (
                 <span key={highlight} className="rounded-full border border-white/10 px-4 py-2">{highlight}</span>
               ))}
-            </div>
+            </div>test-2
           </div>
           <div className="surface-card space-y-4">
             <p className="text-xs uppercase tracking-[0.28em] text-white/40">Default package shape</p>

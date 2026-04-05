@@ -46,9 +46,10 @@ export function Hero({ image, packageCount, departureCount }: HeroProps) {
               background: 'rgba(200,241,107,0.18)',
               color: 'var(--lime)',
               border: '1px solid rgba(200,241,107,0.3)',
-              fontSize: '0.75rem',
-              fontWeight: 700,
-              letterSpacing: '0.14em',
+              fontFamily: 'var(--font-superbusy-text), sans-serif',
+              fontSize: '0.7rem',
+              fontWeight: 500,
+              letterSpacing: '0.12em',
               textTransform: 'uppercase',
               padding: '0.45rem 1rem',
               borderRadius: '99px',
@@ -60,27 +61,29 @@ export function Hero({ image, packageCount, departureCount }: HeroProps) {
 
           <h1
             style={{
-              fontFamily: 'var(--font-playfair), serif',
-              fontSize: 'clamp(2.4rem, 6vw, 4.5rem)',
-              fontWeight: 700,
+              fontFamily: 'var(--font-superbusy-regular), serif',
+              fontSize: 'clamp(2.8rem, 7vw, 5.5rem)',
+              fontWeight: 400,
               color: 'white',
-              lineHeight: 1.12,
+              lineHeight: 1.05,
               marginBottom: '1.25rem',
-              letterSpacing: '-0.02em',
+              letterSpacing: '-0.01em',
             }}
           >
             Escape the City.
             <br />
-            <em style={{ color: 'var(--lime)', fontStyle: 'italic' }}>Find Your Detox.</em>
+            <em style={{ color: 'var(--lime)', fontStyle: 'normal' }}>Find Your Detox.</em>
           </h1>
 
           <p
             style={{
-              fontSize: 'clamp(1rem, 2vw, 1.15rem)',
-              color: 'rgba(255,255,255,0.82)',
-              lineHeight: 1.7,
-              marginBottom: '2rem',
-              maxWidth: '520px',
+              fontFamily: 'var(--font-superbusy-text), sans-serif',
+              fontSize: 'clamp(1rem, 2vw, 1.1rem)',
+              color: 'rgba(255,255,255,0.88)',
+              lineHeight: 1.6,
+              marginBottom: '2.5rem',
+              maxWidth: '560px',
+              letterSpacing: '0.01em',
             }}
           >
             Curated treks, retreats & weekend getaways to Kodaikanal, Gokarna, Kannur and beyond — in small groups that actually let you breathe.

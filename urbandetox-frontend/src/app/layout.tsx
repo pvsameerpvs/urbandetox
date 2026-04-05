@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter, Playfair_Display } from 'next/font/google';
+import localFont from 'next/font/local';
 import './globals.css';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
@@ -14,6 +15,24 @@ const playfair = Playfair_Display({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-playfair',
+});
+
+const superbusyRegular = localFont({
+  src: '../fonts/SuperbusyActivity-Regular.woff2',
+  variable: '--font-superbusy-regular',
+  display: 'swap',
+});
+
+const superbusyText = localFont({
+  src: '../fonts/Superbusy Activity Text.woff2',
+  variable: '--font-superbusy-text',
+  display: 'swap',
+});
+
+const superbusyOutline = localFont({
+  src: '../fonts/SuperbusyActivity-Outline.woff2',
+  variable: '--font-superbusy-outline',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -34,7 +53,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
+    <html lang="en" className={`${inter.variable} ${playfair.variable} ${superbusyRegular.variable} ${superbusyText.variable} ${superbusyOutline.variable}`}>
       <body>
         <div className="page-frame">
           <SiteHeader />
@@ -45,4 +64,3 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     </html>
   );
 }
-

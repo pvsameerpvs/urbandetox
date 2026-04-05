@@ -30,7 +30,7 @@ export default function TripsPage() {
           position: 'relative',
           overflow: 'hidden',
         }}
-      >
+      >test-4
         <div style={{ position: 'absolute', inset: 0, backgroundImage: 'url(https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1400&q=50)', backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.12 }} />
         <div className="container" style={{ position: 'relative' }}>
           <p style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--lime)', marginBottom: '0.75rem' }}>All Trips</p>

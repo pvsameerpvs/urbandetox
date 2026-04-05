@@ -38,7 +38,7 @@ export default async function DeparturePage({ params }: { params: Promise<{ pack
               <p className="text-[0.68rem] uppercase tracking-[0.22em] text-white/35">Guide</p>
               <p className="mt-1 text-white">{departure.guideName ?? 'TBA'}</p>
             </div>
-          </div>
+          </div>test
         </div>
         <div className="surface-card space-y-4">
           <p className="text-xs uppercase tracking-[0.28em] text-white/40">Pricing</p>
