@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import Image from 'next/image';
+import Link from "next/link";
+import Image from "next/image";
 
 interface HeroProps {
   image: string;
@@ -11,44 +11,44 @@ export function Hero({ image }: HeroProps) {
   return (
     <section
       style={{
-        position: 'relative',
-        height: '100svh',
-        minHeight: '620px',
-        maxHeight: '960px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-end',
-        overflow: 'hidden',
+        position: "relative",
+        height: "100svh",
+        minHeight: "620px",
+        maxHeight: "960px",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-end",
+        overflow: "hidden",
       }}
     >
       {/* ── Background Image ── */}
-      <div style={{ position: 'absolute', inset: 0 }}>
+      <div style={{ position: "absolute", inset: 0 }}>
         <Image
           src={image}
           alt="Scenic South India landscape"
           fill
           priority
           sizes="100vw"
-          style={{ objectFit: 'cover', objectPosition: 'center 40%' }}
+          style={{ objectFit: "cover", objectPosition: "center 40%" }}
         />
 
         {/* Dark vignette at bottom for legibility */}
         <div
           style={{
-            position: 'absolute',
+            position: "absolute",
             inset: 0,
             background:
-              'linear-gradient(to top, rgba(8,30,20,0.96) 0%, rgba(8,30,20,0.72) 30%, rgba(8,30,20,0.2) 60%, transparent 100%)',
+              "linear-gradient(to top, rgba(8,30,20,0.96) 0%, rgba(8,30,20,0.72) 30%, rgba(8,30,20,0.2) 60%, transparent 100%)",
           }}
         />
 
         {/* Subtle top gradient for header readability */}
         <div
           style={{
-            position: 'absolute',
+            position: "absolute",
             inset: 0,
             background:
-              'linear-gradient(to bottom, rgba(8,30,20,0.4) 0%, transparent 18%)',
+              "linear-gradient(to bottom, rgba(8,30,20,0.4) 0%, transparent 18%)",
           }}
         />
       </div>
@@ -57,85 +57,52 @@ export function Hero({ image }: HeroProps) {
       <div
         className="container"
         style={{
-          position: 'relative',
+          position: "relative",
           zIndex: 2,
-          paddingBottom: 'clamp(14rem, 25vw, 18rem)', // Further reduction for better balance
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          textAlign: 'center',
+          paddingBottom: "clamp(14rem, 25vw, 18rem)", // Further reduction for better balance
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          textAlign: "center",
         }}
       >
-        {/* Top-center pill badge */}
-        <div
-          style={{
-            zIndex: 3,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            background: 'rgba(200,241,107,0.14)',
-            border: '1px solid rgba(200,241,107,0.32)',
-            backdropFilter: 'blur(10px)',
-            color: 'var(--lime)',
-            fontSize: '0.62rem',
-            fontFamily: 'var(--font-inter), sans-serif',
-            fontWeight: 700,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            padding: '0.35rem 0.8rem',
-            borderRadius: '99px',
-            marginBottom: '1.25rem',
-          }}
-        >
-          <span
-            style={{
-              width: 5,
-              height: 5,
-              borderRadius: '50%',
-              background: 'var(--lime)',
-              display: 'inline-block',
-              animation: 'pulse 2s ease-in-out infinite',
-            }}
-          />
-          Booking Open — 2025 Season
-        </div>
         {/* Headline group */}
-        <div style={{ maxWidth: '820px' }}>
+        <div style={{ maxWidth: "820px" }}>
           {/* H1 — Superbusy Regular */}
           <h1
             style={{
-              fontFamily: 'var(--font-superbusy-regular), sans-serif',
-              fontSize: 'clamp(2.5rem, 6vw, 4.5rem)',
+              fontFamily: "var(--font-superbusy-regular), sans-serif",
+              fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
               fontWeight: 400,
-              color: 'white',
+              color: "white",
               lineHeight: 1,
-              letterSpacing: '-0.01em',
-              marginBottom: '1.5rem',
+              letterSpacing: "-0.01em",
+              marginBottom: "1.5rem",
             }}
           >
             Escape
             <br />
-            <span style={{ color: 'var(--lime)' }}>the City.</span>
+            <span style={{ color: "var(--lime)" }}>the City.</span>
           </h1>
 
           {/* Subtitle + CTA */}
           <div
             style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '1.5rem',
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "1.5rem",
             }}
           >
             {/* Subtitle */}
             <p
               style={{
-                fontFamily: 'var(--font-inter), sans-serif',
-                fontSize: 'clamp(0.9rem, 1.4vw, 1rem)',
-                color: 'rgba(255,255,255,0.7)',
+                fontFamily: "var(--font-inter), sans-serif",
+                fontSize: "clamp(0.9rem, 1.4vw, 1rem)",
+                color: "rgba(255,255,255,0.7)",
                 lineHeight: 1.6,
-                maxWidth: '420px',
+                maxWidth: "420px",
               }}
             >
               Curated treks, retreats &amp; getaways in small&nbsp;groups —
@@ -144,38 +111,49 @@ export function Hero({ image }: HeroProps) {
 
             {/* CTA group */}
             <div
-              style={{ display: 'flex', gap: '0.85rem', flexWrap: 'wrap', justifyContent: 'center' }}
+              style={{
+                display: "flex",
+                gap: "0.85rem",
+                flexWrap: "wrap",
+                justifyContent: "center",
+              }}
             >
               <Link
                 href="/trips"
                 className="btn-primary"
                 style={{
-                  fontFamily: 'var(--font-superbusy-text), sans-serif',
-                  fontSize: '0.9rem',
-                  letterSpacing: '0.02em',
-                  padding: '0.85rem 1.85rem',
+                  fontFamily: "var(--font-superbusy-text), sans-serif",
+                  fontSize: "0.9rem",
+                  letterSpacing: "0.02em",
+                  padding: "0.85rem 1.85rem",
                 }}
               >
                 Explore Trips
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <path
+                    d="M2 7h10M8 3l4 4-4 4"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </Link>
               <Link
                 href="/about"
                 style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  fontFamily: 'var(--font-inter), sans-serif',
-                  color: 'rgba(255,255,255,0.75)',
-                  fontSize: '0.82rem',
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.4rem",
+                  fontFamily: "var(--font-inter), sans-serif",
+                  color: "rgba(255,255,255,0.75)",
+                  fontSize: "0.82rem",
                   fontWeight: 500,
-                  padding: '0.75rem 1.25rem',
-                  border: '1px solid rgba(255,255,255,0.22)',
-                  borderRadius: '99px',
-                  transition: 'all 0.2s',
-                  backdropFilter: 'blur(6px)',
+                  padding: "0.75rem 1.25rem",
+                  border: "1px solid rgba(255,255,255,0.22)",
+                  borderRadius: "99px",
+                  transition: "all 0.2s",
+                  backdropFilter: "blur(6px)",
                 }}
               >
                 Our Story
@@ -188,24 +166,24 @@ export function Hero({ image }: HeroProps) {
       {/* ── Scroll cue ── */}
       <div
         style={{
-          position: 'absolute',
-          bottom: '2rem',
-          right: 'clamp(1.25rem, 4vw, 3rem)',
+          position: "absolute",
+          bottom: "2rem",
+          right: "clamp(1.25rem, 4vw, 3rem)",
           zIndex: 3,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '0.5rem',
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "0.5rem",
         }}
       >
         <p
           style={{
-            fontFamily: 'var(--font-inter), sans-serif',
-            fontSize: '0.62rem',
-            letterSpacing: '0.2em',
-            textTransform: 'uppercase',
-            color: 'rgba(255,255,255,0.35)',
-            writingMode: 'vertical-rl',
+            fontFamily: "var(--font-inter), sans-serif",
+            fontSize: "0.62rem",
+            letterSpacing: "0.2em",
+            textTransform: "uppercase",
+            color: "rgba(255,255,255,0.35)",
+            writingMode: "vertical-rl",
           }}
         >
           Scroll
@@ -213,9 +191,9 @@ export function Hero({ image }: HeroProps) {
         <div
           style={{
             width: 1,
-            height: '3rem',
+            height: "3rem",
             background:
-              'linear-gradient(to bottom, rgba(255,255,255,0.35) 0%, transparent 100%)',
+              "linear-gradient(to bottom, rgba(255,255,255,0.35) 0%, transparent 100%)",
           }}
         />
       </div>
