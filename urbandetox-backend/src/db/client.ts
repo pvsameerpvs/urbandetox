@@ -77,6 +77,7 @@ export function getDb(): Database.Database {
   }
 
   const databasePath = getDatabasePath();
+  console.log('URBANDETOX DB CONNECTING TO:', databasePath);
   mkdirSync(dirname(databasePath), { recursive: true });
 
   dbInstance = new Database(databasePath);

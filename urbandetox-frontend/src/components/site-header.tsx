@@ -27,7 +27,7 @@ export function SiteHeader() {
         style={{
           position: 'sticky',
           top: 0,
-          zIndex: 50,
+          zIndex: 100,
           transition: 'all 0.3s ease',
           background: scrolled
             ? 'rgba(245,246,241,0.95)'
