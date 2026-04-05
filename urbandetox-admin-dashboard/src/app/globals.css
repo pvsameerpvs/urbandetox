@@ -1,0 +1,62 @@
+@import 'tailwindcss';
+
+:root {
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+}
+
+@theme inline {
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+}
+
+body {
+  font-family: var(--font-sans), sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-display), serif;
+}
+
+.admin-card {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: white;
+  border-radius: 1.5rem;
+  padding: 1.25rem;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.05);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th {
+  text-align: left;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgb(100 116 139);
+  padding-bottom: 0.85rem;
+}
+
+.admin-table td {
+  padding: 0.9rem 0;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  font-size: 0.92rem;
+  color: rgb(15 23 42);
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  border-radius: 1rem;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: rgba(248, 250, 252, 0.9);
+  padding: 0.85rem 1rem;
+}
+
+button {
+  cursor: pointer;
+}
