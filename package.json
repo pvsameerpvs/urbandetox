@@ -1,0 +1,22 @@
+{
+  "name": "urbandetox",
+  "private": true,
+  "workspaces": [
+    "urbandetox-frontend",
+    "urbandetox-admin-dashboard",
+    "urbandetox-backend"
+  ],
+  "scripts": {
+    "dev:frontend": "npm run dev --workspace=urbandetox-frontend",
+    "dev:admin": "npm run dev --workspace=urbandetox-admin-dashboard",
+    "build:frontend": "npm run build --workspace=urbandetox-frontend",
+    "build:admin": "npm run build --workspace=urbandetox-admin-dashboard",
+    "build:backend": "npm run build --workspace=urbandetox-backend",
+    "build:all": "npm run build:backend && npm run build:frontend && npm run build:admin",
+    "lint": "npm run lint --workspaces --if-present",
+    "db:reset": "npm run db:reset --workspace=urbandetox-backend"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
