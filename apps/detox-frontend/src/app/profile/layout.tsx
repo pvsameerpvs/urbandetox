@@ -36,7 +36,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:gap-10">
           {/* Sidebar */}
           <aside className="lg:col-span-1">
-            <nav className="flex flex-row lg:flex-col gap-1.5 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0">
+            <nav className="flex flex-row lg:flex-col gap-1.5 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 snap-x snap-mandatory scrollbar-hide">
               {navItems.map((item) => {
                 const isActive = pathname === item.href;
                 const Icon = item.icon;
