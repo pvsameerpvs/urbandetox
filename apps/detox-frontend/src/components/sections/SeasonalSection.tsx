@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { fetchFeaturedPackages } from "@/lib/data";
 import { getDestinationBySlug } from "@/data/destinations";
@@ -32,22 +31,24 @@ export function SeasonalSection() {
   const tags = Array.from(new Set(featured.map((p) => p.seasonalTag).filter(Boolean)));
 
   return (
-    <section className="py-20 sm:py-28">
+    <section className="py-24 sm:py-32 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Elegant Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-14">
-          <div className="max-w-xl">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="h-px w-8 bg-brand" />
+        {/* Header */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 mb-16 sm:mb-20">
+          <div>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="h-px w-10 bg-brand" />
               <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
                 By Season
               </span>
             </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-[2.5rem] font-bold tracking-tight leading-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1]">
               Seasonal <span className="text-brand">Detox</span>
             </h2>
-            <p className="mt-3 text-muted-foreground text-base sm:text-lg leading-relaxed">
-              Pick a mood. We will match the destination and the season.
+          </div>
+          <div className="lg:flex lg:items-end">
+            <p className="text-base sm:text-lg text-muted-foreground leading-relaxed lg:max-w-md">
+              Each season brings a different rhythm. Pick the mood that matches your need for reset.
             </p>
           </div>
         </div>
@@ -67,14 +68,14 @@ export function SeasonalSection() {
 
             return (
               <motion.div key={tag} variants={itemVariants}>
-                <Link href={`/detox`} className="group block">
+                <Link href="/detox" className="group block">
                   <Card
                     className={cn(
                       "overflow-hidden border-0 shadow-lg shadow-black/[0.03] bg-white !gap-0 !py-0",
-                      "hover:shadow-xl hover:shadow-black/[0.06] transition-all duration-500"
+                      "hover:shadow-xl transition-all duration-500"
                     )}
                   >
-                    <div className="relative h-[220px] sm:h-[240px] overflow-hidden">
+                    <div className="relative h-[240px] overflow-hidden">
                       <Image
                         src={pkg.coverImage}
                         alt={tag ?? "Seasonal package"}
@@ -85,7 +86,7 @@ export function SeasonalSection() {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                       <div className="absolute bottom-4 left-4 flex items-center gap-2">
                         <div className="rounded-full bg-white/20 backdrop-blur-sm p-2">
-                          <meta.icon className={`h-4 w-4 text-white`} />
+                          <meta.icon className="h-4 w-4 text-white" />
                         </div>
                         <span className="text-sm font-bold text-white drop-shadow">{meta.label}</span>
                       </div>

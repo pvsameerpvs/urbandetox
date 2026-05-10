@@ -5,10 +5,11 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 export function FinalCTASection() {
   return (
-    <section className="py-20 sm:py-28">
+    <section className="py-24 sm:py-32 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -26,8 +27,17 @@ export function FinalCTASection() {
               className="object-cover"
             />
           </div>
-          
+
           <div className="relative z-10">
+            {/* Editorial line accent */}
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <div className="h-px w-10 bg-white/40" />
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-white/70">
+                Begin Your Reset
+              </span>
+              <div className="h-px w-10 bg-white/40" />
+            </div>
+
             <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-5xl">
               Ready for your next detox?
             </h2>
@@ -37,7 +47,9 @@ export function FinalCTASection() {
             <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
               <Button
                 size="lg"
-                className="bg-white text-brand hover:bg-white/90 font-medium px-8 h-12 text-base shadow-lg shadow-black/10"
+                className={cn(
+                  "bg-white text-brand hover:bg-white/90 font-medium px-8 h-12 text-base shadow-lg shadow-black/10"
+                )}
                 asChild
               >
                 <Link href="/detox">

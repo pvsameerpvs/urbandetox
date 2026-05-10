@@ -21,22 +21,26 @@ export function TestimonialsSection() {
   const testimonials = fetchTestimonials(4);
 
   return (
-    <section className="py-20 sm:py-28">
+    <section className="py-24 sm:py-32 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Elegant Header */}
-        <div className="mb-14 max-w-xl">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="h-px w-8 bg-brand" />
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
-              Testimonials
-            </span>
+        {/* Header */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 mb-16 sm:mb-20">
+          <div>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="h-px w-10 bg-brand" />
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
+                Testimonials
+              </span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1]">
+              Traveler <span className="text-brand">Memories</span>
+            </h2>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-[2.5rem] font-bold tracking-tight leading-tight">
-            Traveler <span className="text-brand">Memories</span>
-          </h2>
-          <p className="mt-3 text-muted-foreground text-base sm:text-lg leading-relaxed">
-            Real travelers. Real resets. No filters needed.
-          </p>
+          <div className="lg:flex lg:items-end">
+            <p className="text-base sm:text-lg text-muted-foreground leading-relaxed lg:max-w-md">
+              Real stories from real travelers. No filters, no scripts. Just honest words about reset.
+            </p>
+          </div>
         </div>
 
         <motion.div
@@ -51,7 +55,7 @@ export function TestimonialsSection() {
               <Card
                 className={cn(
                   "border-0 shadow-lg shadow-black/[0.03] bg-white h-full",
-                  "hover:shadow-xl hover:shadow-black/[0.06] transition-all duration-500"
+                  "hover:shadow-xl transition-all duration-500"
                 )}
               >
                 <CardContent className="p-6 flex flex-col h-full">

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { fetchFeaturedGuides } from "@/lib/data";
 import { ArrowRight, BookOpen } from "lucide-react";
@@ -23,31 +22,33 @@ export function GuideHighlightsSection() {
   const guides = fetchFeaturedGuides(4);
 
   return (
-    <section className="py-20 sm:py-28 bg-secondary/[0.02]">
+    <section className="py-24 sm:py-32 bg-secondary/[0.02]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Elegant Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-14">
-          <div className="max-w-xl">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="h-px w-8 bg-brand" />
+        {/* Header */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 mb-16 sm:mb-20">
+          <div>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="h-px w-10 bg-brand" />
               <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
                 Travel Wisdom
               </span>
             </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-[2.5rem] font-bold tracking-tight leading-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1]">
               Guide <span className="text-brand">Highlights</span>
             </h2>
-            <p className="mt-3 text-muted-foreground text-base sm:text-lg leading-relaxed">
-              Destination wisdom, packing tips, and seasonal insights.
-            </p>
           </div>
-          <Link
-            href="/guide"
-            className="hidden sm:inline-flex items-center gap-2 text-sm font-semibold text-brand hover:text-brand/80 transition-colors group shrink-0"
-          >
-            <span className="uppercase tracking-wider">All Guides</span>
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </Link>
+          <div className="lg:flex lg:flex-col lg:items-start lg:justify-end gap-5">
+            <p className="text-base sm:text-lg text-muted-foreground leading-relaxed lg:max-w-md">
+              Destination guides, packing lists, and seasonal insights to prepare you for the journey.
+            </p>
+            <Link
+              href="/guide"
+              className="hidden sm:inline-flex items-center gap-2 text-sm font-semibold text-brand hover:text-brand/80 transition-colors group"
+            >
+              <span className="uppercase tracking-wider">View All</span>
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Link>
+          </div>
         </div>
 
         <motion.div
@@ -63,7 +64,7 @@ export function GuideHighlightsSection() {
                 <Card
                   className={cn(
                     "overflow-hidden border-0 shadow-lg shadow-black/[0.03] bg-white !gap-0 !py-0",
-                    "hover:shadow-xl hover:shadow-black/[0.06] transition-all duration-500 h-full"
+                    "hover:shadow-xl transition-all duration-500 h-full"
                   )}
                 >
                   <div className="relative h-[180px] sm:h-[200px] overflow-hidden">
