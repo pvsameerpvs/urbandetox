@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Leaf, Globe, Mail, Phone } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
@@ -24,12 +25,18 @@ const footerLinks = {
 
 export function Footer() {
   return (
-    <footer className="w-full border-t bg-secondary/40">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+    <footer className="w-full border-t bg-secondary/30">
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="flex flex-col gap-4">
-            <Link href="/" className="flex items-center gap-2 text-brand">
-              <Leaf className="h-6 w-6" />
+          <div className="flex flex-col gap-5">
+            <Link href="/" className="flex items-center gap-2.5 text-brand">
+              <Image
+                src="/log-detox.png"
+                alt="Urban Detox"
+                width={32}
+                height={32}
+                className="h-8 w-8 object-contain"
+              />
               <span className="text-lg font-semibold tracking-tight">Urban Detox</span>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -51,9 +58,9 @@ export function Footer() {
           {Object.entries(footerLinks).map(([title, links]) => (
             <div key={title} className="flex flex-col gap-3">
               <h4 className="text-sm font-semibold uppercase tracking-wider text-foreground">{title}</h4>
-              <ul className="flex flex-col gap-2">
+              <ul className="flex flex-col gap-2.5">
                 {links.map((link) => (
-                  <li key={link.href}>
+                  <li key={`${title}-${link.label}`}>
                     <Link
                       href={link.href}
                       className="text-sm text-muted-foreground hover:text-brand transition-colors"
@@ -67,7 +74,7 @@ export function Footer() {
           ))}
         </div>
 
-        <Separator className="my-8" />
+        <Separator className="my-10" />
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-muted-foreground">
           <p>© {new Date().getFullYear()} Urban Detox. All rights reserved.</p>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Leaf } from "lucide-react";
+import Image from "next/image";
 
 interface NavbarLogoProps {
   onClick?: () => void;
@@ -9,11 +9,18 @@ export function NavbarLogo({ onClick }: NavbarLogoProps) {
   return (
     <Link
       href="/"
-      className="flex items-center gap-2 text-brand"
+      className="flex items-center gap-2.5 text-brand"
       onClick={onClick}
     >
-      <Leaf className="h-6 w-6" />
-      <span className="text-lg font-semibold tracking-tight">Urban Detox</span>
+      <Image
+        src="/log-detox.png"
+        alt="Urban Detox"
+        width={36}
+        height={36}
+        className="h-9 w-9 object-contain"
+        priority
+      />
+      <span className="text-lg font-semibold tracking-tight hidden sm:block">Urban Detox</span>
     </Link>
   );
 }

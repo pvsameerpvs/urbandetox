@@ -17,6 +17,7 @@ function DetoxListingContent() {
   const searchParams = useSearchParams();
   const [destination, setDestination] = useState(searchParams.get("destination") || "all");
   const [duration, setDuration] = useState(searchParams.get("duration") || "all");
+  const [selectedDate, setSelectedDate] = useState(searchParams.get("date") || "");
   const [sort, setSort] = useState("upcoming");
 
   const packages = fetchPackages();
@@ -27,7 +28,7 @@ function DetoxListingContent() {
       const pkgDepartures = upcoming.filter((d) => d.packageSlug === pkg.slug);
       const nextDep = pkgDepartures[0];
       const dest = getDestinationBySlug(pkg.destinationSlug);
-      return { pkg, nextDep, dest, totalDepartures: pkgDepartures.length };
+      return { pkg, nextDep, dest, totalDepartures: pkgDepartures.length, pkgDepartures };
     });
 
     if (destination !== "all") {
@@ -35,6 +36,11 @@ function DetoxListingContent() {
     }
     if (duration !== "all") {
       result = result.filter((r) => String(r.pkg.duration) === duration);
+    }
+    if (selectedDate) {
+      result = result.filter((r) =>
+        r.pkgDepartures.some((d) => d.startDate === selectedDate)
+      );
     }
 
     if (sort === "upcoming") {
@@ -50,9 +56,9 @@ function DetoxListingContent() {
     }
 
     return result;
-  }, [packages, upcoming, destination, duration, sort]);
+  }, [packages, upcoming, destination, duration, selectedDate, sort]);
 
-  const hasActiveFilters = destination !== "all" || duration !== "all";
+  const hasActiveFilters = destination !== "all" || duration !== "all" || selectedDate !== "";
 
   return (
     <section className="py-10 sm:py-14">
@@ -70,7 +76,7 @@ function DetoxListingContent() {
             Filters
           </div>
           <div className="flex flex-1 flex-col gap-3 sm:flex-row">
-            <Select value={destination} onValueChange={(val) => val && setDestination(val)}>
+            <Select value={destination} onValueChange={(val) => setDestination(val ?? "all")}>
               <SelectTrigger className="w-full sm:w-[200px]">
                 <SelectValue placeholder="Destination" />
               </SelectTrigger>
@@ -82,7 +88,7 @@ function DetoxListingContent() {
                 ))}
               </SelectContent>
             </Select>
-            <Select value={duration} onValueChange={(val) => val && setDuration(val)}>
+            <Select value={duration} onValueChange={(val) => setDuration(val ?? "all")}>
               <SelectTrigger className="w-full sm:w-[160px]">
                 <SelectValue placeholder="Duration" />
               </SelectTrigger>
@@ -94,7 +100,7 @@ function DetoxListingContent() {
                 ))}
               </SelectContent>
             </Select>
-            <Select value={sort} onValueChange={(val) => val && setSort(val)}>
+            <Select value={sort} onValueChange={(val) => setSort(val ?? "upcoming")}>
               <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Sort" />
               </SelectTrigger>
@@ -104,6 +110,17 @@ function DetoxListingContent() {
                 <SelectItem value="featured">Featured</SelectItem>
               </SelectContent>
             </Select>
+            {selectedDate && (
+              <Badge variant="secondary" className="h-8 px-3 text-xs">
+                <Calendar className="mr-1 h-3 w-3" /> {selectedDate}
+                <button
+                  onClick={() => setSelectedDate("")}
+                  className="ml-2 hover:text-destructive"
+                >
+                  ×
+                </button>
+              </Badge>
+            )}
           </div>
           {hasActiveFilters && (
             <Button
@@ -112,6 +129,7 @@ function DetoxListingContent() {
               onClick={() => {
                 setDestination("all");
                 setDuration("all");
+                setSelectedDate("");
               }}
             >
               Reset
@@ -127,6 +145,7 @@ function DetoxListingContent() {
               onClick={() => {
                 setDestination("all");
                 setDuration("all");
+                setSelectedDate("");
               }}
             >
               Reset Filters
