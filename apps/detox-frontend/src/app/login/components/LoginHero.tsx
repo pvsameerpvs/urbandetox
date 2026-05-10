@@ -68,7 +68,7 @@ export function LoginHero() {
                 <Quote className="h-3 w-3 text-brand" />
               </div>
               <div className="min-w-0">
-                <p className="text-sm text-white/85 leading-snug">"{q.text}"</p>
+                <p className="text-sm text-white/85 leading-snug">&ldquo;{q.text}&rdquo;</p>
                 <p className="text-[11px] text-white/40 mt-1">{q.author} · {q.trip}</p>
               </div>
             </div>

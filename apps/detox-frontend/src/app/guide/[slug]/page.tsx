@@ -3,13 +3,13 @@
 import { useParams, notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+
 import { Separator } from "@/components/ui/separator";
 import { fetchGuideBySlug, fetchRelatedGuides, fetchDestinationBySlug } from "@/lib/data";
 import { RelatedPackageCard } from "./components/RelatedPackageCard";
 import { RelatedGuideCard } from "./components/RelatedGuideCard";
 import { GuideCTA } from "./components/GuideCTA";
+import Image from "next/image";
 import { ArrowLeft, BookOpen, MapPin } from "lucide-react";
 
 export default function GuideDetailPage() {
@@ -30,8 +30,8 @@ export default function GuideDetailPage() {
         </Button>
 
         {guide.image && (
-          <div className="mb-6 sm:mb-8 aspect-[16/9] overflow-hidden rounded-xl">
-            <img src={guide.image} alt={guide.title} className="h-full w-full object-cover" />
+          <div className="mb-6 sm:mb-8 aspect-[16/9] overflow-hidden rounded-xl relative">
+            <Image src={guide.image} alt={guide.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 800px" />
           </div>
         )}
 

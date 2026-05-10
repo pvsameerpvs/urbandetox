@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Menu, X, Compass, BookOpen, Info, Phone, LogIn, MapPin, ArrowRight, User, LogOut, Settings } from "lucide-react";
+import { Menu, X, Compass, BookOpen, Info, Phone, LogIn, MapPin, ArrowRight, User, LogOut } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";

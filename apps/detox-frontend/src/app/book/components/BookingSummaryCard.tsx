@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Check } from "lucide-react";
 import { Calendar, MapPin, Users, Clock } from "lucide-react";
-import { formatPrice, formatDateRange } from "@/lib/formatters";
+
 
 interface PriceLine {
   label: string;
@@ -35,7 +35,6 @@ export function BookingSummaryCard({
   travelers,
   seatsLeft,
   priceLines,
-  total,
   showPaymentConfirmed,
 }: BookingSummaryCardProps) {
   return (

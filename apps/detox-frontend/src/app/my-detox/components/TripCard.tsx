@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
-import { Calendar, MapPin, Clock, CheckCircle2, AlertCircle, ArrowRight, X } from "lucide-react";
+import { Calendar, MapPin, CheckCircle2, AlertCircle, ArrowRight, X } from "lucide-react";
 import { motion } from "framer-motion";
 
 export interface Trip {

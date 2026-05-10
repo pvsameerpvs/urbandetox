@@ -3,7 +3,7 @@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { User, Phone, Heart } from "lucide-react";
+import { User, Phone } from "lucide-react";
 import type { Traveler } from "@/lib/booking-state";
 
 interface StepEmergencyContactsProps {

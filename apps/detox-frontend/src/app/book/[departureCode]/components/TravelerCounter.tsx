@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Minus, Plus, Users } from "lucide-react";
 import { formatPrice } from "@/lib/formatters";

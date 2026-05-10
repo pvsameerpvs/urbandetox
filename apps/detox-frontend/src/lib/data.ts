@@ -1,8 +1,8 @@
 import { Package, Departure, GuideArticle, Destination } from "@/lib/types";
 import { destinations, getDestinationBySlug } from "@/data/destinations";
-import { packages, getPackageBySlug, getFeaturedPackages, getAllPackages, getPackagesByDestination } from "@/data/packages";
-import { departures, getDeparturesByPackageSlug, getDepartureByCode, getUpcomingDepartures } from "@/data/departures";
-import { guides, getGuideBySlug, getFeaturedGuides, getAllGuides, getRelatedGuides, getGuideCategories, getGuidesByCategory } from "@/data/guides";
+import { getPackageBySlug, getFeaturedPackages, getAllPackages, getPackagesByDestination } from "@/data/packages";
+import { getDeparturesByPackageSlug, getDepartureByCode, getUpcomingDepartures } from "@/data/departures";
+import { getGuideBySlug, getFeaturedGuides, getAllGuides, getRelatedGuides, getGuideCategories, getGuidesByCategory } from "@/data/guides";
 import { testimonials, getTestimonials } from "@/data/testimonials";
 import { faqs, getFaqsByCategory, getAllFaqs, getFaqCategories } from "@/data/faqs";
 

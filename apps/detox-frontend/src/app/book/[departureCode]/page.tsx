@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useParams, notFound } from "next/navigation";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
@@ -27,7 +27,6 @@ export default function BookingPage() {
   const departure = fetchDepartureByCode(code);
   const pkg = departure ? fetchPackageBySlug(departure.packageSlug) : undefined;
   const dest = departure ? fetchDestinationBySlug(departure.destinationSlug) : undefined;
-  const allDepartures = pkg ? fetchDeparturesByPackage(pkg.slug) : [];
   const { profile } = useUserProfile();
 
   if (!departure || !pkg || !dest) notFound();
@@ -39,20 +38,18 @@ export default function BookingPage() {
   const [travelers, setTravelers] = useState<Traveler[]>([createPrimaryTraveler(profile.personal, profile.health)]);
   const [common, setCommon] = useState<CommonDetails>(createDefaultCommon());
 
-  const availableDates = useMemo(() => {
-    const map: Record<string, { status: string; seatsLeft: number; code: string; price: number; offerPrice?: number }> = {};
-    allDepartures.forEach((dep) => {
-      const date = parseISO(dep.startDate);
-      map[format(date, "yyyy-MM-dd")] = {
-        status: dep.status,
-        seatsLeft: dep.seatsLeft,
-        code: dep.code,
-        price: dep.price,
-        offerPrice: dep.offerPrice,
-      };
-    });
-    return map;
-  }, [allDepartures]);
+  const allDepartures = fetchDeparturesByPackage(pkg.slug);
+  const availableDates: Record<string, { status: string; seatsLeft: number; code: string; price: number; offerPrice?: number }> = {};
+  allDepartures.forEach((dep) => {
+    const date = parseISO(dep.startDate);
+    availableDates[format(date, "yyyy-MM-dd")] = {
+      status: dep.status,
+      seatsLeft: dep.seatsLeft,
+      code: dep.code,
+      price: dep.price,
+      offerPrice: dep.offerPrice,
+    };
+  });
 
   const selectedDeparture = selectedDate ? availableDates[format(selectedDate, "yyyy-MM-dd")] : null;
   const currentPrice = selectedDeparture?.offerPrice ?? selectedDeparture?.price ?? pricePerPerson;

@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowRight, User, Settings, MapPin } from "lucide-react";
+import { ArrowRight, User, Settings } from "lucide-react";
 import { TripStatsBar } from "./components/TripStatsBar";
 import { TripCard } from "./components/TripCard";
 import { EmptyState } from "./components/EmptyState";

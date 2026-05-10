@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useMemo } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -9,7 +8,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatPrice } from "@/lib/formatters";
 import { CalendarDays, ArrowRight } from "lucide-react";
-import { format, parseISO } from "date-fns";
+import { format } from "date-fns";
 
 interface DatePickerProps {
   availableDates: Record<string, { status: string; seatsLeft: number; code: string; price: number; offerPrice?: number }>;
@@ -74,7 +73,7 @@ export function DatePickerCard({ availableDates, selectedDate, onSelect }: DateP
   );
 }
 
-function DateInfoPanel({ availableDates, selectedDate }: { availableDates: Record<string, any>; selectedDate: Date | undefined }) {
+function DateInfoPanel({ availableDates, selectedDate }: { availableDates: Record<string, { status: string; seatsLeft: number; code: string; price: number; offerPrice?: number }>; selectedDate: Date | undefined }) {
   const selectedDeparture = selectedDate ? availableDates[format(selectedDate, "yyyy-MM-dd")] : null;
 
   return (

@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { fetchPackageBySlug, fetchDestinationBySlug } from "@/lib/data";
-import { formatPrice, formatDateRange } from "@/lib/formatters";
-import { ArrowRight } from "lucide-react";
+import { formatPrice } from "@/lib/formatters";
 
 interface PackageLinkProps {
   slug: string;
@@ -19,7 +19,7 @@ export function RelatedPackageCard({ slug }: PackageLinkProps) {
     <Link href={`/detox/${pkg.slug}`} className="group block">
       <Card className="overflow-hidden border-border/60 bg-card">
         <div className="aspect-[16/10] overflow-hidden">
-          <img src={pkg.coverImage} alt={pkg.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+          <Image src={pkg.coverImage} alt={pkg.title} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="(max-width: 640px) 100vw, 33vw" />
         </div>
         <CardContent className="p-4">
           <p className="text-sm font-medium">{pkg.title}</p>

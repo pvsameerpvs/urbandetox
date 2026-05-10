@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { fetchFeaturedPackages } from "@/lib/data";
 import { getDestinationBySlug } from "@/data/destinations";
-import { CloudRain, Sun, Waves, Calendar, ArrowRight } from "lucide-react";
+import { CloudRain, Sun, Waves, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 

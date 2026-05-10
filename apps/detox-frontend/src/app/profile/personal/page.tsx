@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
-import { User, Phone, Mail, CalendarDays, Camera, ChevronRight } from "lucide-react";
+import { User, Phone, Mail, CalendarDays, Camera } from "lucide-react";
 import { ProfileSectionHeader } from "../components/ProfileSectionHeader";
 import { IconInput } from "../components/IconInput";
 import { SaveButton } from "../components/SaveButton";

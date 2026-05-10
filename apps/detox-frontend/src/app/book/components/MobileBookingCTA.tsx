@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Loader2, Lock } from "lucide-react";
+import { Loader2, Lock } from "lucide-react";
 import { formatPrice } from "@/lib/formatters";
 
 interface MobileBookingCTAProps {

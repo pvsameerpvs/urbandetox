@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, startTransition } from "react";
 import { usePathname } from "next/navigation";
 
 export function useNavbarTheme() {
@@ -11,13 +11,13 @@ export function useNavbarTheme() {
 
   useEffect(() => {
     if (!isHomePage) {
-      setScrolled(true);
+      startTransition(() => setScrolled(true));
       return;
     }
 
-    setScrolled(false);
+    startTransition(() => setScrolled(false));
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
+      startTransition(() => setScrolled(window.scrollY > 50));
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
