@@ -3,6 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Compass, Users, ShieldCheck, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 const reasons = [
   {
@@ -33,49 +34,54 @@ const reasons = [
 
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 }
-  }
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
 };
 
 export function WhySection() {
   return (
-    <section className="py-20 sm:py-28 bg-secondary/30">
+    <section className="py-20 sm:py-28 bg-secondary/[0.02]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-14 max-w-xl"
-        >
-          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">Why Urban Detox</h2>
-          <p className="mt-3 text-muted-foreground text-lg">
+        {/* Elegant Header */}
+        <div className="mb-14 max-w-xl">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="h-px w-8 bg-brand" />
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
+              Why Us
+            </span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl lg:text-[2.5rem] font-bold tracking-tight leading-tight">
+            Why <span className="text-brand">Urban Detox</span>
+          </h2>
+          <p className="mt-3 text-muted-foreground text-base sm:text-lg leading-relaxed">
             Built for people who are tired of crowded itineraries and generic getaways.
           </p>
-        </motion.div>
+        </div>
 
         <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: "-80px" }}
           className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
         >
           {reasons.map((r) => (
             <motion.div key={r.title} variants={itemVariants}>
-              <Card className="border-0 shadow-lg shadow-black/5 bg-card h-full hover:shadow-xl hover:shadow-black/10 transition-all duration-500 group">
+              <Card
+                className={cn(
+                  "border-0 shadow-lg shadow-black/[0.03] bg-white h-full",
+                  "hover:shadow-xl hover:shadow-black/[0.06] transition-all duration-500 group"
+                )}
+              >
                 <CardContent className="p-7">
                   <div className="mb-5 inline-flex items-center justify-center rounded-2xl bg-brand/10 p-4 group-hover:bg-brand/15 transition-colors">
                     <r.icon className="h-6 w-6 text-brand" />
                   </div>
-                  <h3 className="text-lg font-semibold mb-3">{r.title}</h3>
+                  <h3 className="text-lg font-bold mb-3">{r.title}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">{r.description}</p>
                 </CardContent>
               </Card>

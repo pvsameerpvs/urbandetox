@@ -178,28 +178,35 @@ function DepartureCard({
 /* ─── Section header ───────────────────────── */
 function SectionHeader() {
   return (
-    <div className="flex items-end justify-between gap-4 mb-12">
-      <div>
-        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand uppercase tracking-wider mb-3">
-          <Calendar className="h-3.5 w-3.5" />
-          Upcoming Departures
-        </span>
-        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-          Upcoming Detox
+    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-14">
+      <div className="max-w-xl">
+        {/* Elegant label with line accent */}
+        <div className="flex items-center gap-3 mb-4">
+          <div className="h-px w-8 bg-brand" />
+          <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
+            Upcoming Departures
+          </span>
+        </div>
+
+        {/* Title with elegant typography */}
+        <h2 className="text-3xl sm:text-4xl lg:text-[2.5rem] font-bold tracking-tight leading-tight">
+          Upcoming <span className="text-brand">Detox</span>
         </h2>
-        <p className="mt-2 text-muted-foreground text-base sm:text-lg max-w-lg">
-          Choose your date. We handle the rest.
+
+        {/* Subtitle */}
+        <p className="mt-3 text-muted-foreground text-base sm:text-lg leading-relaxed">
+          Choose your perfect escape. We handle every detail so you can focus on resetting.
         </p>
       </div>
-      <Button
-        variant="outline"
-        className="hidden sm:flex h-11 px-5 text-sm font-semibold"
-        asChild
+
+      {/* View All - elegant link style */}
+      <Link
+        href="/detox"
+        className="hidden sm:inline-flex items-center gap-2 text-sm font-semibold text-brand hover:text-brand/80 transition-colors group shrink-0"
       >
-        <Link href="/detox">
-          View All <ArrowRight className="ml-2 h-4 w-4" />
-        </Link>
-      </Button>
+        <span className="uppercase tracking-wider">View All</span>
+        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+      </Link>
     </div>
   );
 }
@@ -225,15 +232,15 @@ export function UpcomingDetoxSection() {
           ))}
         </motion.div>
 
-        {/* Mobile view-all button */}
-        <div className="mt-10 sm:hidden">
-          <Button
-            variant="outline"
-            className="w-full h-11 text-sm font-semibold"
-            asChild
+        {/* Mobile view-all link */}
+        <div className="mt-10 sm:hidden text-center">
+          <Link
+            href="/detox"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-brand hover:text-brand/80 transition-colors group"
           >
-            <Link href="/detox">View All Upcoming Detox</Link>
-          </Button>
+            <span className="uppercase tracking-wider">View All Detox</span>
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </Link>
         </div>
       </div>
     </section>
