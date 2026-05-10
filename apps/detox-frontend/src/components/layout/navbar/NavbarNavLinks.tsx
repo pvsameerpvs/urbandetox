@@ -8,11 +8,11 @@ import { useActiveLink } from "./use-active-link";
 interface NavLinkItemProps {
   href: string;
   label: string;
-  mobile?: boolean;
+  isLightMode: boolean;
   onClick?: () => void;
 }
 
-function NavLinkItem({ href, label, mobile, onClick }: NavLinkItemProps) {
+function NavLinkItem({ href, label, isLightMode, onClick }: NavLinkItemProps) {
   const isActive = useActiveLink(href);
 
   return (
@@ -20,9 +20,12 @@ function NavLinkItem({ href, label, mobile, onClick }: NavLinkItemProps) {
       href={href}
       onClick={onClick}
       className={cn(
-        "font-medium transition-colors hover:text-brand",
-        mobile ? "text-base" : "text-sm",
-        isActive ? "text-brand" : "text-muted-foreground"
+        "text-base font-bold tracking-wide transition-colors duration-200 hover:opacity-80 uppercase",
+        isLightMode
+          ? isActive
+            ? "text-brand"
+            : "text-foreground hover:text-brand"
+          : "text-white/95 hover:text-white"
       )}
     >
       {label}
@@ -31,24 +34,36 @@ function NavLinkItem({ href, label, mobile, onClick }: NavLinkItemProps) {
 }
 
 interface NavbarNavLinksProps {
+  isLightMode: boolean;
   mobile?: boolean;
   onLinkClick?: () => void;
 }
 
-export function NavbarNavLinks({ mobile, onLinkClick }: NavbarNavLinksProps) {
-  const className = mobile
-    ? "flex flex-col gap-3"
-    : "hidden md:flex items-center gap-6";
+export function NavbarNavLinks({ isLightMode, mobile, onLinkClick }: NavbarNavLinksProps) {
+  if (mobile) {
+    return (
+      <nav className="flex flex-col gap-1">
+        {NAV_LINKS.map((link) => (
+          <NavLinkItem
+            key={link.href}
+            href={link.href}
+            label={link.label}
+            isLightMode={true}
+            onClick={onLinkClick}
+          />
+        ))}
+      </nav>
+    );
+  }
 
   return (
-    <nav className={className}>
+    <nav className="hidden md:flex items-center gap-10">
       {NAV_LINKS.map((link) => (
         <NavLinkItem
           key={link.href}
           href={link.href}
           label={link.label}
-          mobile={mobile}
-          onClick={onLinkClick}
+          isLightMode={isLightMode}
         />
       ))}
     </nav>
