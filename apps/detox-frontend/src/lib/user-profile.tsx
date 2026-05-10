@@ -69,6 +69,7 @@ export const defaultUserProfile: UserProfile = {
 };
 
 const STORAGE_KEY = "urbandetox-user-profile";
+const AUTH_KEY = "urbandetox-auth";
 
 function loadFromStorage(): UserProfile {
   if (typeof window === "undefined") return defaultUserProfile;
@@ -86,10 +87,27 @@ function saveToStorage(profile: UserProfile) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
 }
 
+function loadAuthFromStorage(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return localStorage.getItem(AUTH_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
+
+function saveAuthToStorage(isLoggedIn: boolean) {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(AUTH_KEY, String(isLoggedIn));
+}
+
 /* ─── Context ────────────────────────────────── */
 
 interface UserProfileContextType {
   profile: UserProfile;
+  isLoggedIn: boolean;
+  login: (data?: Partial<PersonalInfo>) => void;
+  logout: () => void;
   updatePersonal: (data: Partial<PersonalInfo>) => void;
   updateHealth: (data: Partial<HealthInfo>) => void;
   setEmergencyContacts: (contacts: EmergencyContact[]) => void;
@@ -113,11 +131,13 @@ export function useUserProfile() {
 
 export function UserProfileProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<UserProfile>(defaultUserProfile);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
     startTransition(() => {
       setProfile(loadFromStorage());
+      setIsLoggedIn(loadAuthFromStorage());
       setIsHydrated(true);
     });
   }, []);
@@ -125,6 +145,21 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
   useEffect(() => {
     if (isHydrated) saveToStorage(profile);
   }, [profile, isHydrated]);
+
+  useEffect(() => {
+    if (isHydrated) saveAuthToStorage(isLoggedIn);
+  }, [isLoggedIn, isHydrated]);
+
+  const login = useCallback((data?: Partial<PersonalInfo>) => {
+    setIsLoggedIn(true);
+    if (data) {
+      setProfile((prev) => ({ ...prev, personal: { ...prev.personal, ...data } }));
+    }
+  }, []);
+
+  const logout = useCallback(() => {
+    setIsLoggedIn(false);
+  }, []);
 
   const updatePersonal = useCallback((data: Partial<PersonalInfo>) => {
     setProfile((prev) => ({ ...prev, personal: { ...prev.personal, ...data } }));
@@ -174,6 +209,9 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
     <UserProfileContext.Provider
       value={{
         profile,
+        isLoggedIn,
+        login,
+        logout,
         updatePersonal,
         updateHealth,
         setEmergencyContacts,

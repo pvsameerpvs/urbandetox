@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -14,9 +13,13 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useUserProfile } from "@/lib/user-profile";
 import { quickLinks, recentBookings } from "./data";
 
 export default function ProfileDashboard() {
+  const { profile } = useUserProfile();
+  const initials = profile.personal.fullName.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -38,11 +41,11 @@ export default function ProfileDashboard() {
         <CardContent className="relative px-6 sm:px-8 pb-6 sm:pb-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4 -mt-12 sm:-mt-14">
             <Avatar className="h-20 w-20 sm:h-24 sm:w-24 ring-4 ring-white shadow-lg">
-              <AvatarFallback className="bg-brand text-brand-foreground text-xl sm:text-2xl font-bold">JD</AvatarFallback>
+              <AvatarFallback className="bg-brand text-brand-foreground text-xl sm:text-2xl font-bold">{initials}</AvatarFallback>
             </Avatar>
             <div className="flex-1 pt-2 sm:pt-0 sm:pb-1">
-              <h2 className="text-xl sm:text-2xl font-bold">John Doe</h2>
-              <p className="text-sm text-muted-foreground">john@example.com · +91 98765 43210</p>
+              <h2 className="text-xl sm:text-2xl font-bold">{profile.personal.fullName}</h2>
+              <p className="text-sm text-muted-foreground">{profile.personal.email} · {profile.personal.phone}</p>
             </div>
             <Badge className="bg-brand/10 text-brand border-0 text-xs font-medium">Member since 2024</Badge>
           </div>

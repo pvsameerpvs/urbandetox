@@ -3,13 +3,19 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { User, Heart, FileText, PhoneCall, ArrowLeft } from "lucide-react";
+import { User, Heart, FileText, PhoneCall, ArrowLeft, MapPin, Compass } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 const navItems = [
   { label: "Personal Details", href: "/profile/personal", icon: User },
   { label: "Preferences", href: "/profile/preferences", icon: Heart },
   { label: "Documents", href: "/profile/documents", icon: FileText },
   { label: "Emergency Contact", href: "/profile/emergency", icon: PhoneCall },
+];
+
+const quickNavItems = [
+  { label: "My Detox", href: "/my-detox", icon: MapPin },
+  { label: "Explore Detox", href: "/detox", icon: Compass },
 ];
 
 export default function ProfileLayout({ children }: { children: React.ReactNode }) {
@@ -35,7 +41,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:gap-10">
           {/* Sidebar */}
-          <aside className="lg:col-span-1">
+          <aside className="lg:col-span-1 space-y-4">
             <nav className="flex flex-row lg:flex-col gap-1.5 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 snap-x snap-mandatory scrollbar-hide">
               {navItems.map((item) => {
                 const isActive = pathname === item.href;
@@ -57,6 +63,26 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
                 );
               })}
             </nav>
+
+            <div className="hidden lg:block">
+              <Separator className="my-2" />
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-2 px-4">Quick Links</p>
+              <nav className="flex flex-col gap-1">
+                {quickNavItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-all"
+                    >
+                      <Icon className="h-4 w-4" />
+                      <span>{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
           </aside>
 
           {/* Content */}

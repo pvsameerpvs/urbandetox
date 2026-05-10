@@ -1,10 +1,12 @@
-import { User, Heart, FileText, PhoneCall } from "lucide-react";
+import { User, Heart, FileText, PhoneCall, MapPin, Compass } from "lucide-react";
 
 export const quickLinks = [
+  { label: "My Detox", href: "/my-detox", icon: MapPin, desc: "View your trips & bookings" },
   { label: "Personal Details", href: "/profile/personal", icon: User, desc: "Name, email, phone, DOB" },
   { label: "Preferences", href: "/profile/preferences", icon: Heart, desc: "Food, allergies, medical" },
   { label: "Documents", href: "/profile/documents", icon: FileText, desc: "ID, photos, forms" },
   { label: "Emergency Contact", href: "/profile/emergency", icon: PhoneCall, desc: "Emergency contact info" },
+  { label: "Explore Detox", href: "/detox", icon: Compass, desc: "Browse all retreats" },
 ];
 
 export const recentBookings = [
