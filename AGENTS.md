@@ -4,6 +4,16 @@
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
 <!-- END:nextjs-agent-rules -->
 
+# CRITICAL: Git Usage Rules
+
+**Never run git commands automatically.** The user manages git manually.
+
+- **NEVER** run `git commit`, `git push`, `git pull`, `git merge`, `git rebase`, `git reset`, `git checkout`, or any other git mutation without **explicit user permission**.
+- **NEVER** create commits or push code automatically after making changes.
+- **NEVER** include git operations in code generation or "finishing up" steps.
+- Wait for explicit user instruction before touching git.
+- Git commands require a clear, separate user request (e.g., "commit this", "push to git").
+
 # Monorepo Architecture
 
 This project uses **Turborepo** + **pnpm workspaces**.

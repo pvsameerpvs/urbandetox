@@ -1,131 +1,166 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
-import { User, Phone, Mail, MapPin, Save } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  User,
+  Heart,
+  FileText,
+  PhoneCall,
+  Calendar,
+  MapPin,
+  ArrowRight,
+  Clock,
+  CheckCircle2,
+} from "lucide-react";
+import { motion } from "framer-motion";
 
-export default function ProfilePage() {
-  const [saved, setSaved] = useState(false);
+const quickLinks = [
+  { label: "Personal Details", href: "/profile/personal", icon: User, desc: "Name, email, phone, DOB" },
+  { label: "Preferences", href: "/profile/preferences", icon: Heart, desc: "Food, allergies, medical" },
+  { label: "Documents", href: "/profile/documents", icon: FileText, desc: "ID, photos, forms" },
+  { label: "Emergency Contact", href: "/profile/emergency", icon: PhoneCall, desc: "Emergency contact info" },
+];
 
+const recentBookings = [
+  {
+    id: "1",
+    title: "Kodaikanal Weekend Detox",
+    date: "2025-08-15",
+    status: "upcoming" as const,
+    destination: "Kodaikanal",
+  },
+  {
+    id: "2",
+    title: "North Kerala River Retreat",
+    date: "2025-06-10",
+    status: "completed" as const,
+    destination: "North Kerala",
+  },
+];
+
+export default function ProfileDashboard() {
   return (
-    <section className="py-10 sm:py-14">
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl mb-6">Profile</h1>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-8"
+    >
+      {/* Profile card */}
+      <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl overflow-hidden">
+        <div className="relative h-28 sm:h-36 bg-gradient-to-r from-brand/60 via-brand to-brand/60">
+          <div
+            className="absolute inset-0 opacity-10"
+            style={{
+              backgroundImage: `radial-gradient(circle, white 1px, transparent 1px)`,
+              backgroundSize: "20px 20px",
+            }}
+          />
+        </div>
+        <CardContent className="relative px-6 sm:px-8 pb-6 sm:pb-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4 -mt-12 sm:-mt-14">
+            <Avatar className="h-20 w-20 sm:h-24 sm:w-24 ring-4 ring-white shadow-lg">
+              <AvatarFallback className="bg-brand text-brand-foreground text-xl sm:text-2xl font-bold">JD</AvatarFallback>
+            </Avatar>
+            <div className="flex-1 pt-2 sm:pt-0 sm:pb-1">
+              <h2 className="text-xl sm:text-2xl font-bold">John Doe</h2>
+              <p className="text-sm text-muted-foreground">john@example.com · +91 98765 43210</p>
+            </div>
+            <Badge className="bg-brand/10 text-brand border-0 text-xs font-medium">Member since 2024</Badge>
+          </div>
+        </CardContent>
+      </Card>
 
-        <Tabs defaultValue="personal" className="w-full">
-          <TabsList className="w-full justify-start mb-6">
-            <TabsTrigger value="personal">Personal Details</TabsTrigger>
-            <TabsTrigger value="preferences">Preferences</TabsTrigger>
-            <TabsTrigger value="documents">Documents</TabsTrigger>
-            <TabsTrigger value="emergency">Emergency</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="personal">
-            <Card className="border-border/60 bg-card">
-              <CardContent className="p-6 sm:p-8 space-y-6">
-                <div className="flex items-center gap-4">
-                  <Avatar className="h-16 w-16">
-                    <AvatarFallback className="bg-brand-muted text-brand text-lg">JD</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="text-lg font-semibold">John Doe</p>
-                    <p className="text-sm text-muted-foreground">john@example.com</p>
+      {/* Quick links grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {quickLinks.map((link) => {
+          const Icon = link.icon;
+          return (
+            <Link key={link.href} href={link.href} className="group">
+              <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl hover:shadow-xl transition-all duration-500">
+                <CardContent className="p-5 sm:p-6 flex items-center gap-4">
+                  <div className="shrink-0 inline-flex items-center justify-center rounded-xl bg-brand/10 p-3 group-hover:bg-brand/15 transition-colors">
+                    <Icon className="h-5 w-5 text-brand" />
                   </div>
-                </div>
-                <Separator />
-                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="fullName">Full Name</Label>
-                    <Input id="fullName" defaultValue="John Doe" />
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-sm sm:text-base group-hover:text-brand transition-colors">{link.label}</h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">{link.desc}</p>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone</Label>
-                    <Input id="phone" defaultValue="+91 98765 43210" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" defaultValue="john@example.com" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="dob">Date of Birth</Label>
-                    <Input id="dob" type="date" defaultValue="1990-05-15" />
-                  </div>
-                </div>
-                <Button className="bg-brand text-brand-foreground hover:bg-brand/90" onClick={() => setSaved(true)}>
-                  <Save className="mr-2 h-4 w-4" /> Save Changes
-                </Button>
-                {saved && <p className="text-sm text-brand">Changes saved.</p>}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="preferences">
-            <Card className="border-border/60 bg-card">
-              <CardContent className="p-6 sm:p-8 space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="food">Food Preference</Label>
-                  <Input id="food" defaultValue="Vegetarian" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="allergies">Allergies</Label>
-                  <Input id="allergies" defaultValue="None" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="medical">Medical Conditions</Label>
-                  <Input id="medical" defaultValue="None" />
-                </div>
-                <Button className="bg-brand text-brand-foreground hover:bg-brand/90">Save Preferences</Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="documents">
-            <Card className="border-border/60 bg-card">
-              <CardContent className="p-6 sm:p-8 space-y-6">
-                <div className="rounded-lg border border-dashed border-border p-6 text-center">
-                  <p className="text-sm font-medium mb-1">Government ID</p>
-                  <p className="text-xs text-muted-foreground mb-3">Aadhaar / Passport / DL</p>
-                  <Button variant="outline" size="sm">Upload</Button>
-                </div>
-                <div className="rounded-lg border border-dashed border-border p-6 text-center">
-                  <p className="text-sm font-medium mb-1">Recent Photo</p>
-                  <p className="text-xs text-muted-foreground mb-3">Passport-size for records</p>
-                  <Button variant="outline" size="sm">Upload</Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="emergency">
-            <Card className="border-border/60 bg-card">
-              <CardContent className="p-6 sm:p-8 space-y-6">
-                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="eName">Contact Name</Label>
-                    <Input id="eName" defaultValue="Jane Doe" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="ePhone">Contact Phone</Label>
-                    <Input id="ePhone" defaultValue="+91 98765 43211" />
-                  </div>
-                  <div className="space-y-2 sm:col-span-2">
-                    <Label htmlFor="eRelation">Relationship</Label>
-                    <Input id="eRelation" defaultValue="Spouse" />
-                  </div>
-                </div>
-                <Button className="bg-brand text-brand-foreground hover:bg-brand/90">Save Emergency Contact</Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                  <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-brand group-hover:translate-x-0.5 transition-all shrink-0" />
+                </CardContent>
+              </Card>
+            </Link>
+          );
+        })}
       </div>
-    </section>
+
+      {/* Recent bookings */}
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-bold">Recent Bookings</h3>
+          <Link
+            href="/my-detox"
+            className="text-sm font-medium text-brand hover:underline inline-flex items-center gap-1"
+          >
+            View all <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+
+        {recentBookings.length === 0 ? (
+          <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
+            <CardContent className="p-8 sm:p-10 text-center">
+              <Calendar className="h-10 w-10 text-muted-foreground/40 mx-auto mb-4" />
+              <h4 className="font-bold mb-1">No bookings yet</h4>
+              <p className="text-sm text-muted-foreground mb-4">Start your detox journey today.</p>
+              <Button className="rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-10 px-5" asChild>
+                <Link href="/detox">Explore Detox <ArrowRight className="ml-1.5 h-4 w-4" /></Link>
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="space-y-3">
+            {recentBookings.map((booking) => (
+              <Card key={booking.id} className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl hover:shadow-md transition-all duration-300">
+                <CardContent className="p-5 sm:p-6 flex items-center gap-4">
+                  <div className="shrink-0 inline-flex items-center justify-center rounded-xl bg-secondary p-3">
+                    {booking.status === "upcoming" ? (
+                      <Clock className="h-5 w-5 text-amber-600" />
+                    ) : (
+                      <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <h4 className="font-bold text-sm">{booking.title}</h4>
+                      <Badge
+                        className={
+                          booking.status === "upcoming"
+                            ? "bg-amber-100 text-amber-700 border-0 text-[10px]"
+                            : "bg-emerald-100 text-emerald-700 border-0 text-[10px]"
+                        }
+                      >
+                        {booking.status === "upcoming" ? "Upcoming" : "Completed"}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground inline-flex items-center gap-2">
+                      <Calendar className="h-3 w-3" />
+                      {booking.date}
+                      <MapPin className="h-3 w-3 ml-1" />
+                      {booking.destination}
+                    </p>
+                  </div>
+                  <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+    </motion.div>
   );
 }
