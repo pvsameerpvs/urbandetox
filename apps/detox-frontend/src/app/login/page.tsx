@@ -10,7 +10,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import {
-  Leaf,
   Mail,
   Lock,
   Smartphone,
@@ -47,11 +46,15 @@ export default function LoginPage() {
 
         {/* Top branding */}
         <div className="relative z-10 p-8 xl:p-12">
-          <Link href="/" className="inline-flex items-center gap-2.5 text-white">
-            <div className="inline-flex items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm p-2.5">
-              <Leaf className="h-6 w-6 text-white" />
-            </div>
-            <span className="text-xl font-bold tracking-tight">Urban Detox</span>
+          <Link href="/" className="inline-block">
+            <Image
+              src="/log-detox-white.png"
+              alt="Urban Detox"
+              width={160}
+              height={48}
+              className="h-12 w-auto object-contain"
+              priority
+            />
           </Link>
         </div>
 
@@ -65,7 +68,7 @@ export default function LoginPage() {
               <Sparkles className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-white">Urban Detox</p>
+              <p className="text-sm font-semibold text-white">Urban Detox Team</p>
               <p className="text-xs text-white/60">Offbeat escapes since 2023</p>
             </div>
           </div>
@@ -75,11 +78,17 @@ export default function LoginPage() {
       {/* Right side — Form */}
       <div className="flex-1 flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 py-10 sm:py-14 bg-white relative">
         {/* Mobile header */}
-        <div className="lg:hidden w-full max-w-sm mb-8 flex items-center gap-2.5">
-          <div className="inline-flex items-center justify-center rounded-xl bg-brand/10 p-2">
-            <Leaf className="h-5 w-5 text-brand" />
-          </div>
-          <span className="text-lg font-bold tracking-tight">Urban Detox</span>
+        <div className="lg:hidden w-full max-w-sm mb-8">
+          <Link href="/" className="inline-block">
+            <Image
+              src="/log-detox.png"
+              alt="Urban Detox"
+              width={140}
+              height={40}
+              className="h-10 w-auto object-contain"
+              priority
+            />
+          </Link>
         </div>
 
         <motion.div

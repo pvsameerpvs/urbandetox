@@ -29,15 +29,14 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="flex flex-col gap-5">
-            <Link href="/" className="flex items-center gap-2.5 text-brand">
+            <Link href="/" className="block">
               <Image
                 src="/log-detox.png"
                 alt="Urban Detox"
-                width={32}
-                height={32}
-                className="h-8 w-8 object-contain"
+                width={140}
+                height={40}
+                className="h-10 w-auto object-contain"
               />
-              <span className="text-lg font-semibold tracking-tight">Urban Detox</span>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Disconnect from routine. Step into curated offbeat escapes designed for real reset.
