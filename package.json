@@ -1,0 +1,20 @@
+{
+  "name": "urbandetox",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Urban Detox monorepo: detox-frontend, detox-dashboard, detox-backend",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "clean": "turbo run clean",
+    "frontend": "turbo run dev --filter=detox-frontend",
+    "dashboard": "turbo run dev --filter=detox-dashboard",
+    "backend": "turbo run dev --filter=detox-backend"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.0"
+  },
+  "packageManager": "pnpm@9.15.5"
+}

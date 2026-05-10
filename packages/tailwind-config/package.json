@@ -1,0 +1,14 @@
+{
+  "name": "@urbandetox/tailwind-config",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./theme.css",
+  "exports": {
+    ".": "./theme.css",
+    "./theme.css": "./theme.css"
+  }
+}
