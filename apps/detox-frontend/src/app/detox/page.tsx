@@ -355,27 +355,37 @@ function FilterBar({
 /* ─── Section header ───────────────────────── */
 function SectionHeader({ resultCount }: { resultCount: number }) {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 mb-10">
-      <div>
-        <div className="flex items-center gap-3 mb-5">
-          <div className="h-px w-10 bg-brand" />
-          <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
+    <div className="relative mb-12 overflow-hidden rounded-3xl bg-brand px-8 py-14 sm:px-12 sm:py-20 lg:px-16 lg:py-24">
+      {/* Subtle pattern overlay */}
+      <div className="absolute inset-0 opacity-[0.08] bg-[radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] bg-[length:24px_24px]" />
+
+      <div className="relative z-10 max-w-3xl">
+        {/* Label */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="h-px w-8 bg-white/40" />
+          <span className="text-xs font-bold uppercase tracking-[0.2em] text-white/70">
             Discover
           </span>
         </div>
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1]">
-          Explore <span className="text-brand">Detox</span>
+
+        {/* Title */}
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.1] mb-5">
+          Find Your Next{" "}
+          <span className="text-white/90">Detox</span>
         </h1>
-      </div>
-      <div className="lg:flex lg:items-end">
-        <p className="text-base sm:text-lg text-muted-foreground leading-relaxed lg:max-w-md">
-          Browse curated detox packages. Choose a destination, then pick your date.
-          {resultCount > 0 && (
-            <span className="block mt-1 text-sm text-brand font-semibold">
-              {resultCount} {resultCount === 1 ? "package" : "packages"} found
-            </span>
-          )}
+
+        {/* Description */}
+        <p className="text-lg sm:text-xl text-white/70 leading-relaxed max-w-xl mb-4">
+          Browse handpicked offbeat escapes. Filter by destination, date, or duration to find your perfect reset.
         </p>
+
+        {/* Result count */}
+        {resultCount > 0 && (
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/15 backdrop-blur-sm px-4 py-2 text-sm font-semibold text-white border border-white/20">
+            <Search className="h-4 w-4" />
+            {resultCount} {resultCount === 1 ? "package" : "packages"} available
+          </div>
+        )}
       </div>
     </div>
   );
@@ -384,10 +394,10 @@ function SectionHeader({ resultCount }: { resultCount: number }) {
 /* ─── Empty state ──────────────────────────── */
 function EmptyState({ onReset }: { onReset: () => void }) {
   return (
-    <motion.div
+      <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-2xl bg-white border border-border/40 py-20 text-center shadow-lg shadow-black/[0.03]"
+      className="rounded-2xl bg-secondary/[0.03] border border-border/40 py-20 text-center shadow-lg shadow-black/[0.03]"
     >
       <div className="mx-auto max-w-sm">
         <div className="inline-flex items-center justify-center rounded-full bg-secondary/50 p-4 mb-6">
@@ -470,7 +480,7 @@ function DetoxListingContent() {
   };
 
   return (
-    <section className="py-16 sm:py-24 bg-secondary/[0.02]">
+    <section className="py-8 sm:py-12 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader resultCount={filtered.length} />
 
