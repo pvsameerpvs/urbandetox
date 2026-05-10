@@ -1,8 +1,8 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   transpilePackages: ["@urbandetox/ui", "@urbandetox/utils"],
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
