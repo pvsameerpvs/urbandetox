@@ -1,0 +1,59 @@
+"use client";
+
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { Mail, Phone, MessageCircle, MapPin } from "lucide-react";
+
+const BRAND = {
+  email: "hello@urbandetox.in",
+  phone: "+91-98765-43210",
+  whatsapp: "https://wa.me/919876543210",
+  address: "Bangalore, India",
+};
+
+const cards = [
+  { icon: Mail, label: "Email", value: BRAND.email, href: `mailto:${BRAND.email}`, color: "bg-blue-50 text-blue-600" },
+  { icon: Phone, label: "Phone", value: BRAND.phone, href: `tel:${BRAND.phone.replace(/-/g, "")}`, color: "bg-emerald-50 text-emerald-600" },
+  { icon: MessageCircle, label: "WhatsApp", value: "Chat now", href: BRAND.whatsapp, external: true, color: "bg-green-50 text-green-600" },
+  { icon: MapPin, label: "Base", value: BRAND.address, color: "bg-amber-50 text-amber-600" },
+];
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
+};
+
+export function ContactCards() {
+  return (
+    <motion.div variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 -mt-10 sm:-mt-14 relative z-20">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {cards.map((card) => {
+          const Wrapper = card.href ? (card.external ? "a" : Link) : "div";
+          const wrapperProps = card.external ? { href: card.href, target: "_blank", rel: "noopener noreferrer" } : card.href ? { href: card.href } : {};
+          return (
+            <motion.div key={card.label} variants={itemVariants}>
+              <Wrapper {...(wrapperProps as any)} className="block">
+                <Card className={cn("border-0 shadow-xl shadow-black/[0.06] bg-white rounded-2xl h-full", "hover:shadow-2xl transition-all duration-500 group")}>
+                  <CardContent className="p-4 sm:p-6 flex flex-col items-center text-center">
+                    <div className={cn("mb-3 inline-flex items-center justify-center rounded-xl p-3 transition-colors", card.color)}>
+                      <card.icon className="h-5 w-5" />
+                    </div>
+                    <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">{card.label}</span>
+                    <span className="text-sm font-bold text-foreground group-hover:text-brand transition-colors">{card.value}</span>
+                  </CardContent>
+                </Card>
+              </Wrapper>
+            </motion.div>
+          );
+        })}
+      </div>
+    </motion.div>
+  );
+}
