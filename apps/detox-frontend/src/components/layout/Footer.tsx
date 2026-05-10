@@ -7,13 +7,9 @@ import {
   Mail,
   Phone,
   MapPin,
-  ArrowRight,
-  Send,
   ExternalLink,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 
 const footerLinks = {
   Discover: [
@@ -73,9 +69,8 @@ export function Footer() {
       <div className="relative z-10">
         {/* Main footer content */}
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-10">
-          {/* Top section: Logo + Newsletter */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 pb-12 sm:pb-16 border-b border-white/10">
-            {/* Left: Logo + tagline */}
+          {/* Top section: Logo + tagline */}
+          <div className="pb-12 sm:pb-16 border-b border-white/10">
             <div className="flex flex-col gap-6">
               <Link href="/" className="inline-block">
                 <Image
@@ -101,31 +96,6 @@ export function Footer() {
                   <MapPin className="h-4 w-4" /> Bangalore, India
                 </span>
               </div>
-            </div>
-
-            {/* Right: Newsletter */}
-            <div className="lg:max-w-md lg:ml-auto">
-              <h3 className="text-lg font-bold mb-2">Stay in the loop</h3>
-              <p className="text-sm text-white/50 mb-4">
-                Get trip announcements, seasonal detox picks, and traveler stories
-                delivered to your inbox.
-              </p>
-              <form
-                onSubmit={(e) => e.preventDefault()}
-                className="flex gap-2"
-              >
-                <Input
-                  type="email"
-                  placeholder="you@example.com"
-                  className="h-12 flex-1 rounded-xl bg-white/10 border-white/10 text-white placeholder:text-white/40 focus-visible:ring-white/20 focus-visible:ring-offset-0"
-                />
-                <Button
-                  type="submit"
-                  className="h-12 px-5 rounded-xl bg-white text-[#0a1628] hover:bg-white/90 font-semibold shrink-0"
-                >
-                  <Send className="h-4 w-4" />
-                </Button>
-              </form>
             </div>
           </div>
 
