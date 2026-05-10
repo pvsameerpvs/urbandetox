@@ -2,14 +2,13 @@
 
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { User, Mail, Phone, CalendarDays, Save, Camera } from "lucide-react";
+import { User, Phone, Mail, CalendarDays, Save, Camera } from "lucide-react";
+import { ProfileSectionHeader } from "../components/ProfileSectionHeader";
+import { IconInput } from "../components/IconInput";
+import { SaveButton } from "../components/SaveButton";
 
 export default function PersonalDetailsPage() {
   const [saved, setSaved] = useState(false);
@@ -28,18 +27,11 @@ export default function PersonalDetailsPage() {
     >
       <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
         <CardContent className="p-6 sm:p-8">
-          {/* Section header */}
-          <div className="flex items-center gap-3 mb-6">
-            <div className="inline-flex items-center justify-center rounded-xl bg-brand/10 p-2.5">
-              <User className="h-5 w-5 text-brand" />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold">Personal Details</h2>
-              <p className="text-sm text-muted-foreground">Update your personal information.</p>
-            </div>
-          </div>
-
-          <Separator className="mb-6" />
+          <ProfileSectionHeader
+            icon={User}
+            title="Personal Details"
+            description="Update your personal information."
+          />
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Avatar */}
@@ -59,73 +51,19 @@ export default function PersonalDetailsPage() {
 
             {/* Form fields */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div className="space-y-2">
-                <Label htmlFor="fullName" className="text-sm font-semibold">Full Name</Label>
-                <div className="relative">
-                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="fullName"
-                    defaultValue="John Doe"
-                    className="h-12 pl-11 rounded-xl bg-secondary/40 border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="phone" className="text-sm font-semibold">Phone Number</Label>
-                <div className="relative">
-                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="phone"
-                    defaultValue="+91 98765 43210"
-                    className="h-12 pl-11 rounded-xl bg-secondary/40 border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-semibold">Email</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="email"
-                    type="email"
-                    defaultValue="john@example.com"
-                    className="h-12 pl-11 rounded-xl bg-secondary/40 border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="dob" className="text-sm font-semibold">Date of Birth</Label>
-                <div className="relative">
-                  <CalendarDays className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="dob"
-                    type="date"
-                    defaultValue="1990-05-15"
-                    className="h-12 pl-11 rounded-xl bg-secondary/40 border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20"
-                  />
-                </div>
-              </div>
+              <IconInput label="Full Name" icon={User} id="fullName" defaultValue="John Doe" />
+              <IconInput label="Phone Number" icon={Phone} id="phone" defaultValue="+91 98765 43210" />
+              <IconInput label="Email" icon={Mail} id="email" type="email" defaultValue="john@example.com" />
+              <IconInput label="Date of Birth" icon={CalendarDays} id="dob" type="date" defaultValue="1990-05-15" />
             </div>
 
-            <Separator />
+            <hr className="border-border/40" />
 
-            {/* Submit */}
-            <div className="flex items-center gap-4">
-              <Button
-                type="submit"
-                className="rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-11 px-7 text-sm font-semibold shadow-lg shadow-brand/10"
-              >
-                <Save className="mr-2 h-4 w-4" /> Save Changes
-              </Button>
-              {saved && (
-                <Badge className="bg-emerald-100 text-emerald-700 border-0 text-xs font-normal animate-fade-in">
-                  Changes saved successfully.
-                </Badge>
-              )}
-            </div>
+            <SaveButton
+              label="Save Changes"
+              saved={saved}
+              savedMessage="Changes saved successfully."
+            />
           </form>
         </CardContent>
       </Card>

@@ -7,10 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
-  User,
-  Heart,
-  FileText,
-  PhoneCall,
   Calendar,
   MapPin,
   ArrowRight,
@@ -18,30 +14,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { motion } from "framer-motion";
-
-const quickLinks = [
-  { label: "Personal Details", href: "/profile/personal", icon: User, desc: "Name, email, phone, DOB" },
-  { label: "Preferences", href: "/profile/preferences", icon: Heart, desc: "Food, allergies, medical" },
-  { label: "Documents", href: "/profile/documents", icon: FileText, desc: "ID, photos, forms" },
-  { label: "Emergency Contact", href: "/profile/emergency", icon: PhoneCall, desc: "Emergency contact info" },
-];
-
-const recentBookings = [
-  {
-    id: "1",
-    title: "Kodaikanal Weekend Detox",
-    date: "2025-08-15",
-    status: "upcoming" as const,
-    destination: "Kodaikanal",
-  },
-  {
-    id: "2",
-    title: "North Kerala River Retreat",
-    date: "2025-06-10",
-    status: "completed" as const,
-    destination: "North Kerala",
-  },
-];
+import { quickLinks, recentBookings } from "./data";
 
 export default function ProfileDashboard() {
   return (
