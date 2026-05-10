@@ -1,24 +1,39 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useParams, notFound } from "next/navigation";
-import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { BookingHeader } from "../../components/BookingHeader";
+import { BookingHero } from "../../components/BookingHero";
+import { BookingSummaryCard } from "../../components/BookingSummaryCard";
+import { Stepper } from "../../components/Stepper";
+import { OnboardingSubmitted } from "../../components/OnboardingSubmitted";
+import { OnboardingNavigation } from "../../components/OnboardingNavigation";
 import { fetchDepartureByCode, fetchPackageBySlug, fetchDestinationBySlug } from "@/lib/data";
 import { formatPrice, formatDateRange } from "@/lib/formatters";
-import { ChevronLeft, ChevronRight, Check, Upload, Loader2, User, Utensils, PhoneCall, FileCheck } from "lucide-react";
+import { User, Users, Utensils, Pill, AlertTriangle, Phone, Heart, Upload, Camera, MapPin, PhoneCall } from "lucide-react";
 
 const steps = [
-  { id: 1, label: "Personal", icon: User },
-  { id: 2, label: "Travel & Food", icon: Utensils },
-  { id: 3, label: "Emergency", icon: PhoneCall },
-  { id: 4, label: "Confirm", icon: FileCheck },
+  { id: 1, label: "Travel Party", icon: Users, desc: "Who is coming" },
+  { id: 2, label: "Health & Food", icon: Utensils, desc: "Preferences & health" },
+  { id: 3, label: "Emergency", icon: PhoneCall, desc: "Emergency contacts" },
+  { id: 4, label: "Confirm", icon: PhoneCall, desc: "Final details" },
 ];
+
+const slideVariants = {
+  enter: (dir: number) => ({ x: dir > 0 ? 60 : -60, opacity: 0 }),
+  center: { x: 0, opacity: 1 },
+  exit: (dir: number) => ({ x: dir > 0 ? -60 : 60, opacity: 0 }),
+};
 
 export default function OnboardingPage() {
   const params = useParams();
@@ -32,250 +47,341 @@ export default function OnboardingPage() {
   }
 
   const [step, setStep] = useState(1);
+  const [direction, setDirection] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [party, setParty] = useState("solo");
+  const [emergencyContacts, setEmergencyContacts] = useState([{ name: "", phone: "", relation: "" }]);
 
-  const next = () => setStep((s) => Math.min(s + 1, steps.length));
-  const prev = () => setStep((s) => Math.max(s - 1, 1));
+  const next = () => { setDirection(1); setStep((s) => Math.min(s + 1, steps.length)); };
+  const prev = () => { setDirection(-1); setStep((s) => Math.max(s - 1, 1)); };
+
+  const addContact = () => setEmergencyContacts((prev) => [...prev, { name: "", phone: "", relation: "" }]);
+  const removeContact = (index: number) => setEmergencyContacts((prev) => prev.filter((_, i) => i !== index));
 
   const handleSubmit = () => {
     setSubmitting(true);
     setTimeout(() => {
       setSubmitting(false);
       setSubmitted(true);
-      setTimeout(() => {
-        window.location.href = `/book/${code}/success`;
-      }, 1200);
-    }, 1500);
+      setTimeout(() => { window.location.href = `/book/${code}/success`; }, 1500);
+    }, 2000);
   };
 
+  const currentStep = steps.find((s) => s.id === step)!;
+  const stepProgress = ((step - 1) / (steps.length - 1)) * 100;
+  const tripPrice = departure.offerPrice ?? departure.price;
+
   return (
-    <section className="py-10 sm:py-14">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-        <Button variant="ghost" size="sm" className="mb-6" asChild>
-          <Link href={`/book/${code}/payment`}>
-            <ChevronLeft className="mr-1 h-4 w-4" /> Back to Payment
-          </Link>
-        </Button>
+    <main className="min-h-screen bg-white pb-24 md:pb-0">
+      <BookingHeader backHref={`/book/${code}/payment`} backLabel="Back to Payment" stepLabel="Step 3 of 3" />
+      <BookingHero
+        image={pkg.coverImage}
+        title="Trip Onboarding"
+        destination={dest.name}
+        durationLabel={pkg.durationLabel}
+        dates={formatDateRange(departure.startDate, departure.endDate)}
+        subtitle="Complete your traveler details before the detox begins."
+      />
+      <Stepper steps={steps} currentStep={step} />
 
-        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl mb-2">Onboarding</h1>
-        <p className="text-muted-foreground mb-8">Complete your traveler details before the detox begins.</p>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
+          <div className="lg:col-span-3">
+            <OnboardingSubmitted isVisible={submitted} />
 
-        {/* Stepper */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            {steps.map((s, i) => (
-              <div key={s.id} className="flex flex-1 items-center">
-                <div className="flex flex-col items-center">
-                  <div
-                    className={`flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-medium transition-colors ${
-                      step > s.id
-                        ? "border-brand bg-brand text-brand-foreground"
-                        : step === s.id
-                        ? "border-brand text-brand"
-                        : "border-border text-muted-foreground"
-                    }`}
-                  >
-                    {step > s.id ? <Check className="h-5 w-5" /> : <s.icon className="h-4 w-4" />}
-                  </div>
-                  <span className="mt-2 text-[10px] font-medium hidden sm:block text-muted-foreground">{s.label}</span>
-                </div>
-                {i < steps.length - 1 && (
-                  <div className="mx-2 h-0.5 flex-1 bg-border sm:mx-4">
-                    <div
-                      className="h-full bg-brand transition-all"
-                      style={{ width: step > s.id ? "100%" : "0%" }}
-                    />
-                  </div>
-                )}
-              </div>
-            ))}
+            <AnimatePresence mode="wait" custom={direction}>
+              {!submitted && (
+                <motion.div
+                  key={step}
+                  custom={direction}
+                  variants={slideVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ duration: 0.35, ease: "easeOut" }}
+                >
+                  <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
+                    <CardContent className="p-5 sm:p-6">
+                      <div className="flex items-center gap-3 mb-6">
+                        <div className="inline-flex items-center justify-center rounded-xl bg-brand/10 p-2.5">
+                          <currentStep.icon className="h-5 w-5 text-brand" />
+                        </div>
+                        <div>
+                          <h2 className="text-lg font-bold">{currentStep.label}</h2>
+                          <p className="text-xs text-muted-foreground">{currentStep.desc}</p>
+                        </div>
+                      </div>
+                      <Separator className="mb-6" />
+
+                      {step === 1 && <StepTravelParty party={party} setParty={setParty} />}
+                      {step === 2 && <StepHealthFood />}
+                      {step === 3 && <StepEmergency contacts={emergencyContacts} onAdd={addContact} onRemove={removeContact} />}
+                      {step === 4 && <StepConfirm />}
+
+                      <OnboardingNavigation
+                        step={step}
+                        totalSteps={steps.length}
+                        onBack={prev}
+                        onNext={next}
+                        onSubmit={handleSubmit}
+                        isSubmitting={submitting}
+                      />
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
-        </div>
 
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           <div className="lg:col-span-2">
-            <Card className="border-border/60 bg-card">
-              <CardContent className="p-6 sm:p-8">
-                {submitted ? (
-                  <div className="py-12 text-center">
-                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-brand text-brand-foreground">
-                      <Check className="h-6 w-6" />
+            <div className="sticky top-24 space-y-4">
+              <BookingSummaryCard
+                image={pkg.coverImage}
+                title={pkg.title}
+                destination={dest.name}
+                durationLabel={pkg.durationLabel}
+                dates={formatDateRange(departure.startDate, departure.endDate)}
+                meetingPoint={dest.meetingPoint}
+                travelers={1}
+                seatsLeft={departure.seatsLeft}
+                priceLines={[{ label: "Trip Price", value: formatPrice(tripPrice), isTotal: true }]}
+                total={tripPrice}
+                showPaymentConfirmed
+              />
+              {!submitted && (
+                <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
+                  <CardContent className="p-5">
+                    <h4 className="text-sm font-bold mb-3">Completion Progress</h4>
+                    <div className="h-2 rounded-full bg-secondary overflow-hidden mb-2">
+                      <div className="h-full bg-brand rounded-full transition-all duration-500" style={{ width: `${stepProgress}%` }} />
                     </div>
-                    <h3 className="text-xl font-semibold mb-2">Details saved</h3>
-                    <p className="text-muted-foreground">Taking you to the confirmation page...</p>
-                  </div>
-                ) : (
-                  <div className="space-y-5">
-                    {step === 1 && (
-                      <>
-                        <h2 className="text-lg font-semibold">Personal Details</h2>
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                          <div className="space-y-2">
-                            <Label htmlFor="fullName">Full Name</Label>
-                            <Input id="fullName" placeholder="As per ID" required />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="phone">Phone Number</Label>
-                            <Input id="phone" type="tel" placeholder="+91 98765 43210" required />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="dob">Date of Birth</Label>
-                            <Input id="dob" type="date" required />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="gender">Gender</Label>
-                            <Input id="gender" placeholder="Male / Female / Other" />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="blood">Blood Group</Label>
-                            <Input id="blood" placeholder="A+ / B+ / O+" />
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                    {step === 2 && (
-                      <>
-                        <h2 className="text-lg font-semibold">Travel & Food</h2>
-                        <div className="space-y-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="travelMode">Traveling</Label>
-                            <Input id="travelMode" placeholder="Solo / With family / With friends" />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="companions">Companion Names (if any)</Label>
-                            <Input id="companions" placeholder="Comma separated" />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="food">Food Preference</Label>
-                            <Input id="food" placeholder="Vegetarian / Non-vegetarian / Vegan" />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="allergies">Allergies</Label>
-                            <Input id="allergies" placeholder="None / Nuts / Shellfish" />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="medical">Medical Conditions</Label>
-                            <Input id="medical" placeholder="None / Asthma / Diabetes" />
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                    {step === 3 && (
-                      <>
-                        <h2 className="text-lg font-semibold">Emergency Contact</h2>
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                          <div className="space-y-2">
-                            <Label htmlFor="eName">Contact Name</Label>
-                            <Input id="eName" placeholder="Name" required />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="ePhone">Contact Phone</Label>
-                            <Input id="ePhone" type="tel" placeholder="+91 98765 43210" required />
-                          </div>
-                          <div className="space-y-2 sm:col-span-2">
-                            <Label htmlFor="eRelation">Relationship</Label>
-                            <Input id="eRelation" placeholder="Parent / Spouse / Friend" />
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                    {step === 4 && (
-                      <>
-                        <h2 className="text-lg font-semibold">Uploads & Final Confirmation</h2>
-                        <div className="space-y-4">
-                          <div className="rounded-lg border border-dashed border-border p-5 text-center">
-                            <Upload className="mx-auto h-6 w-6 text-muted-foreground mb-2" />
-                            <p className="text-sm font-medium">Upload Government ID</p>
-                            <p className="text-xs text-muted-foreground mb-3">Aadhaar / Passport / DL</p>
-                            <Button variant="outline" size="sm">Choose File</Button>
-                          </div>
-                          <div className="rounded-lg border border-dashed border-border p-5 text-center">
-                            <Upload className="mx-auto h-6 w-6 text-muted-foreground mb-2" />
-                            <p className="text-sm font-medium">Upload Recent Photo</p>
-                            <p className="text-xs text-muted-foreground mb-3">Passport size</p>
-                            <Button variant="outline" size="sm">Choose File</Button>
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="arrival">Mode of Arrival</Label>
-                            <Input id="arrival" placeholder="Bus / Train / Self-drive / Flight" />
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <Checkbox id="travelHelp" />
-                            <Label htmlFor="travelHelp" className="text-sm font-normal leading-snug">
-                              I need assistance with travel arrangements to the meeting point.
-                            </Label>
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <Checkbox id="paymentDone" defaultChecked />
-                            <Label htmlFor="paymentDone" className="text-sm font-normal leading-snug">
-                              I have completed the payment for this detox.
-                            </Label>
-                          </div>
-                          <Separator />
-                          <div className="flex items-start gap-2">
-                            <Checkbox id="confirm" required />
-                            <Label htmlFor="confirm" className="text-sm font-normal leading-snug">
-                              I confirm the details are correct and accept the trip terms and cancellation policy.
-                            </Label>
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                    <div className="flex items-center justify-between pt-4">
-                      <Button variant="outline" onClick={prev} disabled={step === 1}>
-                        <ChevronLeft className="mr-1 h-4 w-4" /> Back
-                      </Button>
-                      {step < steps.length ? (
-                        <Button className="bg-brand text-brand-foreground hover:bg-brand/90" onClick={next}>
-                          Next <ChevronRight className="ml-1 h-4 w-4" />
-                        </Button>
-                      ) : (
-                        <Button
-                          className="bg-brand text-brand-foreground hover:bg-brand/90"
-                          onClick={handleSubmit}
-                          disabled={submitting}
-                        >
-                          {submitting ? (
-                            <>
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...
-                            </>
-                          ) : (
-                            "Confirm & Submit"
-                          )}
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Sidebar summary */}
-          <div className="hidden lg:block">
-            <div className="sticky top-24">
-              <Card className="border-border/60 bg-card">
-                <CardContent className="p-5 space-y-3">
-                  <p className="text-sm font-medium">{pkg.title}</p>
-                  <p className="text-xs text-muted-foreground">{dest.name}</p>
-                  <Separator />
-                  <p className="text-xs text-muted-foreground">
-                    {formatDateRange(departure.startDate, departure.endDate)}
-                  </p>
-                  <p className="text-sm font-semibold text-brand">
-                    {formatPrice(departure.offerPrice ?? departure.price)}
-                  </p>
-                </CardContent>
-              </Card>
+                    <p className="text-xs text-muted-foreground">
+                      {step === steps.length ? "Almost done!" : `${steps.length - step} step${steps.length - step > 1 ? "s" : ""} remaining`}
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </div>
         </div>
       </div>
-    </section>
+    </main>
+  );
+}
+
+/* ─── Step Components ────────────────────────── */
+
+function StepTravelParty({ party, setParty }: { party: string; setParty: (v: string) => void }) {
+  return (
+    <div className="space-y-6">
+      <div className="space-y-3">
+        <Label className="text-sm font-semibold">Are you traveling solo or with others?</Label>
+        <div className="grid grid-cols-2 gap-3">
+          {[
+            { value: "solo", icon: User, label: "Solo" },
+            { value: "group", icon: Users, label: "With Others" },
+          ].map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => setParty(opt.value)}
+              className={cn(
+                "flex flex-col items-center gap-2 rounded-xl border p-4 sm:p-5 text-center transition-all duration-300",
+                party === opt.value ? "border-brand bg-brand/5 shadow-sm" : "border-border/60 hover:border-brand/40 hover:bg-secondary/30"
+              )}
+            >
+              <opt.icon className={cn("h-6 w-6", party === opt.value ? "text-brand" : "text-muted-foreground")} />
+              <span className={cn("text-sm font-bold", party === opt.value ? "text-brand" : "text-foreground")}>{opt.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {party === "group" && (
+        <div className="space-y-2">
+          <Label htmlFor="companions" className="text-sm font-semibold">Companion Names</Label>
+          <textarea
+            id="companions"
+            placeholder="Enter full names of all companions (comma separated)"
+            className="w-full min-h-[80px] rounded-xl bg-secondary/40 border-0 p-3 text-sm placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-brand/20 resize-none"
+          />
+        </div>
+      )}
+
+      <div className="space-y-2">
+        <Label className="text-sm font-semibold">Upload a Recent Photo</Label>
+        <div className="rounded-xl border-2 border-dashed border-border/60 bg-secondary/20 p-6 sm:p-8 text-center hover:border-brand/40 hover:bg-brand/5 transition-colors cursor-pointer">
+          <Camera className="mx-auto h-8 w-8 text-muted-foreground mb-3" />
+          <p className="text-sm font-medium mb-1">Drop your photo here</p>
+          <p className="text-xs text-muted-foreground mb-3">Passport-size, white background (JPG, PNG, max 2MB)</p>
+          <Button type="button" variant="outline" size="sm" className="rounded-full h-9"><Upload className="mr-1.5 h-3.5 w-3.5" /> Choose File</Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StepHealthFood() {
+  return (
+    <div className="space-y-5">
+      <div className="space-y-2">
+        <Label className="text-sm font-semibold">Food Preference</Label>
+        <Select defaultValue="vegetarian">
+          <SelectTrigger className="h-12 rounded-xl bg-secondary/40 border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20">
+            <Utensils className="mr-2 h-4 w-4 text-muted-foreground" />
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="vegetarian">Vegetarian</SelectItem>
+            <SelectItem value="vegan">Vegan</SelectItem>
+            <SelectItem value="non-vegetarian">Non-Vegetarian</SelectItem>
+            <SelectItem value="jain">Jain</SelectItem>
+            <SelectItem value="no-preference">No Preference</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="allergies" className="text-sm font-semibold">Do you have any allergies?</Label>
+        <div className="relative">
+          <AlertTriangle className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input id="allergies" placeholder="None / Nuts / Shellfish / Gluten" className="h-12 pl-11 rounded-xl bg-secondary/40 border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20" />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="medical" className="text-sm font-semibold">Do you have any medical conditions?</Label>
+        <div className="relative">
+          <Pill className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input id="medical" placeholder="None / Asthma / Diabetes / Blood Pressure" className="h-12 pl-11 rounded-xl bg-secondary/40 border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20" />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Label className="text-sm font-semibold">Blood Group</Label>
+        <Select defaultValue="unknown">
+          <SelectTrigger className="h-12 rounded-xl bg-secondary/40 border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20 w-[140px]">
+            <SelectValue placeholder="Select" />
+          </SelectTrigger>
+          <SelectContent>
+            {["unknown", "A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"].map((bg) => (
+              <SelectItem key={bg} value={bg}>{bg === "unknown" ? "Not sure" : bg}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
+  );
+}
+
+function StepEmergency({ contacts, onAdd, onRemove }: { contacts: Array<{ name: string; phone: string; relation: string }>; onAdd: () => void; onRemove: (i: number) => void }) {
+  return (
+    <div className="space-y-6">
+      <p className="text-xs text-muted-foreground leading-relaxed bg-amber-50 rounded-xl p-3">
+        <AlertTriangle className="h-3.5 w-3.5 text-amber-600 inline mr-1.5" />
+        Provide at least one emergency contact. We will reach them if we cannot contact you during an emergency.
+      </p>
+
+      {contacts.map((_, index) => (
+        <div key={index} className="space-y-4 rounded-2xl bg-secondary/20 p-4 sm:p-5">
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-bold">Emergency Contact {index + 1}</h4>
+            {contacts.length > 1 && (
+              <button onClick={() => onRemove(index)} className="text-xs text-muted-foreground hover:text-destructive transition-colors">Remove</button>
+            )}
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold">Full Name</Label>
+              <div className="relative">
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input placeholder="Contact name" className="h-12 pl-11 rounded-xl bg-white border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold">Phone Number</Label>
+              <div className="relative">
+                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input type="tel" placeholder="+91 98765 43210" className="h-12 pl-11 rounded-xl bg-white border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20" />
+              </div>
+            </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label className="text-sm font-semibold">Relationship</Label>
+              <div className="relative">
+                <Heart className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                <Select defaultValue="">
+                  <SelectTrigger className="h-12 pl-11 rounded-xl bg-white border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20">
+                    <SelectValue placeholder="Select relationship" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {["spouse", "parent", "sibling", "friend", "colleague", "other"].map((r) => (
+                      <SelectItem key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+
+      <Button type="button" variant="outline" onClick={onAdd} className="w-full rounded-xl border-border/60 h-11 text-sm font-medium">
+        <PhoneCall className="mr-2 h-4 w-4" /> Add Another Emergency Contact
+      </Button>
+    </div>
+  );
+}
+
+function StepConfirm() {
+  return (
+    <div className="space-y-5">
+      <div className="space-y-2">
+        <Label className="text-sm font-semibold">Mode of Arrival at Meeting Point</Label>
+        <Select defaultValue="">
+          <SelectTrigger className="h-12 rounded-xl bg-secondary/40 border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20">
+            <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
+            <SelectValue placeholder="How will you reach the meeting point?" />
+          </SelectTrigger>
+          <SelectContent>
+            {["bus", "train", "flight", "self-drive", "cab", "shared"].map((m) => (
+              <SelectItem key={m} value={m}>{m.charAt(0).toUpperCase() + m.slice(1).replace("-", " ")}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label className="text-sm font-semibold">Upload a Recent Photo</Label>
+        <div className="rounded-xl border-2 border-dashed border-border/60 bg-secondary/20 p-5 sm:p-6 text-center hover:border-brand/40 hover:bg-brand/5 transition-colors cursor-pointer">
+          <Camera className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
+          <p className="text-sm font-medium mb-1">Upload your recent photo</p>
+          <p className="text-xs text-muted-foreground mb-2">Passport-size, clear face visible (max 2MB)</p>
+          <Button type="button" variant="outline" size="sm" className="rounded-full h-9"><Upload className="mr-1.5 h-3.5 w-3.5" /> Choose File</Button>
+        </div>
+      </div>
+
+      <div className="space-y-4 rounded-2xl bg-secondary/20 p-4 sm:p-5">
+        <div className="flex items-start gap-3">
+          <Checkbox id="travelHelp" className="mt-0.5" />
+          <Label htmlFor="travelHelp" className="text-sm font-normal leading-relaxed">
+            <span className="font-semibold">Do you require assistance with travel arrangements?</span>
+            <span className="text-muted-foreground block text-xs mt-0.5">We can help coordinate transport to the meeting point if needed.</span>
+          </Label>
+        </div>
+        <Separator className="bg-border/40" />
+        <div className="flex items-start gap-3">
+          <Checkbox id="paymentDone" defaultChecked className="mt-0.5" />
+          <Label htmlFor="paymentDone" className="text-sm font-normal leading-relaxed">
+            <span className="font-semibold">Have you completed the trip payment?</span>
+            <span className="text-muted-foreground block text-xs mt-0.5">Confirm that the full payment has been made for this detox.</span>
+          </Label>
+        </div>
+      </div>
+
+      <div className="flex items-start gap-3 rounded-2xl bg-brand/5 border border-brand/10 p-4 sm:p-5">
+        <Checkbox id="confirm" className="mt-0.5" />
+        <Label htmlFor="confirm" className="text-sm font-normal leading-relaxed">
+          <span className="font-semibold">I confirm all details are accurate.</span>
+          <span className="text-muted-foreground block text-xs mt-0.5">I have read and accept the trip terms, cancellation policy, and safety guidelines.</span>
+        </Label>
+      </div>
+    </div>
   );
 }
