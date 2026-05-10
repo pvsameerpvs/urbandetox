@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback, useEffect } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, startTransition } from "react";
 
 /* ─── Types ──────────────────────────────────── */
 
@@ -116,8 +116,10 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
-    setProfile(loadFromStorage());
-    setIsHydrated(true);
+    startTransition(() => {
+      setProfile(loadFromStorage());
+      setIsHydrated(true);
+    });
   }, []);
 
   useEffect(() => {

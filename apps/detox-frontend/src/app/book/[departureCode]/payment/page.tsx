@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, startTransition } from "react";
 import { useParams, notFound } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,8 @@ import { BookingSummaryCard } from "../../components/BookingSummaryCard";
 import { MobileBookingCTA } from "../../components/MobileBookingCTA";
 import { PaymentStatusAlert } from "../../components/PaymentStatusAlert";
 import { PaymentMethodOption } from "../components/PaymentMethodOption";
+import { useHydrated } from "@/hooks/use-hydrated";
+import { loadBookingState } from "@/lib/booking-state";
 import { fetchDepartureByCode, fetchPackageBySlug, fetchDestinationBySlug } from "@/lib/data";
 import { formatPrice, formatDateRange } from "@/lib/formatters";
 import { CreditCard, Wallet, Lock, Loader2, Shield } from "lucide-react";
@@ -27,12 +29,23 @@ export default function PaymentPage() {
 
   if (!departure || !pkg || !dest) notFound();
 
+  const [travelerCount, setTravelerCount] = useState(1);
+
+  useEffect(() => {
+    const saved = loadBookingState(code);
+    if (saved) {
+      startTransition(() => setTravelerCount(saved.travelers.length));
+    }
+  }, [code]);
+
   const [method, setMethod] = useState<PaymentMethod>("razorpay");
   const [status, setStatus] = useState<PaymentStatus>("idle");
+  const hydrated = useHydrated();
 
   const pricePerPerson = departure.offerPrice ?? departure.price;
-  const gst = Math.round(pricePerPerson * 0.05);
-  const total = pricePerPerson + gst;
+  const subtotal = pricePerPerson * travelerCount;
+  const gst = Math.round(subtotal * 0.05);
+  const total = subtotal + gst;
 
   const handlePay = () => {
     setStatus("processing");
@@ -43,9 +56,7 @@ export default function PaymentPage() {
   };
 
   const priceLines = [
-    { label: "Price per person", value: formatPrice(pricePerPerson) },
-    { label: "Travelers", value: "1" },
-    { label: "Subtotal", value: formatPrice(pricePerPerson) },
+    { label: `Price × ${travelerCount}`, value: formatPrice(subtotal) },
     { label: "GST (5%)", value: formatPrice(gst) },
     { label: "Total", value: formatPrice(total), isTotal: true },
   ];
@@ -94,8 +105,8 @@ export default function PaymentPage() {
                   <p className="text-xs text-muted-foreground leading-relaxed">Your payment is secured with 256-bit SSL encryption. We do not store your card details. This is a demo environment — no real payment will be deducted.</p>
                 </div>
 
-                <Button className="w-full rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-12 text-sm font-semibold shadow-lg shadow-brand/10" onClick={handlePay} disabled={status === "processing" || status === "success"}>
-                  {status === "processing" ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing Payment...</> : <><Lock className="mr-2 h-4 w-4" /> Pay {formatPrice(total)} Securely</>}
+                <Button className="w-full rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-12 text-sm font-semibold shadow-lg shadow-brand/10" onClick={handlePay} disabled={!hydrated || status === "processing" || status === "success"}>
+                  {!hydrated ? <span className="inline-flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Loading price...</span> : status === "processing" ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing Payment...</> : <><Lock className="mr-2 h-4 w-4" /> Pay {formatPrice(total)} Securely</>}
                 </Button>
 
                 <p className="text-xs text-muted-foreground text-center">By clicking Pay, you agree to our Terms of Service and Cancellation Policy.</p>
@@ -105,13 +116,25 @@ export default function PaymentPage() {
 
           <div className="lg:col-span-2">
             <div className="sticky top-24 space-y-4">
-              <BookingSummaryCard image={pkg.coverImage} title={pkg.title} destination={dest.name} durationLabel={pkg.durationLabel} dates={formatDateRange(departure.startDate, departure.endDate)} meetingPoint={dest.meetingPoint} travelers={1} seatsLeft={departure.seatsLeft} priceLines={priceLines} total={total} />
+              {!hydrated ? (
+                <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
+                  <CardContent className="p-4 sm:p-5 space-y-4">
+                    <div className="h-32 bg-secondary rounded-xl animate-pulse" />
+                    <div className="h-4 bg-secondary rounded w-3/4 animate-pulse" />
+                    <div className="h-4 bg-secondary rounded w-1/2 animate-pulse" />
+                    <Separator />
+                    <div className="h-6 bg-secondary rounded w-1/3 animate-pulse" />
+                  </CardContent>
+                </Card>
+              ) : (
+                <BookingSummaryCard image={pkg.coverImage} title={pkg.title} destination={dest.name} durationLabel={pkg.durationLabel} dates={formatDateRange(departure.startDate, departure.endDate)} meetingPoint={dest.meetingPoint} travelers={travelerCount} seatsLeft={departure.seatsLeft} priceLines={priceLines} total={total} />
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      <MobileBookingCTA total={total} label="Pay Now" onClick={handlePay} isProcessing={status === "processing"} disabled={status === "success"} />
+      <MobileBookingCTA total={hydrated ? total : 0} label={hydrated ? "Pay Now" : "Loading..."} onClick={handlePay} isProcessing={!hydrated || status === "processing"} disabled={!hydrated || status === "success"} />
     </main>
   );
 }
