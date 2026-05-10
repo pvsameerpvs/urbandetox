@@ -1,17 +1,29 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
-import { Leaf, Globe, Mail, Phone } from "lucide-react";
+import {
+  Instagram,
+  Mail,
+  Phone,
+  MapPin,
+  ArrowRight,
+  Send,
+  ExternalLink,
+} from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const footerLinks = {
   Discover: [
     { label: "Explore Detox", href: "/detox" },
-    { label: "Upcoming Detox", href: "/detox" },
-    { label: "Guide", href: "/guide" },
+    { label: "Upcoming Trips", href: "/detox" },
+    { label: "Travel Guide", href: "/guide" },
     { label: "FAQs", href: "/faqs" },
   ],
   Company: [
-    { label: "About", href: "/about" },
+    { label: "About Us", href: "/about" },
     { label: "Contact", href: "/contact" },
     { label: "Corporate Retreats", href: "/corporate-retreats" },
     { label: "University Trips", href: "/university-trips" },
@@ -21,63 +33,159 @@ const footerLinks = {
     { label: "My Profile", href: "/profile" },
     { label: "My Detox", href: "/my-detox" },
   ],
+  Legal: [
+    { label: "Terms of Service", href: "#" },
+    { label: "Privacy Policy", href: "#" },
+    { label: "Cancellation Policy", href: "#" },
+  ],
 };
+
+const socialLinks = [
+  {
+    icon: Instagram,
+    href: "https://instagram.com/urbandetox",
+    label: "Instagram",
+  },
+  {
+    icon: Mail,
+    href: "mailto:hello@urbandetox.in",
+    label: "Email",
+  },
+  {
+    icon: Phone,
+    href: "https://wa.me/919876543210",
+    label: "WhatsApp",
+  },
+];
 
 export function Footer() {
   return (
-    <footer className="w-full border-t bg-secondary/30">
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="flex flex-col gap-5">
-            <Link href="/" className="block">
-              <Image
-                src="/log-detox.png"
-                alt="Urban Detox"
-                width={140}
-                height={40}
-                className="h-10 w-auto object-contain"
-              />
-            </Link>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Disconnect from routine. Step into curated offbeat escapes designed for real reset.
-            </p>
-            <div className="flex items-center gap-3 pt-1">
-              <a href="https://instagram.com/urbandetox" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-brand transition-colors">
-                <Globe className="h-5 w-5" />
-              </a>
-              <a href="mailto:hello@urbandetox.in" className="text-muted-foreground hover:text-brand transition-colors">
-                <Mail className="h-5 w-5" />
-              </a>
-              <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-brand transition-colors">
-                <Phone className="h-5 w-5" />
-              </a>
+    <footer className="w-full bg-[#0a1628] text-white relative overflow-hidden">
+      {/* Subtle dot pattern */}
+      <div
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage: `radial-gradient(circle, white 1px, transparent 1px)`,
+          backgroundSize: "24px 24px",
+        }}
+      />
+
+      <div className="relative z-10">
+        {/* Main footer content */}
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-10">
+          {/* Top section: Logo + Newsletter */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 pb-12 sm:pb-16 border-b border-white/10">
+            {/* Left: Logo + tagline */}
+            <div className="flex flex-col gap-6">
+              <Link href="/" className="inline-block">
+                <Image
+                  src="/log-detox-white.png"
+                  alt="Urban Detox"
+                  width={180}
+                  height={52}
+                  className="h-12 w-auto object-contain"
+                />
+              </Link>
+              <p className="text-sm sm:text-base text-white/60 leading-relaxed max-w-sm">
+                Disconnect from routine. Step into curated offbeat escapes
+                designed for real reset.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 text-sm text-white/50">
+                <span className="inline-flex items-center gap-2">
+                  <Mail className="h-4 w-4" /> hello@urbandetox.in
+                </span>
+                <span className="inline-flex items-center gap-2">
+                  <Phone className="h-4 w-4" /> +91-98765-43210
+                </span>
+                <span className="inline-flex items-center gap-2">
+                  <MapPin className="h-4 w-4" /> Bangalore, India
+                </span>
+              </div>
+            </div>
+
+            {/* Right: Newsletter */}
+            <div className="lg:max-w-md lg:ml-auto">
+              <h3 className="text-lg font-bold mb-2">Stay in the loop</h3>
+              <p className="text-sm text-white/50 mb-4">
+                Get trip announcements, seasonal detox picks, and traveler stories
+                delivered to your inbox.
+              </p>
+              <form
+                onSubmit={(e) => e.preventDefault()}
+                className="flex gap-2"
+              >
+                <Input
+                  type="email"
+                  placeholder="you@example.com"
+                  className="h-12 flex-1 rounded-xl bg-white/10 border-white/10 text-white placeholder:text-white/40 focus-visible:ring-white/20 focus-visible:ring-offset-0"
+                />
+                <Button
+                  type="submit"
+                  className="h-12 px-5 rounded-xl bg-white text-[#0a1628] hover:bg-white/90 font-semibold shrink-0"
+                >
+                  <Send className="h-4 w-4" />
+                </Button>
+              </form>
             </div>
           </div>
 
-          {Object.entries(footerLinks).map(([title, links]) => (
-            <div key={title} className="flex flex-col gap-3">
-              <h4 className="text-sm font-semibold uppercase tracking-wider text-foreground">{title}</h4>
-              <ul className="flex flex-col gap-2.5">
-                {links.map((link) => (
-                  <li key={`${title}-${link.label}`}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-muted-foreground hover:text-brand transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+          {/* Links grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 py-12 sm:py-16">
+            {Object.entries(footerLinks).map(([title, links]) => (
+              <div key={title}>
+                <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-white/40 mb-5">
+                  {title}
+                </h4>
+                <ul className="flex flex-col gap-3">
+                  {links.map((link) => (
+                    <li key={`${title}-${link.label}`}>
+                      <Link
+                        href={link.href}
+                        className="text-sm text-white/70 hover:text-white transition-colors inline-flex items-center gap-1 group"
+                      >
+                        {link.label}
+                        {link.href.startsWith("http") && (
+                          <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        )}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+
+          {/* Social + Bottom bar */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-8 border-t border-white/10">
+            {/* Social icons */}
+            <div className="flex items-center gap-3">
+              {socialLinks.map((social) => (
+                <a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.label}
+                  className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-white/10 text-white/70 hover:bg-brand hover:text-white transition-all duration-300"
+                >
+                  <social.icon className="h-4 w-4" />
+                </a>
+              ))}
             </div>
-          ))}
-        </div>
 
-        <Separator className="my-10" />
-
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} Urban Detox. All rights reserved.</p>
-          <p className="text-xs">Built with intention. Calm, premium, real.</p>
+            {/* Copyright */}
+            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-6 text-xs text-white/40">
+              <p>© {new Date().getFullYear()} Urban Detox. All rights reserved.</p>
+              <div className="flex items-center gap-4">
+                <Link href="#" className="hover:text-white/60 transition-colors">
+                  Terms
+                </Link>
+                <Link href="#" className="hover:text-white/60 transition-colors">
+                  Privacy
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </footer>
