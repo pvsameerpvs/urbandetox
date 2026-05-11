@@ -1,12 +1,12 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { motion } from "framer-motion";
-import { FileText, Upload, CheckCircle2, X, AlertCircle, Shield } from "lucide-react";
 import { ProfileSectionHeader } from "../components/ProfileSectionHeader";
 import { useUserProfile } from "@/lib/user-profile";
+import { FileText, Upload, CheckCircle2, X, AlertCircle, Shield } from "lucide-react";
 
 const statusConfig = {
   missing: { icon: AlertCircle, label: "Missing", className: "bg-muted text-muted-foreground" },

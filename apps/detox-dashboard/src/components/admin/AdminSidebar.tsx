@@ -1,0 +1,71 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@urbandetox/utils";
+import {
+  LayoutDashboard,
+  MapPin,
+  Package,
+  CalendarDays,
+  BookOpen,
+  Settings,
+} from "lucide-react";
+
+const navItems = [
+  { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/destinations", label: "Destinations", icon: MapPin },
+  { href: "/packages", label: "Packages", icon: Package },
+  { href: "/departures", label: "Departures", icon: CalendarDays },
+  { href: "/bookings", label: "Bookings", icon: BookOpen },
+];
+
+export function AdminSidebar() {
+  const pathname = usePathname();
+
+  return (
+    <aside className="fixed top-0 left-0 z-30 h-screen w-[260px] bg-[#0a1628] border-r border-white/5 hidden lg:flex flex-col">
+      <div className="flex items-center gap-3 px-6 py-5 border-b border-white/5">
+        <div className="h-8 w-8 rounded-lg bg-brand flex items-center justify-center">
+          <span className="text-brand-foreground font-bold text-sm">UD</span>
+        </div>
+        <div>
+          <p className="text-sm font-bold text-white">Urban Detox</p>
+          <p className="text-[10px] text-white/40 uppercase tracking-wider">Admin Panel</p>
+        </div>
+      </div>
+
+      <nav className="flex-1 px-3 py-4 space-y-1">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
+                isActive
+                  ? "bg-brand/15 text-brand"
+                  : "text-white/50 hover:text-white/80 hover:bg-white/5"
+              )}
+            >
+              <Icon className="h-4 w-4 shrink-0" />
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
+
+      <div className="px-3 py-4 border-t border-white/5">
+        <Link
+          href="/settings"
+          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-white/50 hover:text-white/80 hover:bg-white/5 transition-colors"
+        >
+          <Settings className="h-4 w-4 shrink-0" />
+          Settings
+        </Link>
+      </div>
+    </aside>
+  );
+}

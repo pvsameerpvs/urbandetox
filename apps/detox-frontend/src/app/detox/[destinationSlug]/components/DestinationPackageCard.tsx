@@ -31,7 +31,7 @@ function StatusBadge({ status, seatsLeft }: { status: string; seatsLeft: number 
 export function DestinationPackageCard({ pkg, destination, upcomingCount, nextDeparture }: DestinationPackageCardProps) {
   return (
     <Link href={`/detox/${destination.slug}/${pkg.slug}`} className="group block">
-      <Card className="overflow-hidden border-0 shadow-lg shadow-black/[0.03] bg-white !gap-0 !py-0 hover:shadow-xl transition-all duration-500 h-full">
+      <Card className="overflow-hidden border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl !gap-0 !py-0 hover:shadow-xl transition-all duration-500 h-full">
         <div className="relative h-[200px] sm:h-[220px] overflow-hidden">
           <Image
             src={pkg.coverImage}

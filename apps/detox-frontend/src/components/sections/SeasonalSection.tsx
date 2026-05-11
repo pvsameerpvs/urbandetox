@@ -47,7 +47,7 @@ export function SeasonalSection() {
 
         {/* Rows */}
         {grouped.map(({ tag, meta, packages }) => (
-          <SeasonalRow key={tag} tag={tag} label={meta.label} icon={meta.icon} packages={packages} />
+          <SeasonalRow key={tag} label={meta.label} icon={meta.icon} packages={packages} />
         ))}
       </div>
     </section>

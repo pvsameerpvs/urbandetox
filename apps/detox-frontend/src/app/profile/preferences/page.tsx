@@ -1,15 +1,15 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Heart, Utensils, AlertTriangle, Pill, Droplets } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ProfileSectionHeader } from "../components/ProfileSectionHeader";
 import { IconInput } from "../components/IconInput";
 import { SaveButton } from "../components/SaveButton";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useUserProfile } from "@/lib/user-profile";
-import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
+import { Heart, Utensils, AlertTriangle, Pill, Droplets } from "lucide-react";
 
 const foodOptions = [
   { value: "vegetarian", label: "Vegetarian" },

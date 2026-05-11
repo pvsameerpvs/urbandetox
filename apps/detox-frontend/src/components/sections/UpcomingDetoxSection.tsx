@@ -5,13 +5,11 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { fetchUpcomingDepartures } from "@/lib/data";
-import { getPackageBySlug } from "@/data/packages";
-import { getDestinationBySlug } from "@/data/destinations";
+import { fetchUpcomingDepartures, fetchPackageBySlug, fetchDestinationBySlug } from "@/lib/data";
 import { formatPrice, formatDateRange } from "@/lib/formatters";
+import { cn } from "@/lib/utils";
 import { Calendar, ArrowRight, MapPin, Clock } from "lucide-react";
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
 
 /* ─── Animations ───────────────────────────── */
 const containerVariants = {
@@ -73,8 +71,8 @@ function DepartureCard({
 }: {
   dep: ReturnType<typeof fetchUpcomingDepartures>[number];
 }) {
-  const pkg = getPackageBySlug(dep.packageSlug);
-  const dest = getDestinationBySlug(dep.destinationSlug);
+  const pkg = fetchPackageBySlug(dep.packageSlug);
+  const dest = fetchDestinationBySlug(dep.destinationSlug);
 
   if (!pkg || !dest) return null;
 

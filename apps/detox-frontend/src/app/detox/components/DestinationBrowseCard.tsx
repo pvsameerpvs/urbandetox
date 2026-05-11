@@ -23,7 +23,7 @@ export function DestinationBrowseCard({ destination }: DestinationBrowseCardProp
       }}
     >
       <Link href={`/detox/${destination.slug}`} className="group block">
-        <Card className="overflow-hidden border-0 shadow-lg shadow-black/[0.03] bg-white !gap-0 !py-0 hover:shadow-xl transition-all duration-500">
+        <Card className="overflow-hidden border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl !gap-0 !py-0 hover:shadow-xl transition-all duration-500">
           <div className="relative h-[260px] sm:h-[300px] overflow-hidden">
             <Image
               src={destination.image}
