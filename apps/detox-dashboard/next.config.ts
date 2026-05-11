@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   transpilePackages: ["@urbandetox/ui", "@urbandetox/utils"],
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",

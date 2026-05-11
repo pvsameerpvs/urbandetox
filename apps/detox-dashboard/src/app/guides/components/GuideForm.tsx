@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@urbandetox/ui";
 import { Input } from "@urbandetox/ui";
@@ -10,7 +10,7 @@ import { Checkbox } from "@urbandetox/ui";
 import { FormSection } from "@/components/admin/FormSection";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { getDestinations, getPackages } from "@/lib/admin-data";
-import type { GuideArticle } from "@urbandetox/utils";
+import type { GuideArticle, Destination, Package } from "@urbandetox/utils";
 
 const existingCategories = ["Destination Guides", "Travel Tips", "Packing Guides", "Group Travel", "Seasonal Detox"];
 
@@ -21,8 +21,19 @@ interface GuideFormProps {
 
 export function GuideForm({ initial, onSave }: GuideFormProps) {
   const router = useRouter();
-  const destinations = getDestinations();
-  const packages = getPackages();
+
+  const [destinations, setDestinations] = useState<Destination[]>([]);
+  const [allPackages, setAllPackages] = useState<Package[]>([]);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDestinations(getDestinations());
+      setAllPackages(getPackages());
+      setReady(true);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
 
   const [title, setTitle] = useState(initial?.title ?? "");
   const [slug, setSlug] = useState(initial?.slug ?? "");
@@ -34,6 +45,10 @@ export function GuideForm({ initial, onSave }: GuideFormProps) {
   const [featured, setFeatured] = useState(initial?.featured ?? false);
   const [relatedSlugs, setRelatedSlugs] = useState(initial?.relatedPackageSlugs?.join(", ") ?? "");
   const [error, setError] = useState("");
+
+  const relatedPackages = destinationSlug
+    ? allPackages.filter((p) => p.destinationSlug === destinationSlug)
+    : allPackages;
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -84,10 +99,19 @@ export function GuideForm({ initial, onSave }: GuideFormProps) {
           </div>
           <div>
             <Label>Destination</Label>
-            <select value={destinationSlug} onChange={(e) => setDestinationSlug(e.target.value)} className="mt-1.5 w-full h-10 rounded-xl border border-input bg-white px-3 text-sm">
-              <option value="">None</option>
+            <select
+              value={destinationSlug}
+              onChange={(e) => {
+                setDestinationSlug(e.target.value);
+                setRelatedSlugs("");
+              }}
+              disabled={!ready}
+              className="mt-1.5 w-full h-10 rounded-xl border border-input bg-white px-3 text-sm disabled:opacity-50"
+            >
+              <option value="">{ready ? "None" : "Loading..."}</option>
               {destinations.map((d) => <option key={d.slug} value={d.slug}>{d.name}</option>)}
             </select>
+            <p className="text-xs text-muted-foreground mt-1">Choosing a destination filters the related packages below.</p>
           </div>
         </div>
       </FormSection>
@@ -116,15 +140,30 @@ export function GuideForm({ initial, onSave }: GuideFormProps) {
           </div>
           <div>
             <Label>Related Packages</Label>
-            <Input value={relatedSlugs} onChange={(e) => setRelatedSlugs(e.target.value)} placeholder="kodaikanal-5days, kodaikanal-6days" className="mt-1.5" />
-            <p className="text-xs text-muted-foreground mt-1">Comma-separated package slugs.</p>
+            <Input value={relatedSlugs} onChange={(e) => setRelatedSlugs(e.target.value)} placeholder="kodaikanal-5days, kodaikanal-6days" className="mt-1.5" disabled={!ready} />
+            <p className="text-xs text-muted-foreground mt-1">
+              {ready
+                ? (destinationSlug
+                    ? `Showing packages for ${destinations.find((d) => d.slug === destinationSlug)?.name ?? "this destination"}.`
+                    : "Choose a destination above to filter packages, or type slugs manually.")
+                : "Loading packages..."}
+            </p>
             <div className="flex flex-wrap gap-1.5 mt-2">
-              {packages.map((p) => (
-                <button key={p.slug} type="button" onClick={() => setRelatedSlugs((prev) => prev ? `${prev}, ${p.slug}` : p.slug)} className="text-[10px] bg-secondary px-2 py-1 rounded-md hover:bg-brand/10 transition-colors">
+              {ready && relatedPackages.map((p) => (
+                <button
+                  key={p.slug}
+                  type="button"
+                  onClick={() => setRelatedSlugs((prev) => prev ? `${prev}, ${p.slug}` : p.slug)}
+                  className="text-[10px] bg-secondary px-2 py-1 rounded-md hover:bg-brand/10 transition-colors"
+                  title={p.title}
+                >
                   {p.slug}
                 </button>
               ))}
             </div>
+            {ready && destinationSlug && relatedPackages.length === 0 && (
+              <p className="text-xs text-amber-600 mt-2">No packages found for this destination.</p>
+            )}
           </div>
           <div className="flex items-center gap-2">
             <Checkbox id="featured" checked={featured} onCheckedChange={(v) => setFeatured(v === true)} />
