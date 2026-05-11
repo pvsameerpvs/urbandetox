@@ -1,22 +1,37 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Card, CardContent } from "@urbandetox/ui";
-import { Button } from "@urbandetox/ui";
+import { Card, CardContent, Button } from "@urbandetox/ui";
 import { MapPin, ArrowRight, Plus } from "lucide-react";
 import { getPackagesByDestination, deleteDestination } from "@/lib/admin-data";
 import { useAdminDestinations } from "@/hooks/use-admin-data";
 import { safeImageUrl } from "@/lib/image-url";
+import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { toast } from "sonner";
 
 export default function DestinationsPage() {
   const destinations = useAdminDestinations();
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingSlug, setPendingSlug] = useState<string | null>(null);
 
-  const handleDelete = (slug: string) => {
-    if (confirm("Delete this destination and all its packages?")) {
-      deleteDestination(slug);
-      window.location.reload();
+  const handleDeleteClick = (slug: string) => {
+    setPendingSlug(slug);
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!pendingSlug) return;
+    try {
+      deleteDestination(pendingSlug);
+      toast.success("Destination deleted successfully");
+      setTimeout(() => window.location.reload(), 400);
+    } catch {
+      toast.error("Failed to delete destination");
     }
+    setConfirmOpen(false);
+    setPendingSlug(null);
   };
 
   return (
@@ -27,7 +42,7 @@ export default function DestinationsPage() {
           <p className="text-sm text-muted-foreground mt-1">Manage detox destinations and their packages.</p>
         </div>
         <Button className="rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-10 px-4 text-sm font-semibold shadow-lg shadow-brand/10" asChild>
-          <Link href="/destinations/new"><Plus className="mr-1.5 h-4 w-4" /> New</Link>
+          <Link href="/destinations/new"><Plus className="mr-1.5 h-4 w-4" /> New Destination</Link>
         </Button>
       </div>
 
@@ -55,7 +70,7 @@ export default function DestinationsPage() {
                     <Link href={`/destinations/${dest.slug}/edit`} className="text-xs font-semibold text-brand hover:text-brand/80 inline-flex items-center gap-1 transition-colors">
                       Edit <ArrowRight className="h-3 w-3" />
                     </Link>
-                    <button onClick={() => handleDelete(dest.slug)} className="text-xs text-red-500 hover:text-red-700 transition-colors">Delete</button>
+                    <button onClick={() => handleDeleteClick(dest.slug)} className="text-xs text-red-500 hover:text-red-700 transition-colors">Delete</button>
                   </div>
                 </div>
               </CardContent>
@@ -63,6 +78,15 @@ export default function DestinationsPage() {
           );
         })}
       </div>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Delete Destination"
+        description="This will permanently delete the destination and all associated packages. This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => { setConfirmOpen(false); setPendingSlug(null); }}
+      />
     </div>
   );
 }

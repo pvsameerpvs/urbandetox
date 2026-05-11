@@ -1,6 +1,6 @@
 import { Controller } from "react-hook-form";
 import type { Control } from "react-hook-form";
-import { Input } from "@urbandetox/ui";
+import { Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@urbandetox/ui";
 import { SEASONAL_TAGS } from "@urbandetox/utils";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import type { PackageFormData } from "./use-package-form";
@@ -31,9 +31,16 @@ export function BasicInfoFields({ control, destinations }: BasicInfoFieldsProps)
           render={({ field, fieldState }) => (
             <div className="space-y-2">
               <label className="text-sm font-medium">Destination</label>
-              <select {...field} className="h-11 w-full rounded-xl border border-border/60 bg-white px-3 text-sm">
-                {destinations.map((d) => (<option key={d.slug} value={d.slug}>{d.name}</option>))}
-              </select>
+              <Select value={field.value} onValueChange={field.onChange}>
+                <SelectTrigger className="h-11 rounded-xl w-full">
+                  <SelectValue placeholder="Select destination" />
+                </SelectTrigger>
+                <SelectContent>
+                  {destinations.map((d) => (
+                    <SelectItem key={d.slug} value={d.slug}>{d.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               {fieldState.error && <p className="text-xs text-red-500">{fieldState.error.message}</p>}
             </div>
           )}
@@ -103,9 +110,16 @@ export function BasicInfoFields({ control, destinations }: BasicInfoFieldsProps)
           render={({ field, fieldState }) => (
             <div className="space-y-2">
               <label className="text-sm font-medium">Seasonal Tag</label>
-              <select {...field} className="h-11 w-full rounded-xl border border-border/60 bg-white px-3 text-sm">
-                {SEASONAL_TAGS.map((t) => (<option key={t} value={t}>{t}</option>))}
-              </select>
+              <Select value={field.value} onValueChange={field.onChange}>
+                <SelectTrigger className="h-11 rounded-xl w-full">
+                  <SelectValue placeholder="Select tag" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SEASONAL_TAGS.map((t) => (
+                    <SelectItem key={t} value={t}>{t}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               {fieldState.error && <p className="text-xs text-red-500">{fieldState.error.message}</p>}
             </div>
           )}

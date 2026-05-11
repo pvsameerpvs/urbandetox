@@ -5,6 +5,7 @@ import { Card, CardContent, Button } from "@urbandetox/ui";
 import { updatePackage } from "@/lib/admin-data";
 import { useAdminPackage, useAdminDestinations } from "@/hooks/use-admin-data";
 import { ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 import Link from "next/link";
 import { usePackageForm, type PackageFormData } from "@/app/packages/components/use-package-form";
 import { BasicInfoFields } from "@/app/packages/components/basic-info-fields";
@@ -49,7 +50,8 @@ export default function EditPackagePage() {
 
   function onSubmit(data: PackageFormData) {
     const durationLabel = `${data.duration} Days / ${data.duration - 1} Nights`;
-    updatePackage(slug, {
+    try {
+      updatePackage(slug, {
       ...data,
       durationLabel,
       highlights: data.highlights.filter(Boolean),
@@ -59,7 +61,11 @@ export default function EditPackagePage() {
       faqs: data.faqs.filter((q) => q.question && q.answer),
       itinerary: data.itinerary.map((d) => ({ ...d, activities: d.activities.filter(Boolean) })),
     });
-    router.push("/packages");
+    toast.success("Package updated successfully");
+      router.push("/packages");
+    } catch {
+      toast.error("Failed to update package");
+    }
   }
 
   return (

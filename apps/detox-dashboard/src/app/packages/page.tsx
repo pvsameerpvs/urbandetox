@@ -1,23 +1,38 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Card, CardContent } from "@urbandetox/ui";
-import { Button } from "@urbandetox/ui";
+import { Card, CardContent, Button } from "@urbandetox/ui";
 import { formatPrice } from "@urbandetox/utils";
 import { MapPin, Clock, ArrowRight, Plus, Tag } from "lucide-react";
 import { getDestinationBySlug, deletePackage } from "@/lib/admin-data";
 import { useAdminPackages } from "@/hooks/use-admin-data";
 import { safeImageUrl } from "@/lib/image-url";
+import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { toast } from "sonner";
 
 export default function PackagesPage() {
   const packages = useAdminPackages();
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingSlug, setPendingSlug] = useState<string | null>(null);
 
-  const handleDelete = (slug: string) => {
-    if (confirm("Delete this package?")) {
-      deletePackage(slug);
-      window.location.reload();
+  const handleDeleteClick = (slug: string) => {
+    setPendingSlug(slug);
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!pendingSlug) return;
+    try {
+      deletePackage(pendingSlug);
+      toast.success("Package deleted successfully");
+      setTimeout(() => window.location.reload(), 400);
+    } catch {
+      toast.error("Failed to delete package");
     }
+    setConfirmOpen(false);
+    setPendingSlug(null);
   };
 
   return (
@@ -65,7 +80,7 @@ export default function PackagesPage() {
                     <Link href={`/packages/${pkg.slug}/edit`} className="text-xs font-semibold text-brand hover:text-brand/80 inline-flex items-center gap-1 transition-colors">
                       Edit <ArrowRight className="h-3 w-3" />
                     </Link>
-                    <button onClick={() => handleDelete(pkg.slug)} className="text-xs text-red-500 hover:text-red-700 transition-colors">Delete</button>
+                    <button onClick={() => handleDeleteClick(pkg.slug)} className="text-xs text-red-500 hover:text-red-700 transition-colors">Delete</button>
                   </div>
                 </div>
               </CardContent>
@@ -73,6 +88,15 @@ export default function PackagesPage() {
           );
         })}
       </div>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Delete Package"
+        description="This will permanently delete the package and all its departures. This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => { setConfirmOpen(false); setPendingSlug(null); }}
+      />
     </div>
   );
 }

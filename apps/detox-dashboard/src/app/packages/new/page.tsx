@@ -6,6 +6,7 @@ import { createPackage } from "@/lib/admin-data";
 import { useAdminDestinations } from "@/hooks/use-admin-data";
 import { generateId } from "@/lib/id";
 import { ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 import Link from "next/link";
 import { usePackageForm, type PackageFormData } from "@/app/packages/components/use-package-form";
 import { BasicInfoFields } from "@/app/packages/components/basic-info-fields";
@@ -23,7 +24,8 @@ export default function NewPackagePage() {
   function onSubmit(data: PackageFormData) {
     const slug = data.title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-");
     const durationLabel = `${data.duration} Days / ${data.duration - 1} Nights`;
-    createPackage({
+    try {
+      createPackage({
       ...data,
       id: generateId("pkg"),
       slug,
@@ -37,7 +39,11 @@ export default function NewPackagePage() {
       faqs: data.faqs.filter((q) => q.question && q.answer),
       itinerary: data.itinerary.map((d) => ({ ...d, activities: d.activities.filter(Boolean) })),
     });
-    router.push("/packages");
+    toast.success("Package created successfully");
+      router.push("/packages");
+    } catch {
+      toast.error("Failed to create package");
+    }
   }
 
   return (

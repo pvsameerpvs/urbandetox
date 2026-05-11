@@ -1,21 +1,37 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Card, Button } from "@urbandetox/ui";
 import { formatPrice } from "@urbandetox/utils";
 import { CalendarDays, Plus, Users, AlertCircle } from "lucide-react";
 import { getPackageBySlug, getDestinationBySlug, deleteDeparture } from "@/lib/admin-data";
 import { useAdminDepartures } from "@/hooks/use-admin-data";
+import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { toast } from "sonner";
 
 export default function DeparturesPage() {
   const allDepartures = useAdminDepartures();
   const departures = [...allDepartures].sort((a, b) => a.startDate.localeCompare(b.startDate));
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingId, setPendingId] = useState<string | null>(null);
 
-  const handleDelete = (id: string) => {
-    if (confirm("Delete this departure?")) {
-      deleteDeparture(id);
-      window.location.reload();
+  const handleDeleteClick = (id: string) => {
+    setPendingId(id);
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!pendingId) return;
+    try {
+      deleteDeparture(pendingId);
+      toast.success("Departure deleted successfully");
+      setTimeout(() => window.location.reload(), 400);
+    } catch {
+      toast.error("Failed to delete departure");
     }
+    setConfirmOpen(false);
+    setPendingId(null);
   };
 
   return (
@@ -95,7 +111,7 @@ export default function DeparturesPage() {
                         <Button variant="ghost" size="sm" className="h-7 text-xs" asChild>
                           <Link href={`/departures/${dep.id}/edit`}>Edit</Link>
                         </Button>
-                        <button onClick={() => handleDelete(dep.id)} className="text-xs text-red-500 hover:text-red-700 transition-colors px-2">Delete</button>
+                        <button onClick={() => handleDeleteClick(dep.id)} className="text-xs text-red-500 hover:text-red-700 transition-colors px-2">Delete</button>
                       </div>
                     </td>
                   </tr>
@@ -105,6 +121,15 @@ export default function DeparturesPage() {
           </table>
         </div>
       </Card>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Delete Departure"
+        description="This will permanently remove this trip departure. This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => { setConfirmOpen(false); setPendingId(null); }}
+      />
     </div>
   );
 }
