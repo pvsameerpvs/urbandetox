@@ -87,7 +87,8 @@ export function usePackageForm(initialDestinationSlug: string, initialData?: Ini
   };
 
   const form = useForm<PackageFormData>({
-    resolver: zodResolver(packageSchema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(packageSchema as any),
     defaultValues,
   });
 

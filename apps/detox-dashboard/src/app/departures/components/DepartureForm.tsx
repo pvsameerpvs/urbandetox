@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm, FormProvider } from "react-hook-form";
+import { useForm, FormProvider, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { cn } from "@urbandetox/utils";
@@ -14,10 +14,13 @@ import {
 } from "@/components/ui/form";
 import { FormSection } from "@/components/admin/FormSection";
 import { FormActions } from "@/components/admin/FormActions";
-import type { Departure } from "@urbandetox/utils";
+import type { Departure, Package, Destination } from "@urbandetox/utils";
+import { MapPin, PackageIcon, CalendarDays, Users, CreditCard, Tag } from "lucide-react";
 
 const schema = z.object({
   code: z.string().min(1, "Departure code is required"),
+  packageSlug: z.string().min(1, "Package is required"),
+  destinationSlug: z.string().min(1, "Destination is required"),
   startDate: z.string().min(1, "Start date is required"),
   endDate: z.string().min(1, "End date is required"),
   price: z.number().min(0, "Price must be 0 or more"),
@@ -35,13 +38,18 @@ interface DepartureFormProps {
   onSubmit: (data: DepartureFormData) => void;
   submitLabel: string;
   cancelHref: string;
+  packages: Package[];
+  destinations: Destination[];
 }
 
-export function DepartureForm({ mode, initialData, onSubmit, submitLabel, cancelHref }: DepartureFormProps) {
+export function DepartureForm({ mode, initialData, onSubmit, submitLabel, cancelHref, packages, destinations }: DepartureFormProps) {
   const form = useForm<DepartureFormData>({
-    resolver: zodResolver(schema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(schema as any),
     defaultValues: {
       code: initialData?.code || "",
+      packageSlug: initialData?.packageSlug || "",
+      destinationSlug: initialData?.destinationSlug || "",
       startDate: initialData?.startDate || "",
       endDate: initialData?.endDate || "",
       price: initialData?.price || 0,
@@ -52,16 +60,101 @@ export function DepartureForm({ mode, initialData, onSubmit, submitLabel, cancel
     },
   });
 
+  const selectedPkgSlug = useWatch({ control: form.control, name: "packageSlug" });
+  const selectedPkg = packages.find((p) => p.slug === selectedPkgSlug);
+
   return (
     <FormProvider {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
         <FormSection>
+          {/* Package Selection */}
+          <FormField
+            control={form.control}
+            name="packageSlug"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex items-center gap-2">
+                  <PackageIcon className="h-4 w-4 text-brand" /> Package
+                </FormLabel>
+                <FormControl>
+                  <Select
+                    value={field.value}
+                    onValueChange={(slug) => {
+                      field.onChange(slug);
+                      const pkg = packages.find((p) => p.slug === slug);
+                      if (pkg) {
+                        form.setValue("destinationSlug", pkg.destinationSlug);
+                        form.setValue("price", pkg.startingPrice);
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="h-11 rounded-xl w-full">
+                      <SelectValue placeholder="Choose a package for this departure" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {packages.map((pkg) => (
+                        <SelectItem key={pkg.slug} value={pkg.slug}>
+                          <span className="flex items-center gap-2">
+                            <span className="font-medium">{pkg.title}</span>
+                            <span className="text-muted-foreground">· {pkg.durationLabel}</span>
+                          </span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Package Preview Card */}
+          {selectedPkg && (
+            <div className="rounded-xl border border-brand/20 bg-brand/[0.03] p-4 space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-lg bg-brand/10 flex items-center justify-center shrink-0">
+                  <PackageIcon className="h-5 w-5 text-brand" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold">{selectedPkg.title}</p>
+                  <p className="text-xs text-muted-foreground">{selectedPkg.subtitle}</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                <div className="flex items-center gap-1.5">
+                  <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="text-muted-foreground">{destinations.find((d) => d.slug === selectedPkg.destinationSlug)?.name || selectedPkg.destinationSlug}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="text-muted-foreground">{selectedPkg.durationLabel}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="text-muted-foreground">{selectedPkg.groupSize}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <CreditCard className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="text-muted-foreground">From ₹{selectedPkg.startingPrice.toLocaleString("en-IN")}</span>
+                </div>
+              </div>
+              {selectedPkg.seasonalTag && (
+                <div className="flex items-center gap-1.5 text-xs">
+                  <Tag className="h-3.5 w-3.5 text-brand" />
+                  <span className="text-brand font-medium">{selectedPkg.seasonalTag}</span>
+                </div>
+              )}
+            </div>
+          )}
+
           <FormField
             control={form.control}
             name="code"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Departure Code</FormLabel>
+                <FormLabel className="flex items-center gap-2">
+                  <Tag className="h-4 w-4 text-brand" /> Departure Code
+                </FormLabel>
                 <FormControl>
                   <Input placeholder={mode === "create" ? "e.g. KAS3-JUN20" : undefined} className="h-11 rounded-xl" {...field} />
                 </FormControl>

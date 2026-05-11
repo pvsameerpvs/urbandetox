@@ -40,7 +40,8 @@ interface DestinationFormProps {
 
 export function DestinationForm({ mode, initialData, slugValue, onSubmit, submitLabel, cancelHref }: DestinationFormProps) {
   const form = useForm<DestinationFormData>({
-    resolver: zodResolver(schema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(schema as any),
     defaultValues: {
       name: initialData?.name || "",
       region: initialData?.region || "",

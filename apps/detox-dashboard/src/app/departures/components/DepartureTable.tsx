@@ -86,7 +86,12 @@ export function DepartureTable({ departures, getPackageBySlug, getDestinationByS
                   </td>
                   <td className="px-4 py-3.5">
                     <div className="min-w-0">
-                      <p className="text-xs font-medium truncate">{pkg?.title || "—"}</p>
+                      <Link
+                        href={`/packages/${dep.packageSlug}`}
+                        className="text-xs font-medium truncate hover:text-brand transition-colors"
+                      >
+                        {pkg?.title || "—"}
+                      </Link>
                       <div className="flex items-center gap-1 text-[10px] text-muted-foreground mt-0.5">
                         <MapPin className="h-3 w-3" />
                         <span className="truncate">{dest?.name || "—"}</span>

@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
 import { updateDeparture } from "@/lib/admin-data";
-import { useAdminDepartures } from "@/hooks/use-admin-data";
+import { useAdminDepartures, useAdminPackages, useAdminDestinations } from "@/hooks/use-admin-data";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { DepartureForm, type DepartureFormData } from "../../components/DepartureForm";
 
@@ -14,6 +14,8 @@ export default function EditDeparturePage() {
   const router = useRouter();
   const id = String(params.id);
   const allDeps = useAdminDepartures();
+  const packages = useAdminPackages();
+  const destinations = useAdminDestinations();
   const dep = allDeps.find((d) => d.id === id);
 
   if (!dep) {
@@ -38,7 +40,7 @@ export default function EditDeparturePage() {
   return (
     <div className="max-w-2xl mx-auto">
       <PageHeader backHref="/departures" backLabel="Back to Departures" title="Edit Departure" subtitle={`Update ${dep.code} details.`} />
-      <DepartureForm mode="edit" initialData={dep} onSubmit={handleSubmit} submitLabel="Save Changes" cancelHref="/departures" />
+      <DepartureForm mode="edit" initialData={dep} onSubmit={handleSubmit} submitLabel="Save Changes" cancelHref="/departures" packages={packages} destinations={destinations} />
     </div>
   );
 }

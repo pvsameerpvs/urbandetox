@@ -30,18 +30,19 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.0.0",
+    "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-slot": "^1.0.0",
+    "@urbandetox/utils": "workspace:*",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.400.0",
-    "tailwind-merge": "^3.0.0",
-    "@urbandetox/utils": "workspace:*"
+    "tailwind-merge": "^3.0.0"
   },
   "devDependencies": {
-    "@urbandetox/typescript-config": "workspace:*",
-    "@urbandetox/eslint-config": "workspace:*",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@urbandetox/eslint-config": "workspace:*",
+    "@urbandetox/typescript-config": "workspace:*",
     "typescript": "^5.8.0"
   },
   "peerDependencies": {

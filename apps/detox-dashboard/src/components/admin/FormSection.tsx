@@ -7,10 +7,10 @@ interface FormSectionProps {
 
 export function FormSection({ title, children }: FormSectionProps) {
   return (
-    <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
-      <CardContent className="p-6">
+    <Card className="border border-border/40 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
+      <CardContent className="p-6 sm:p-8 space-y-6">
         {title && (
-          <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">{title}</h3>
+          <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">{title}</h3>
         )}
         {children}
       </CardContent>
