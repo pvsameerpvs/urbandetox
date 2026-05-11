@@ -10,6 +10,7 @@ import {
   CalendarDays,
   BookOpen,
   Tag,
+  Users,
   Settings,
 } from "lucide-react";
 
@@ -20,6 +21,7 @@ const navItems = [
   { href: "/departures", label: "Departures", icon: CalendarDays },
   { href: "/bookings", label: "Bookings", icon: BookOpen },
   { href: "/seasonal-tags", label: "Seasonal Tags", icon: Tag },
+  { href: "/users", label: "Users", icon: Users },
 ];
 
 export function AdminSidebar() {
