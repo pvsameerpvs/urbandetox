@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@urbandetox/utils";
+import { useBookingNotifications } from "@/components/admin/BookingNotificationContext";
 import {
   LayoutDashboard,
   MapPin,
@@ -19,13 +20,14 @@ const navItems = [
   { href: "/destinations", label: "Destinations", icon: MapPin },
   { href: "/packages", label: "Packages", icon: Package },
   { href: "/departures", label: "Departures", icon: CalendarDays },
-  { href: "/bookings", label: "Bookings", icon: BookOpen },
+  { href: "/bookings", label: "Bookings", icon: BookOpen, badge: true },
   { href: "/seasonal-tags", label: "Seasonal Tags", icon: Tag },
   { href: "/users", label: "Users", icon: Users },
 ];
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const { unreadCount } = useBookingNotifications();
 
   return (
     <aside className="fixed top-0 left-0 z-30 h-screen w-[260px] bg-[#0a1628] border-r border-white/5 hidden lg:flex flex-col">
@@ -43,6 +45,7 @@ export function AdminSidebar() {
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+          const showBadge = item.badge && unreadCount > 0;
           return (
             <Link
               key={item.href}
@@ -55,7 +58,12 @@ export function AdminSidebar() {
               )}
             >
               <Icon className="h-4 w-4 shrink-0" />
-              {item.label}
+              <span className="flex-1">{item.label}</span>
+              {showBadge && (
+                <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-brand px-1.5 text-[11px] font-bold text-brand-foreground">
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              )}
             </Link>
           );
         })}

@@ -3,13 +3,15 @@
 import { useState } from "react";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminTopbar } from "@/components/admin/AdminTopbar";
+import { BookingNotificationProvider } from "@/components/admin/BookingNotificationContext";
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-secondary/[0.02]">
-      <AdminSidebar />
+    <BookingNotificationProvider>
+      <div className="min-h-screen bg-secondary/[0.02]">
+        <AdminSidebar />
 
       {/* Mobile overlay */}
       {mobileOpen && (
@@ -24,5 +26,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         <main className="p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
     </div>
+    </BookingNotificationProvider>
   );
 }

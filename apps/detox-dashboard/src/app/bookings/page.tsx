@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { getAllBookings, type BookingWithMeta } from "@/lib/bookings";
 import { getDepartureByCode, getPackageBySlug, getDestinationBySlug } from "@/lib/admin-data";
+import { useBookingNotifications } from "@/components/admin/BookingNotificationContext";
 import { BookingTable } from "./components/BookingTable";
 
 function seedDemoBookings() {
@@ -32,7 +33,9 @@ function seedDemoBookings() {
         allergies: "None",
         medicalConditions: "None",
         bloodGroup: "O+",
-        photoUrl: "",
+        photoUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face",
+        idUrl: "",
+        idType: "Aadhaar",
         emergencyName: "Priya Sharma",
         emergencyPhone: "+91 98765 43211",
         emergencyRelation: "Spouse",
@@ -49,7 +52,9 @@ function seedDemoBookings() {
         allergies: "Peanuts",
         medicalConditions: "None",
         bloodGroup: "A+",
-        photoUrl: "",
+        photoUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face",
+        idUrl: "",
+        idType: "Aadhaar",
         emergencyName: "Rahul Sharma",
         emergencyPhone: "+91 98765 43210",
         emergencyRelation: "Spouse",
@@ -79,7 +84,9 @@ function seedDemoBookings() {
         allergies: "None",
         medicalConditions: "Mild asthma",
         bloodGroup: "B+",
-        photoUrl: "",
+        photoUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=face",
+        idUrl: "",
+        idType: "Passport",
         emergencyName: "Meera Kumar",
         emergencyPhone: "+91 99887 76656",
         emergencyRelation: "Sister",
@@ -97,8 +104,10 @@ function seedDemoBookings() {
 
 export default function BookingsPage() {
   const [bookings, setBookings] = useState<BookingWithMeta[]>([]);
+  const { clearUnread } = useBookingNotifications();
 
   useEffect(() => {
+    clearUnread();
     seedDemoBookings();
     const t = setTimeout(() => {
       const raw = getAllBookings();
@@ -125,7 +134,7 @@ export default function BookingsPage() {
       setBookings(enriched);
     }, 0);
     return () => clearTimeout(t);
-  }, []);
+  }, [clearUnread]);
 
   const stats = useMemo(() => {
     const total = bookings.length;

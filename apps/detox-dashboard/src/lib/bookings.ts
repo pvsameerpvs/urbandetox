@@ -13,6 +13,8 @@ export interface Traveler {
   medicalConditions: string;
   bloodGroup: string;
   photoUrl: string;
+  idUrl: string;
+  idType: string;
   emergencyName: string;
   emergencyPhone: string;
   emergencyRelation: string;
