@@ -29,6 +29,8 @@ export interface BookingState {
   travelers: Traveler[];
   common: CommonDetails;
   onboardingComplete?: boolean;
+  paymentStatus?: "paid" | "pending" | "cod";
+  paymentMethod?: "razorpay" | "cod";
 }
 
 const STORAGE_KEY = (code: string) => `urbandetox-booking-${code}`;

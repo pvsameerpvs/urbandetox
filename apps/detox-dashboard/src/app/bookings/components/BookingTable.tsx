@@ -10,6 +10,9 @@ import {
   MapPin,
   ArrowRight,
   ExternalLink,
+  Wallet,
+  CreditCard,
+  Banknote,
 } from "lucide-react";
 import { cn } from "@urbandetox/utils";
 import type { BookingWithMeta } from "@/lib/bookings";
@@ -45,6 +48,7 @@ export function BookingTable({ bookings }: BookingTableProps) {
               <th className="text-left px-4 py-3 font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">Trip</th>
               <th className="text-left px-4 py-3 font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">Dates</th>
               <th className="text-left px-4 py-3 font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">Travelers</th>
+              <th className="text-left px-4 py-3 font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">Payment</th>
               <th className="text-left px-4 py-3 font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">Status</th>
               <th className="text-right px-4 py-3 font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">Action</th>
             </tr>
@@ -93,6 +97,9 @@ export function BookingTable({ bookings }: BookingTableProps) {
                   </Badge>
                 </td>
                 <td className="px-4 py-3.5">
+                  <PaymentBadge status={b.paymentStatus} />
+                </td>
+                <td className="px-4 py-3.5">
                   <div className="flex flex-col gap-1">
                     {b.onboardingComplete ? (
                       <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600">
@@ -120,5 +127,27 @@ export function BookingTable({ bookings }: BookingTableProps) {
         </table>
       </div>
     </Card>
+  );
+}
+
+function PaymentBadge({ status }: { status?: string }) {
+  if (status === "paid") {
+    return (
+      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600">
+        <CreditCard className="h-3 w-3" /> Paid
+      </span>
+    );
+  }
+  if (status === "cod") {
+    return (
+      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-blue-600">
+        <Banknote className="h-3 w-3" /> COD
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-muted-foreground">
+      <Wallet className="h-3 w-3" /> Pending
+    </span>
   );
 }

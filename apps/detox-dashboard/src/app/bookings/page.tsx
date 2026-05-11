@@ -7,6 +7,8 @@ import {
   CheckCircle2,
   Clock,
   CalendarDays,
+  CreditCard,
+  Banknote,
 } from "lucide-react";
 import { getAllBookings, type BookingWithMeta } from "@/lib/bookings";
 import { getDepartureByCode, getPackageBySlug, getDestinationBySlug } from "@/lib/admin-data";
@@ -66,6 +68,8 @@ function seedDemoBookings() {
       needsTravelHelp: true,
     },
     onboardingComplete: true,
+    paymentStatus: "paid" as const,
+    paymentMethod: "razorpay" as const,
   };
   localStorage.setItem(key, JSON.stringify(demo));
 
@@ -98,6 +102,8 @@ function seedDemoBookings() {
       needsTravelHelp: false,
     },
     onboardingComplete: false,
+    paymentStatus: "cod" as const,
+    paymentMethod: "cod" as const,
   };
   localStorage.setItem("urbandetox-booking-KOD5-APR18", JSON.stringify(demo2));
 }
@@ -140,8 +146,10 @@ export default function BookingsPage() {
     const total = bookings.length;
     const complete = bookings.filter((b) => b.onboardingComplete).length;
     const pending = total - complete;
+    const paid = bookings.filter((b) => b.paymentStatus === "paid").length;
+    const cod = bookings.filter((b) => b.paymentStatus === "cod").length;
     const totalTravelers = bookings.reduce((sum, b) => sum + b.travelers.length, 0);
-    return { total, complete, pending, totalTravelers };
+    return { total, complete, pending, paid, cod, totalTravelers };
   }, [bookings]);
 
   return (
@@ -153,7 +161,7 @@ export default function BookingsPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
         <Card className="border border-border/40 bg-white rounded-2xl">
           <CardContent className="p-4 flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-brand/10 flex items-center justify-center">
@@ -189,8 +197,30 @@ export default function BookingsPage() {
         </Card>
         <Card className="border border-border/40 bg-white rounded-2xl">
           <CardContent className="p-4 flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+              <CreditCard className="h-5 w-5 text-emerald-700" />
+            </div>
+            <div>
+              <p className="text-xl font-bold leading-none">{stats.paid}</p>
+              <p className="text-xs text-muted-foreground mt-1">Paid Online</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border border-border/40 bg-white rounded-2xl">
+          <CardContent className="p-4 flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-blue-100 flex items-center justify-center">
-              <CalendarDays className="h-5 w-5 text-blue-700" />
+              <Banknote className="h-5 w-5 text-blue-700" />
+            </div>
+            <div>
+              <p className="text-xl font-bold leading-none">{stats.cod}</p>
+              <p className="text-xs text-muted-foreground mt-1">Pay on Arrival</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border border-border/40 bg-white rounded-2xl">
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-purple-100 flex items-center justify-center">
+              <CalendarDays className="h-5 w-5 text-purple-700" />
             </div>
             <div>
               <p className="text-xl font-bold leading-none">{stats.totalTravelers}</p>

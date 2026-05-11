@@ -12,7 +12,7 @@ import { MobileBookingCTA } from "../../components/MobileBookingCTA";
 import { PaymentStatusAlert } from "../../components/PaymentStatusAlert";
 import { PaymentMethodOption } from "../components/PaymentMethodOption";
 import { useHydrated } from "@/hooks/use-hydrated";
-import { loadBookingState } from "@/lib/booking-state";
+import { loadBookingState, saveBookingState } from "@/lib/booking-state";
 import { fetchDepartureByCode, fetchPackageBySlug, fetchDestinationBySlug } from "@/lib/data";
 import { formatPrice, formatDateRange } from "@urbandetox/utils";
 import { CreditCard, Wallet, Lock, Loader2, Shield } from "lucide-react";
@@ -51,6 +51,16 @@ export default function PaymentPage() {
     setStatus("processing");
     setTimeout(() => {
       setStatus("success");
+      // Persist payment status before redirecting
+      const current = loadBookingState(code);
+      if (current) {
+        saveBookingState({
+          ...current,
+          departureCode: code,
+          paymentStatus: method === "cod" ? "cod" : "paid",
+          paymentMethod: method,
+        });
+      }
       setTimeout(() => { window.location.href = `/book/${code}/onboarding`; }, 2000);
     }, 2500);
   };
