@@ -5,10 +5,10 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { formatPrice, formatDateRange } from "@/lib/formatters";
+import { formatPrice, formatDateRange } from "@urbandetox/utils";
 import { Clock, Calendar as CalendarIcon, Users, ArrowRight, MapPin } from "lucide-react";
-import type { Package } from "@/lib/types";
-import type { Departure } from "@/lib/types";
+import type { Package } from "@urbandetox/utils";
+import type { Departure } from "@urbandetox/utils";
 import type { Destination } from "@urbandetox/utils";
 
 interface DestinationPackageCardProps {

@@ -1,4 +1,3 @@
-"use client";
 
 import { AboutHero } from "./components/AboutHero";
 import { StatsBar } from "./components/StatsBar";

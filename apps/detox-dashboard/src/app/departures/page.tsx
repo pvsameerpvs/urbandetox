@@ -1,15 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { Card } from "@urbandetox/ui";
-import { Button } from "@urbandetox/ui";
+import { Card, Button } from "@urbandetox/ui";
 import { formatPrice } from "@urbandetox/utils";
 import { CalendarDays, Plus, Users, AlertCircle } from "lucide-react";
 import { getPackageBySlug, getDestinationBySlug, deleteDeparture } from "@/lib/admin-data";
 import { useAdminDepartures } from "@/hooks/use-admin-data";
 
 export default function DeparturesPage() {
-  const departures = useAdminDepartures().sort((a, b) => a.startDate.localeCompare(b.startDate));
+  const allDepartures = useAdminDepartures();
+  const departures = [...allDepartures].sort((a, b) => a.startDate.localeCompare(b.startDate));
 
   const handleDelete = (id: string) => {
     if (confirm("Delete this departure?")) {

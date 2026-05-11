@@ -1,16 +1,7 @@
-import { Input } from "@urbandetox/ui";
-import { Button } from "@urbandetox/ui";
-import { Textarea } from "@urbandetox/ui";
+import { Input, Button, Textarea } from "@urbandetox/ui";
+import type { ItineraryDay } from "@urbandetox/utils";
+import { ImageUploadInline } from "@/components/admin/ImageUploadInline";
 import { Plus } from "lucide-react";
-
-export interface ItineraryDay {
-  day: number;
-  title: string;
-  description: string;
-  activities: string[];
-  stay: string;
-  meals: string;
-}
 
 interface ItineraryFieldsProps {
   itinerary: ItineraryDay[];
@@ -22,12 +13,7 @@ interface ItineraryFieldsProps {
 }
 
 export function ItineraryFields({
-  itinerary,
-  onUpdateDay,
-  onUpdateActivity,
-  onAddActivity,
-  onAddDay,
-  onRemoveDay,
+  itinerary, onUpdateDay, onUpdateActivity, onAddActivity, onAddDay, onRemoveDay,
 }: ItineraryFieldsProps) {
   return (
     <div className="space-y-6">
@@ -47,8 +33,12 @@ export function ItineraryFields({
             <Input value={day.title} onChange={(e) => onUpdateDay(di, "title", e.target.value)} placeholder="Day title" className="h-10 rounded-xl" />
             <Textarea value={day.description} onChange={(e) => onUpdateDay(di, "description", e.target.value)} placeholder="Description" className="rounded-xl min-h-[60px]" />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Input value={day.stay} onChange={(e) => onUpdateDay(di, "stay", e.target.value)} placeholder="Stay" className="h-10 rounded-xl" />
-              <Input value={day.meals} onChange={(e) => onUpdateDay(di, "meals", e.target.value)} placeholder="Meals" className="h-10 rounded-xl" />
+              <Input value={day.stay ?? ""} onChange={(e) => onUpdateDay(di, "stay", e.target.value)} placeholder="Stay accommodation" className="h-10 rounded-xl" />
+              <Input value={day.meals ?? ""} onChange={(e) => onUpdateDay(di, "meals", e.target.value)} placeholder="Meals" className="h-10 rounded-xl" />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="flex flex-col gap-1.5"><p className="text-xs text-muted-foreground">Day image</p><ImageUploadInline value={day.image} onChange={(v) => onUpdateDay(di, "image", v)} /></div>
+              <Input value={day.travelNotes ?? ""} onChange={(e) => onUpdateDay(di, "travelNotes", e.target.value)} placeholder="Travel notes (optional)" className="h-10 rounded-xl" />
             </div>
             <div className="space-y-2">
               <p className="text-xs font-medium text-muted-foreground">Activities</p>

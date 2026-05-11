@@ -2,7 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import { Minus, Plus, Users } from "lucide-react";
-import { formatPrice } from "@/lib/formatters";
+import { formatPrice } from "@urbandetox/utils";
 
 interface TravelerCounterProps {
   count: number;

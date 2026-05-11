@@ -12,7 +12,7 @@ interface ImageUploadProps {
   maxSizeMB?: number;
 }
 
-export function ImageUpload({ value, onChange, label = "Cover Image", maxSizeMB = 1 }: ImageUploadProps) {
+export function ImageUpload({ value, onChange, label = "Cover Image", maxSizeMB = 5 }: ImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
 

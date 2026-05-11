@@ -2,33 +2,32 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent } from "@urbandetox/ui";
-import { Button } from "@urbandetox/ui";
-import { Input } from "@urbandetox/ui";
-import { Label } from "@urbandetox/ui";
-import { Textarea } from "@urbandetox/ui";
+import { Card, CardContent, Button, Input, Label, Textarea } from "@urbandetox/ui";
 import { createDestination } from "@/lib/admin-data";
 import { generateId } from "@/lib/id";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { GalleryUpload } from "@/components/admin/GalleryUpload";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 export default function NewDestinationPage() {
   const router = useRouter();
   const [form, setForm] = useState({
-    id: "",
-    slug: "",
     name: "",
     region: "",
     description: "",
     image: "",
     meetingPoint: "",
     vibe: "",
+    gallery: [""],
   });
+
+  const setField = (field: string, value: string | string[]) => setForm({ ...form, [field]: value });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createDestination({ ...form, id: generateId("dest") });
+    const slug = form.name.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-");
+    createDestination({ ...form, id: generateId("dest"), slug, gallery: form.gallery.filter(Boolean) });
     router.push("/destinations");
   };
 
@@ -46,11 +45,11 @@ export default function NewDestinationPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <Label>Name</Label>
-                <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value, slug: e.target.value.toLowerCase().replace(/\s+/g, "-") })} placeholder="e.g. Kashmir" className="h-11 rounded-xl" required />
+                <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Kashmir" className="h-11 rounded-xl" required />
               </div>
               <div className="space-y-2">
-                <Label>Slug (auto-generated)</Label>
-                <Input value={form.slug} readOnly className="h-11 rounded-xl bg-secondary/30" />
+                <Label>Slug</Label>
+                <Input value={form.name.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-")} readOnly className="h-11 rounded-xl bg-secondary/30" />
               </div>
             </div>
             <div className="space-y-2">
@@ -61,7 +60,11 @@ export default function NewDestinationPage() {
               <Label>Description</Label>
               <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Describe the destination..." className="rounded-xl min-h-[100px]" required />
             </div>
-            <ImageUpload value={form.image} onChange={(v) => setForm({ ...form, image: v })} label="Cover Image" />
+            <ImageUpload value={form.image} onChange={(v) => setField("image", v)} label="Cover Image" />
+            <div className="space-y-2">
+              <Label>Gallery Images</Label>
+              <GalleryUpload items={form.gallery} onAdd={(v) => setForm({ ...form, gallery: [...form.gallery, v] })} onRemove={(i) => setForm({ ...form, gallery: form.gallery.filter((_, j) => j !== i) })} />
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <Label>Meeting Point</Label>

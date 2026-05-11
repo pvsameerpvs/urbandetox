@@ -1,5 +1,3 @@
-"use client";
-
 import { Card, CardContent } from "@urbandetox/ui";
 import { Settings } from "lucide-react";
 

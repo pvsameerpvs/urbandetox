@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { DestinationPackageCard } from "./DestinationPackageCard";
 import type { Destination } from "@urbandetox/utils";
-import type { Package, Departure } from "@/lib/types";
+import type { Package, Departure } from "@urbandetox/utils";
 
 interface DestinationPackagesProps {
   destination: Destination;

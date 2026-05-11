@@ -2,10 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent } from "@urbandetox/ui";
-import { Button } from "@urbandetox/ui";
-import { Input } from "@urbandetox/ui";
-import { Label } from "@urbandetox/ui";
+import { Card, CardContent, Button, Input, Label } from "@urbandetox/ui";
 import { createDeparture } from "@/lib/admin-data";
 import { useAdminPackages } from "@/hooks/use-admin-data";
 import { generateId } from "@/lib/id";
@@ -17,7 +14,6 @@ export default function NewDeparturePage() {
   const packages = useAdminPackages();
 
   const [form, setForm] = useState({
-    id: "",
     code: "",
     packageSlug: packages[0]?.slug || "",
     startDate: "",

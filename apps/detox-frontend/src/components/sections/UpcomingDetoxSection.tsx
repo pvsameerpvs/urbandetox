@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { fetchUpcomingDepartures, fetchPackageBySlug, fetchDestinationBySlug } from "@/lib/data";
-import { formatPrice, formatDateRange } from "@/lib/formatters";
+import { formatPrice, formatDateRange } from "@urbandetox/utils";
 import { cn } from "@/lib/utils";
 import { Calendar, ArrowRight, MapPin, Clock } from "lucide-react";
 import { motion } from "framer-motion";

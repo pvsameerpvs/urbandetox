@@ -1,4 +1,4 @@
-import { Package, Departure, GuideArticle, Destination } from "@/lib/types";
+import { Package, Departure, GuideArticle, Destination } from "@urbandetox/utils";
 import { destinations, getDestinationBySlug } from "@/data/destinations";
 import { getPackageBySlug, getFeaturedPackages, getAllPackages, getPackagesByDestination } from "@/data/packages";
 import { getDeparturesByPackageSlug, getDepartureByCode, getUpcomingDepartures } from "@/data/departures";

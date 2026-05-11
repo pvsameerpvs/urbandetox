@@ -1,4 +1,4 @@
-import { Testimonial } from "@/lib/types";
+import { Testimonial } from "@urbandetox/utils";
 
 export const testimonials: Testimonial[] = [
   {

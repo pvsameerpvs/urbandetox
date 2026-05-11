@@ -1,6 +1,7 @@
-import { destinations as initialDestinations } from "../data/destinations";
-import { packages as initialPackages } from "../data/packages";
-import { departures as initialDepartures } from "../data/departures";
+import type { Destination, Package, Departure } from "@urbandetox/utils";
+import { destinations as initialDestinations } from "@/data/destinations";
+import { packages as initialPackages } from "@/data/packages";
+import { departures as initialDepartures } from "@/data/departures";
 
 const DEST_KEY = "ud-admin-destinations";
 const PKG_KEY = "ud-admin-packages";
@@ -22,23 +23,23 @@ function save<T>(key: string, data: T) {
 }
 
 /* ─── Destinations ─────────────────────────── */
-export function getDestinations() {
+export function getDestinations(): Destination[] {
   return load(DEST_KEY, initialDestinations);
 }
 
-export function getDestinationBySlug(slug: string) {
-  return getDestinations().find((d: { slug: string }) => d.slug === slug);
+export function getDestinationBySlug(slug: string): Destination | undefined {
+  return getDestinations().find((d) => d.slug === slug);
 }
 
-export function createDestination(dest: Record<string, unknown>) {
-  const all = getDestinations() as Record<string, unknown>[];
+export function createDestination(dest: Destination) {
+  const all = getDestinations();
   all.push(dest);
   save(DEST_KEY, all);
 }
 
-export function updateDestination(slug: string, data: Record<string, unknown>) {
-  const all = getDestinations() as Record<string, unknown>[];
-  const idx = all.findIndex((d) => (d as { slug: string }).slug === slug);
+export function updateDestination(slug: string, data: Partial<Destination>) {
+  const all = getDestinations();
+  const idx = all.findIndex((d) => d.slug === slug);
   if (idx >= 0) {
     all[idx] = { ...all[idx], ...data };
     save(DEST_KEY, all);
@@ -46,73 +47,70 @@ export function updateDestination(slug: string, data: Record<string, unknown>) {
 }
 
 export function deleteDestination(slug: string) {
-  const all = (getDestinations() as Record<string, unknown>[]).filter((d) => (d as { slug: string }).slug !== slug);
+  const all = getDestinations().filter((d) => d.slug !== slug);
   save(DEST_KEY, all);
 }
 
 /* ─── Packages ─────────────────────────────── */
-export function getPackages() {
+export function getPackages(): Package[] {
   return load(PKG_KEY, initialPackages);
 }
 
-export function getPackageBySlug(slug: string) {
-  return getPackages().find((p: { slug: string }) => p.slug === slug);
+export function getPackageBySlug(slug: string): Package | undefined {
+  return getPackages().find((p) => p.slug === slug);
 }
 
-export function getPackagesByDestination(destinationSlug: string) {
-  return getPackages().filter((p: { destinationSlug: string }) => p.destinationSlug === destinationSlug);
+export function getPackagesByDestination(destinationSlug: string): Package[] {
+  return getPackages().filter((p) => p.destinationSlug === destinationSlug);
 }
 
-export function getFeaturedPackages() {
-  return getPackages().filter((p: { featured: boolean }) => p.featured);
-}
-
-export function createPackage(pkg: Record<string, unknown>) {
-  const all = getPackages() as Record<string, unknown>[];
+export function createPackage(pkg: Package) {
+  const all = getPackages();
+  if (all.some((p) => p.slug === pkg.slug)) return;
   all.push(pkg);
   save(PKG_KEY, all);
 }
 
-export function updatePackage(slug: string, data: Record<string, unknown>) {
-  const all = getPackages() as Record<string, unknown>[];
-  const idx = all.findIndex((p) => (p as { slug: string }).slug === slug);
+export function updatePackage(slug: string, data: Partial<Package>) {
+  const all = getPackages();
+  const idx = all.findIndex((p) => p.slug === slug);
   if (idx >= 0) {
-    all[idx] = { ...all[idx], ...data };
+    all[idx] = { ...all[idx], ...data, slug }; // preserve original slug
     save(PKG_KEY, all);
   }
 }
 
 export function deletePackage(slug: string) {
-  const all = (getPackages() as Record<string, unknown>[]).filter((p) => (p as { slug: string }).slug !== slug);
+  const all = getPackages().filter((p) => p.slug !== slug);
   save(PKG_KEY, all);
 }
 
 /* ─── Departures ─────────────────────────── */
-export function getDepartures() {
+export function getDepartures(): Departure[] {
   return load(DEP_KEY, initialDepartures);
 }
 
-export function getDeparturesByPackage(packageSlug: string) {
-  return getDepartures().filter((d: { packageSlug: string }) => d.packageSlug === packageSlug);
+export function getDeparturesByPackage(packageSlug: string): Departure[] {
+  return getDepartures().filter((d) => d.packageSlug === packageSlug);
 }
 
-export function getUpcomingDepartures(limit = 50) {
+export function getUpcomingDepartures(limit = 50): Departure[] {
   const today = new Date().toISOString().split("T")[0];
   return getDepartures()
-    .filter((d: { startDate: string; status: string }) => d.startDate >= today && d.status !== "closed")
-    .sort((a: { startDate: string }, b: { startDate: string }) => a.startDate.localeCompare(b.startDate))
+    .filter((d) => d.startDate >= today && d.status !== "closed")
+    .sort((a, b) => a.startDate.localeCompare(b.startDate))
     .slice(0, limit);
 }
 
-export function createDeparture(dep: Record<string, unknown>) {
-  const all = getDepartures() as Record<string, unknown>[];
+export function createDeparture(dep: Departure) {
+  const all = getDepartures();
   all.push(dep);
   save(DEP_KEY, all);
 }
 
-export function updateDeparture(id: string, data: Record<string, unknown>) {
-  const all = getDepartures() as Record<string, unknown>[];
-  const idx = all.findIndex((d) => (d as { id: string }).id === id);
+export function updateDeparture(id: string, data: Partial<Departure>) {
+  const all = getDepartures();
+  const idx = all.findIndex((d) => d.id === id);
   if (idx >= 0) {
     all[idx] = { ...all[idx], ...data };
     save(DEP_KEY, all);
@@ -120,14 +118,8 @@ export function updateDeparture(id: string, data: Record<string, unknown>) {
 }
 
 export function deleteDeparture(id: string) {
-  const all = (getDepartures() as Record<string, unknown>[]).filter((d) => (d as { id: string }).id !== id);
+  const all = getDepartures().filter((d) => d.id !== id);
   save(DEP_KEY, all);
 }
 
-/* ─── Reset ──────────────────────────────── */
-export function resetAllData() {
-  if (typeof window === "undefined") return;
-  localStorage.removeItem(DEST_KEY);
-  localStorage.removeItem(PKG_KEY);
-  localStorage.removeItem(DEP_KEY);
-}
+

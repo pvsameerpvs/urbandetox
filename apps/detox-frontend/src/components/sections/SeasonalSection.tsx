@@ -1,10 +1,10 @@
-"use client";
 
 import { fetchFeaturedPackages } from "@/lib/data";
 import { SeasonalRow } from "./SeasonalRow";
+import type { LucideIcon } from "lucide-react";
 import { CloudRain, Sun, Waves, Mountain } from "lucide-react";
 
-const seasonalMeta: Record<string, { icon: typeof Sun; label: string }> = {
+const seasonalMeta: Record<string, { icon: LucideIcon; label: string }> = {
   "Monsoon Detox": { icon: CloudRain, label: "Monsoon Escapes" },
   "Summer Escape": { icon: Sun, label: "Summer Escapes" },
   "Coastal Detox": { icon: Waves, label: "Coastal Retreats" },

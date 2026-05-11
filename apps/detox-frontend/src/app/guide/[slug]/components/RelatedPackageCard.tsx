@@ -1,10 +1,9 @@
-"use client";
 
 import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { fetchPackageBySlug, fetchDestinationBySlug } from "@/lib/data";
-import { formatPrice } from "@/lib/formatters";
+import { formatPrice } from "@urbandetox/utils";
 
 interface PackageLinkProps {
   slug: string;

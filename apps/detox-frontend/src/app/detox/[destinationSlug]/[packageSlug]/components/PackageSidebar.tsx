@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { formatPrice, formatDateRange } from "@/lib/formatters";
+import { formatPrice, formatDateRange } from "@urbandetox/utils";
 import { Calendar, Users, ArrowRight, Phone, Shield, Heart, Check } from "lucide-react";
 
 interface PackageSidebarProps {

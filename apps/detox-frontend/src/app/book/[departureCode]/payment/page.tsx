@@ -14,7 +14,7 @@ import { PaymentMethodOption } from "../components/PaymentMethodOption";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { loadBookingState } from "@/lib/booking-state";
 import { fetchDepartureByCode, fetchPackageBySlug, fetchDestinationBySlug } from "@/lib/data";
-import { formatPrice, formatDateRange } from "@/lib/formatters";
+import { formatPrice, formatDateRange } from "@urbandetox/utils";
 import { CreditCard, Wallet, Lock, Loader2, Shield } from "lucide-react";
 
 type PaymentMethod = "razorpay" | "cod";
@@ -22,7 +22,7 @@ type PaymentStatus = "idle" | "processing" | "success" | "failure";
 
 export default function PaymentPage() {
   const params = useParams();
-  const code = params.departureCode as string;
+  const code = String(params.departureCode);
   const departure = fetchDepartureByCode(code);
   const pkg = departure ? fetchPackageBySlug(departure.packageSlug) : undefined;
   const dest = departure ? fetchDestinationBySlug(departure.destinationSlug) : undefined;

@@ -11,10 +11,10 @@ export const BRAND = {
 } as const;
 
 export const SEASONAL_TAGS = [
-  "Monsoon Detox",
   "Summer Escape",
+  "Monsoon Detox",
   "Coastal Detox",
-  "Weekend Detox",
+  "Extended Detox",
 ] as const;
 
 export const DESTINATIONS = [

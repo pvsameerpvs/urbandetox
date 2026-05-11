@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Card, CardContent } from "@urbandetox/ui";
+import type { LucideIcon } from "lucide-react";
 import { MapPin, Package, CalendarDays, BookOpen, TrendingUp } from "lucide-react";
 import { useAdminDestinations, useAdminPackages, useAdminDepartures } from "@/hooks/use-admin-data";
 
@@ -9,7 +10,7 @@ interface StatCardProps {
   label: string;
   value: string;
   change: string;
-  icon: typeof MapPin;
+  icon: LucideIcon;
 }
 
 function StatCard({ label, value, change, icon: Icon }: StatCardProps) {
@@ -37,7 +38,7 @@ export default function AdminDashboardPage() {
   const destinations = useAdminDestinations();
   const packages = useAdminPackages();
   const departures = useAdminDepartures();
-  const upcoming = departures.filter((d) => d.status !== "closed").sort((a, b) => a.startDate.localeCompare(b.startDate));
+  const upcoming = [...departures.filter((d) => d.status !== "closed")].sort((a, b) => a.startDate.localeCompare(b.startDate));
   const fillingFast = upcoming.filter((d) => d.status === "filling" || d.seatsLeft <= 3);
 
   return (

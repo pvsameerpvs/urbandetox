@@ -1,4 +1,4 @@
-import { Destination } from "@/lib/types";
+import { Destination } from "@urbandetox/utils";
 
 export const destinations: Destination[] = [
   {

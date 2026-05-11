@@ -2,10 +2,7 @@
 
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Card, CardContent } from "@urbandetox/ui";
-import { Button } from "@urbandetox/ui";
-import { Input } from "@urbandetox/ui";
-import { Label } from "@urbandetox/ui";
+import { Card, CardContent, Button, Input, Label } from "@urbandetox/ui";
 import { updateDeparture } from "@/lib/admin-data";
 import { useAdminDepartures } from "@/hooks/use-admin-data";
 import { ArrowLeft } from "lucide-react";
@@ -16,7 +13,7 @@ export default function EditDeparturePage() {
   const router = useRouter();
   const id = params.id as string;
   const allDeps = useAdminDepartures();
-  const dep = allDeps.find((d: { id: string }) => d.id === id);
+  const dep = allDeps.find((d) => d.id === id);
 
   const [form, setForm] = useState({
     code: dep?.code || "",

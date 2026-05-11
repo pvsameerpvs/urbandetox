@@ -2,14 +2,11 @@
 
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Card, CardContent } from "@urbandetox/ui";
-import { Button } from "@urbandetox/ui";
-import { Input } from "@urbandetox/ui";
-import { Label } from "@urbandetox/ui";
-import { Textarea } from "@urbandetox/ui";
+import { Card, CardContent, Button, Input, Label, Textarea } from "@urbandetox/ui";
 import { updateDestination } from "@/lib/admin-data";
 import { useAdminDestination } from "@/hooks/use-admin-data";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { GalleryUpload } from "@/components/admin/GalleryUpload";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
@@ -26,6 +23,7 @@ export default function EditDestinationPage() {
     image: dest?.image || "",
     meetingPoint: dest?.meetingPoint || "",
     vibe: dest?.vibe || "",
+    gallery: dest?.gallery || [""],
   });
 
   if (!dest) {
@@ -39,7 +37,7 @@ export default function EditDestinationPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    updateDestination(slug, form);
+    updateDestination(slug, { ...form, gallery: form.gallery.filter(Boolean) });
     router.push("/destinations");
   };
 
@@ -73,6 +71,10 @@ export default function EditDestinationPage() {
               <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="rounded-xl min-h-[100px]" required />
             </div>
             <ImageUpload value={form.image} onChange={(v) => setForm({ ...form, image: v })} label="Cover Image" />
+            <div className="space-y-2">
+              <Label>Gallery Images</Label>
+              <GalleryUpload items={form.gallery} onAdd={(v) => setForm({ ...form, gallery: [...form.gallery, v] })} onRemove={(i) => setForm({ ...form, gallery: form.gallery.filter((_, j) => j !== i) })} />
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <Label>Meeting Point</Label>

@@ -1,5 +1,6 @@
 import { Input } from "@urbandetox/ui";
 import { Label } from "@urbandetox/ui";
+import { SEASONAL_TAGS } from "@urbandetox/utils";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 
 interface BasicInfoFieldsProps {
@@ -17,8 +18,6 @@ interface BasicInfoFieldsProps {
   setField: (field: "title" | "subtitle" | "destinationSlug" | "duration" | "startingPrice" | "groupSize" | "style" | "seasonalTag" | "coverImage", value: string | number) => void;
   destinations: { slug: string; name: string }[];
 }
-
-const SEASONAL_TAGS = ["Summer Escape", "Monsoon Detox", "Coastal Detox", "Extended Detox"];
 
 export function BasicInfoFields({ form, setField, destinations }: BasicInfoFieldsProps) {
   return (

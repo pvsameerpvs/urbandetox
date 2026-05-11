@@ -1,5 +1,3 @@
-"use client";
-
 import { Card, CardContent } from "@urbandetox/ui";
 import { formatPrice } from "@urbandetox/utils";
 import { Users, CheckCircle2, Clock, AlertCircle } from "lucide-react";

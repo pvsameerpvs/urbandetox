@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
-import { formatPrice } from "@/lib/formatters";
+import { formatPrice } from "@urbandetox/utils";
 import { CalendarDays, ArrowRight } from "lucide-react";
 import { format } from "date-fns";
 

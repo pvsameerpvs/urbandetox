@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { SEASONAL_TAGS } from "@urbandetox/utils";
+import type { ItineraryDay } from "@urbandetox/utils";
 
 export interface PackageFormState {
   title: string;
@@ -11,10 +13,12 @@ export interface PackageFormState {
   seasonalTag: string;
   coverImage: string;
   highlights: string[];
-  itinerary: { day: number; title: string; description: string; activities: string[]; stay: string; meals: string }[];
+  itinerary: ItineraryDay[];
+  included: string[];
+  notIncluded: string[];
+  gallery: string[];
+  faqs: { question: string; answer: string }[];
 }
-
-const SEASONAL_TAGS = ["Summer Escape", "Monsoon Detox", "Coastal Detox", "Extended Detox"];
 
 export function usePackageForm(initialDestinationSlug: string, initialData?: Partial<PackageFormState>) {
   const [form, setForm] = useState<PackageFormState>({
@@ -28,7 +32,11 @@ export function usePackageForm(initialDestinationSlug: string, initialData?: Par
     seasonalTag: initialData?.seasonalTag || SEASONAL_TAGS[0],
     coverImage: initialData?.coverImage || "",
     highlights: initialData?.highlights?.length ? initialData.highlights : [""],
-    itinerary: initialData?.itinerary?.length ? initialData.itinerary : [{ day: 1, title: "", description: "", activities: [""], stay: "", meals: "" }],
+    itinerary: initialData?.itinerary?.length ? initialData.itinerary : [{ day: 1, title: "", description: "", activities: [""], stay: "", meals: "", image: "", travelNotes: "" }],
+    included: initialData?.included?.length ? initialData.included : [""],
+    notIncluded: initialData?.notIncluded?.length ? initialData.notIncluded : [""],
+    gallery: initialData?.gallery?.length ? initialData.gallery : [],
+    faqs: initialData?.faqs?.length ? initialData.faqs : [{ question: "", answer: "" }],
   });
 
   const setField = <K extends keyof PackageFormState>(field: K, value: PackageFormState[K]) => {
@@ -42,9 +50,41 @@ export function usePackageForm(initialDestinationSlug: string, initialData?: Par
       return { ...prev, highlights: h };
     });
   };
-
   const addHighlight = () => setForm((prev) => ({ ...prev, highlights: [...prev.highlights, ""] }));
   const removeHighlight = (index: number) => setForm((prev) => ({ ...prev, highlights: prev.highlights.filter((_, i) => i !== index) }));
+
+  const updateIncluded = (index: number, value: string) => {
+    setForm((prev) => {
+      const arr = [...prev.included];
+      arr[index] = value;
+      return { ...prev, included: arr };
+    });
+  };
+  const addIncluded = () => setForm((prev) => ({ ...prev, included: [...prev.included, ""] }));
+  const removeIncluded = (index: number) => setForm((prev) => ({ ...prev, included: prev.included.filter((_, i) => i !== index) }));
+
+  const updateNotIncluded = (index: number, value: string) => {
+    setForm((prev) => {
+      const arr = [...prev.notIncluded];
+      arr[index] = value;
+      return { ...prev, notIncluded: arr };
+    });
+  };
+  const addNotIncluded = () => setForm((prev) => ({ ...prev, notIncluded: [...prev.notIncluded, ""] }));
+  const removeNotIncluded = (index: number) => setForm((prev) => ({ ...prev, notIncluded: prev.notIncluded.filter((_, i) => i !== index) }));
+
+  const updateFaq = (index: number, field: "question" | "answer", value: string) => {
+    setForm((prev) => {
+      const faqs = [...prev.faqs];
+      faqs[index] = { ...faqs[index], [field]: value };
+      return { ...prev, faqs };
+    });
+  };
+  const addFaq = () => setForm((prev) => ({ ...prev, faqs: [...prev.faqs, { question: "", answer: "" }] }));
+  const removeFaq = (index: number) => setForm((prev) => ({ ...prev, faqs: prev.faqs.filter((_, i) => i !== index) }));
+
+  const addGallery = (value?: string) => setForm((prev) => ({ ...prev, gallery: [...prev.gallery, value || ""] }));
+  const removeGallery = (index: number) => setForm((prev) => ({ ...prev, gallery: prev.gallery.filter((_, i) => i !== index) }));
 
   const updateItineraryDay = (index: number, field: string, value: unknown) => {
     setForm((prev) => {
@@ -75,7 +115,7 @@ export function usePackageForm(initialDestinationSlug: string, initialData?: Par
   const addDay = () => {
     setForm((prev) => {
       const nextDay = prev.itinerary.length + 1;
-      return { ...prev, itinerary: [...prev.itinerary, { day: nextDay, title: "", description: "", activities: [""], stay: "", meals: "" }] };
+      return { ...prev, itinerary: [...prev.itinerary, { day: nextDay, title: "", description: "", activities: [""], stay: "", meals: "", image: "", travelNotes: "" }] };
     });
   };
 
@@ -90,13 +130,13 @@ export function usePackageForm(initialDestinationSlug: string, initialData?: Par
   return {
     form,
     setField,
-    updateHighlight,
-    addHighlight,
-    removeHighlight,
+    updateHighlight, addHighlight, removeHighlight,
+    updateIncluded, addIncluded, removeIncluded,
+    updateNotIncluded, addNotIncluded, removeNotIncluded,
+    updateFaq, addFaq, removeFaq,
+    addGallery, removeGallery,
     updateItineraryDay,
-    updateActivity,
-    addActivity,
-    addDay,
-    removeDay,
+    updateActivity, addActivity,
+    addDay, removeDay,
   };
 }

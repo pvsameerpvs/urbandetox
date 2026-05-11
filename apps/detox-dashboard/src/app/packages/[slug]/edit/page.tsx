@@ -1,15 +1,18 @@
 "use client";
 
-import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Card, CardContent } from "@urbandetox/ui";
-import { Button } from "@urbandetox/ui";
+import { Card, CardContent, Button } from "@urbandetox/ui";
 import { updatePackage } from "@/lib/admin-data";
 import { useAdminPackage, useAdminDestinations } from "@/hooks/use-admin-data";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { BasicInfoFields } from "../../components/basic-info-fields";
-import { HighlightsFields } from "../../components/highlights-fields";
+import { usePackageForm } from "@/app/packages/components/use-package-form";
+import { BasicInfoFields } from "@/app/packages/components/basic-info-fields";
+import { HighlightsFields } from "@/app/packages/components/highlights-fields";
+import { ArrayInput } from "@/app/packages/components/array-input";
+import { GalleryUpload } from "@/components/admin/GalleryUpload";
+import { FaqsFields } from "@/app/packages/components/faqs-fields";
+import { ItineraryFields } from "@/app/packages/components/itinerary-fields";
 
 export default function EditPackagePage() {
   const params = useParams();
@@ -17,18 +20,22 @@ export default function EditPackagePage() {
   const slug = params.slug as string;
   const pkg = useAdminPackage(slug);
   const destinations = useAdminDestinations();
-
-  const [form, setForm] = useState({
-    title: pkg?.title || "",
-    subtitle: pkg?.subtitle || "",
-    destinationSlug: pkg?.destinationSlug || "",
-    duration: pkg?.duration || 2,
-    startingPrice: pkg?.startingPrice || 0,
-    groupSize: pkg?.groupSize || "6 to 12",
-    style: pkg?.style || "",
-    seasonalTag: pkg?.seasonalTag || "Summer Escape",
-    coverImage: pkg?.coverImage || "",
-    highlights: (pkg?.highlights || [""]) as string[],
+  const f = usePackageForm(pkg?.destinationSlug || "", {
+    title: pkg?.title,
+    subtitle: pkg?.subtitle,
+    destinationSlug: pkg?.destinationSlug,
+    duration: pkg?.duration,
+    startingPrice: pkg?.startingPrice,
+    groupSize: pkg?.groupSize,
+    style: pkg?.style,
+    seasonalTag: pkg?.seasonalTag,
+    coverImage: pkg?.coverImage,
+    highlights: pkg?.highlights,
+    itinerary: pkg?.itinerary,
+    included: pkg?.included,
+    notIncluded: pkg?.notIncluded,
+    gallery: pkg?.gallery,
+    faqs: pkg?.faqs,
   });
 
   if (!pkg) {
@@ -40,25 +47,19 @@ export default function EditPackagePage() {
     );
   }
 
-  const setField = (field: "title" | "subtitle" | "destinationSlug" | "duration" | "startingPrice" | "groupSize" | "style" | "seasonalTag" | "coverImage", value: string | number) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const updateHighlight = (index: number, value: string) => {
-    setForm((prev) => {
-      const h = [...prev.highlights];
-      h[index] = value;
-      return { ...prev, highlights: h };
-    });
-  };
-
-  const addHighlight = () => setForm((prev) => ({ ...prev, highlights: [...prev.highlights, ""] }));
-  const removeHighlight = (index: number) => setForm((prev) => ({ ...prev, highlights: prev.highlights.filter((_, i) => i !== index) }));
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const durationLabel = `${form.duration} Days / ${form.duration - 1} Nights`;
-    updatePackage(slug, { ...form, durationLabel, highlights: form.highlights.filter(Boolean) });
+    const durationLabel = `${f.form.duration} Days / ${f.form.duration - 1} Nights`;
+    updatePackage(slug, {
+      ...f.form,
+      durationLabel,
+      highlights: f.form.highlights.filter(Boolean),
+      included: f.form.included.filter(Boolean),
+      notIncluded: f.form.notIncluded.filter(Boolean), 
+      gallery: f.form.gallery.filter(Boolean),
+      faqs: f.form.faqs.filter((q) => q.question && q.answer),
+      itinerary: f.form.itinerary.map((d) => ({ ...d, activities: d.activities.filter(Boolean) })),
+    });
     router.push("/packages");
   };
 
@@ -74,14 +75,56 @@ export default function EditPackagePage() {
         <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
           <CardContent className="p-6">
             <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Basic Info</h3>
-            <BasicInfoFields form={form} setField={setField} destinations={destinations} />
+            <BasicInfoFields form={f.form} setField={f.setField} destinations={destinations} />
+          </CardContent>
+        </Card>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
+            <CardContent className="p-6">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Included</h3>
+              <ArrayInput items={f.form.included} onUpdate={f.updateIncluded} onAdd={f.addIncluded} onRemove={f.removeIncluded} placeholder="Included item" />
+            </CardContent>
+          </Card>
+          <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
+            <CardContent className="p-6">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Not Included</h3>
+              <ArrayInput items={f.form.notIncluded} onUpdate={f.updateNotIncluded} onAdd={f.addNotIncluded} onRemove={f.removeNotIncluded} placeholder="Not included item" />
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
+          <CardContent className="p-6">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Highlights</h3>
+            <HighlightsFields highlights={f.form.highlights} onUpdate={f.updateHighlight} onAdd={f.addHighlight} onRemove={f.removeHighlight} />
           </CardContent>
         </Card>
 
         <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
           <CardContent className="p-6">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Highlights</h3>
-            <HighlightsFields highlights={form.highlights} onUpdate={updateHighlight} onAdd={addHighlight} onRemove={removeHighlight} />
+            <ItineraryFields
+              itinerary={f.form.itinerary}
+              onUpdateDay={f.updateItineraryDay}
+              onUpdateActivity={f.updateActivity}
+              onAddActivity={f.addActivity}
+              onAddDay={f.addDay}
+              onRemoveDay={f.removeDay}
+            />
+          </CardContent>
+        </Card>
+
+        <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
+          <CardContent className="p-6">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Gallery Images</h3>
+            <GalleryUpload items={f.form.gallery} onAdd={f.addGallery} onRemove={f.removeGallery} />
+          </CardContent>
+        </Card>
+
+        <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
+          <CardContent className="p-6">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">FAQs</h3>
+            <FaqsFields faqs={f.form.faqs} onUpdate={f.updateFaq} onAdd={f.addFaq} onRemove={f.removeFaq} />
           </CardContent>
         </Card>
 

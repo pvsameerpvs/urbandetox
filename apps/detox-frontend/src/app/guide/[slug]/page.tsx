@@ -14,7 +14,7 @@ import { ArrowLeft, BookOpen, MapPin } from "lucide-react";
 
 export default function GuideDetailPage() {
   const params = useParams();
-  const slug = params.slug as string;
+  const slug = String(params.slug);
   const guide = fetchGuideBySlug(slug);
 
   if (!guide) notFound();
@@ -47,14 +47,14 @@ export default function GuideDetailPage() {
         <Separator className="mb-6 sm:mb-8" />
 
         <article className="prose prose-stone max-w-none">
-          {guide.content.split("\n\n").map((paragraph, i) => {
+          {guide.content.split("\n\n").map((paragraph: string, i: number) => {
             if (paragraph.startsWith("**") && paragraph.endsWith("**")) {
               return <h3 key={i} className="text-lg sm:text-xl font-semibold mt-6 sm:mt-8 mb-3">{paragraph.replace(/\*\*/g, "")}</h3>;
             }
             if (paragraph.startsWith("- ")) {
               return (
                 <ul key={i} className="my-4 list-disc pl-6 space-y-1">
-                  {paragraph.split("\n").map((line, j) => (
+                  {paragraph.split("\n").map((line: string, j: number) => (
                     <li key={j} className="text-muted-foreground leading-relaxed">{line.replace("- ", "")}</li>
                   ))}
                 </ul>
@@ -68,7 +68,7 @@ export default function GuideDetailPage() {
           <div className="mt-10 sm:mt-12">
             <h2 className="text-lg sm:text-xl font-semibold mb-4">Related Detox</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {guide.relatedPackageSlugs.map((s) => <RelatedPackageCard key={s} slug={s} />)}
+              {guide.relatedPackageSlugs.map((s: string) => <RelatedPackageCard key={s} slug={s} />)}
             </div>
           </div>
         )}
@@ -77,7 +77,7 @@ export default function GuideDetailPage() {
           <div className="mt-10 sm:mt-12">
             <h2 className="text-lg sm:text-xl font-semibold mb-4">More Guides</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              {related.map((g) => <RelatedGuideCard key={g.id} slug={g.slug} />)}
+              {related.map((g: { id: string; slug: string }) => <RelatedGuideCard key={g.id} slug={g.slug} />)}
             </div>
           </div>
         )}

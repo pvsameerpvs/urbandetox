@@ -1,4 +1,4 @@
-import { Departure } from "@/lib/types";
+import { Departure } from "@urbandetox/utils";
 
 export const departures: Departure[] = [
   /* ─── KASHMIR ─────────────────────────────── */

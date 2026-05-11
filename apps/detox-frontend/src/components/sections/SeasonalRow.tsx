@@ -1,10 +1,9 @@
-"use client";
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { SeasonalPackageCard } from "./SeasonalPackageCard";
 import { fetchDestinationBySlug } from "@/lib/data";
-import type { Package } from "@/lib/types";
+import type { Package } from "@urbandetox/utils";
 import type { LucideIcon } from "lucide-react";
 
 interface SeasonalRowProps {

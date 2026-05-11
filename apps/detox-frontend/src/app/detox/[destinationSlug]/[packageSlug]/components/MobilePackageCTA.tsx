@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { formatPrice } from "@/lib/formatters";
+import { formatPrice } from "@urbandetox/utils";
 import { ArrowRight } from "lucide-react";
 
 interface MobilePackageCTAProps {

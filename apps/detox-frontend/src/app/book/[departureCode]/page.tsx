@@ -22,7 +22,7 @@ import { parseISO, format } from "date-fns";
 
 export default function BookingPage() {
   const params = useParams();
-  const code = params.departureCode as string;
+  const code = String(params.departureCode);
   const departure = fetchDepartureByCode(code);
   const pkg = departure ? fetchPackageBySlug(departure.packageSlug) : undefined;
   const dest = departure ? fetchDestinationBySlug(departure.destinationSlug) : undefined;

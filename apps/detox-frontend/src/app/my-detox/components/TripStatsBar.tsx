@@ -1,4 +1,3 @@
-"use client";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Plane, Mountain, Clock } from "lucide-react";

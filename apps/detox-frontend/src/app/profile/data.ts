@@ -34,33 +34,4 @@ export interface DocumentItem {
   hint: string;
 }
 
-export const defaultDocuments: DocumentItem[] = [
-  {
-    id: "govt-id",
-    label: "Government ID",
-    description: "Aadhaar / Passport / Driver's License",
-    status: "missing",
-    hint: "Accepted formats: PDF, JPG, PNG (max 5MB)",
-  },
-  {
-    id: "photo",
-    label: "Recent Photo",
-    description: "Passport-size photograph for records",
-    status: "missing",
-    hint: "White background, no glasses (max 2MB)",
-  },
-  {
-    id: "consent",
-    label: "Consent Form",
-    description: "Signed medical and liability waiver",
-    status: "uploaded",
-    hint: "We will send this before your trip.",
-  },
-  {
-    id: "insurance",
-    label: "Travel Insurance",
-    description: "Optional but recommended",
-    status: "missing",
-    hint: "Most Indian travel insurance policies cover hill trekking.",
-  },
-];
+

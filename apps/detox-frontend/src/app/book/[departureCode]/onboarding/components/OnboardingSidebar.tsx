@@ -3,10 +3,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { BookingSummaryCard } from "../../../components/BookingSummaryCard";
-import { formatPrice, formatDateRange } from "@/lib/formatters";
+import { formatPrice, formatDateRange } from "@urbandetox/utils";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { Sparkles } from "lucide-react";
-import type { Package, Departure } from "@/lib/types";
+import type { Package, Departure } from "@urbandetox/utils";
 import type { Destination } from "@urbandetox/utils";
 import type { Traveler } from "@/lib/booking-state";
 

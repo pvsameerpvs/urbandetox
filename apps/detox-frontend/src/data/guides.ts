@@ -1,4 +1,4 @@
-import { GuideArticle } from "@/lib/types";
+import { GuideArticle } from "@urbandetox/utils";
 
 export const guides: GuideArticle[] = [
   {

@@ -3,6 +3,7 @@
 import { useParams, notFound } from "next/navigation";
 import { motion } from "framer-motion";
 import { fetchPackageBySlug, fetchDeparturesByPackage, fetchGuides, fetchDestinationBySlug } from "@/lib/data";
+import { safeImageUrl } from "@/lib/image-url";
 import { PackageHero } from "./components/PackageHero";
 import { InfoBar } from "./components/InfoBar";
 import { OverviewSection } from "./components/OverviewSection";
@@ -23,8 +24,8 @@ const containerVariants = {
 
 export default function DetoxDetailPage() {
   const params = useParams();
-  const destinationSlug = params.destinationSlug as string;
-  const packageSlug = params.packageSlug as string;
+  const destinationSlug = String(params.destinationSlug);
+  const packageSlug = String(params.packageSlug);
 
   const pkg = fetchPackageBySlug(packageSlug);
   const dest = pkg ? fetchDestinationBySlug(pkg.destinationSlug) : undefined;
@@ -42,7 +43,7 @@ export default function DetoxDetailPage() {
   return (
     <main className="min-h-screen bg-white pb-24 md:pb-0">
       <PackageHero
-        image={pkg.coverImage}
+        image={safeImageUrl(pkg.coverImage)}
         title={pkg.title}
         subtitle={pkg.subtitle}
         destinationName={dest.name}
@@ -63,12 +64,12 @@ export default function DetoxDetailPage() {
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="lg:col-span-2 space-y-14">
             <OverviewSection description={dest.description} durationLabel={pkg.durationLabel} subtitle={pkg.subtitle} />
             <HighlightsSection highlights={pkg.highlights} />
-            <GallerySection images={pkg.gallery} />
+            <GallerySection images={pkg.gallery || []} />
             <ItinerarySection itinerary={pkg.itinerary} />
-            <InclusionsSection included={pkg.included} notIncluded={pkg.notIncluded} />
+            <InclusionsSection included={pkg.included || []} notIncluded={pkg.notIncluded || []} />
             <DeparturesSection departures={upcomingDepartures} />
             <RelatedGuidesSection guides={guides} />
-            <PackageFAQsSection faqs={pkg.faqs} />
+            <PackageFAQsSection faqs={pkg.faqs || []} />
           </motion.div>
 
           <PackageSidebar startingPrice={pkg.startingPrice} nextDeparture={nextDep ? { startDate: nextDep.startDate, endDate: nextDep.endDate, seatsLeft: nextDep.seatsLeft, code: nextDep.code } : null} />

@@ -1,4 +1,4 @@
-import { FaqItem } from "@/lib/types";
+import { FaqItem } from "@urbandetox/utils";
 
 export const faqs: FaqItem[] = [
   {

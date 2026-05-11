@@ -3,9 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { formatPrice } from "@/lib/formatters";
+import { formatPrice } from "@urbandetox/utils";
 import { Clock } from "lucide-react";
-import type { Package } from "@/lib/types";
+import type { Package } from "@urbandetox/utils";
 import type { Destination } from "@urbandetox/utils";
 
 interface SeasonalPackageCardProps {

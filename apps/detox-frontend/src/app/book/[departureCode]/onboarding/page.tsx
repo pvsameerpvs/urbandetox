@@ -17,7 +17,7 @@ import { StepFinalConfirm } from "./steps/StepFinalConfirm";
 import { slideVariants } from "@/lib/animations";
 import { loadBookingState, saveBookingState, type Traveler, type CommonDetails } from "@/lib/booking-state";
 import { fetchDepartureByCode, fetchPackageBySlug, fetchDestinationBySlug } from "@/lib/data";
-import { formatDateRange } from "@/lib/formatters";
+import { formatDateRange } from "@urbandetox/utils";
 import { Users, Utensils, PhoneCall, FileCheck } from "lucide-react";
 
 const steps = [
@@ -29,7 +29,7 @@ const steps = [
 
 export default function OnboardingPage() {
   const params = useParams();
-  const code = params.departureCode as string;
+  const code = String(params.departureCode);
   const departure = fetchDepartureByCode(code);
   const pkg = departure ? fetchPackageBySlug(departure.packageSlug) : undefined;
   const dest = departure ? fetchDestinationBySlug(departure.destinationSlug) : undefined;

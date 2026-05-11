@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { motion } from "framer-motion";
 import { ArrowRight, MapPin, CalendarDays, Clock, ChevronDown, Search, X } from "lucide-react";
-import { DESTINATIONS, DURATIONS } from "@/lib/constants";
+import { DESTINATIONS, DURATIONS } from "@urbandetox/utils";
 import { fetchUpcomingDepartures } from "@/lib/data";
 import { format, isAfter, startOfToday } from "date-fns";
 

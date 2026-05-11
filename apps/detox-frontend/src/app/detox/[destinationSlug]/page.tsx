@@ -7,7 +7,7 @@ import { DestinationPackages } from "./components/DestinationPackages";
 
 export default function DestinationPage() {
   const params = useParams();
-  const slug = params.destinationSlug as string;
+  const slug = String(params.destinationSlug);
   const dest = fetchDestinationBySlug(slug);
   const packages = dest ? fetchPackagesByDestination(slug) : [];
   const upcoming = fetchUpcomingDepartures(50);

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Loader2, Lock } from "lucide-react";
-import { formatPrice } from "@/lib/formatters";
+import { formatPrice } from "@urbandetox/utils";
 
 interface MobileBookingCTAProps {
   total: number;
