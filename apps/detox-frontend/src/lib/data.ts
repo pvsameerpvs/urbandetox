@@ -2,7 +2,7 @@ import { Package, Departure, GuideArticle, Destination } from "@urbandetox/utils
 import { destinations, getDestinationBySlug } from "@/data/destinations";
 import { getPackageBySlug, getFeaturedPackages, getPackagesByDestination } from "@/data/packages";
 import { getDeparturesByPackageSlug, getDepartureByCode, getUpcomingDepartures } from "@/data/departures";
-import { getGuideBySlug, getFeaturedGuides, getAllGuides, getRelatedGuides, getGuideCategories } from "@/data/guides";
+import { getGuideBySlug, getFeaturedGuides, getAllGuides, getRelatedGuides, getGuideCategories } from "@urbandetox/utils";
 import { testimonials, getTestimonials } from "@/data/testimonials";
 import { faqs, getAllFaqs, getFaqCategories } from "@/data/faqs";
 

@@ -1,4 +1,5 @@
 import { HeroSection } from "@/components/sections/HeroSection";
+import { BestDestinationsSection } from "@/components/sections/BestDestinationsSection";
 import { UpcomingDetoxSection } from "@/components/sections/UpcomingDetoxSection";
 import { WhySection } from "@/components/sections/WhySection";
 import { SeasonalSection } from "@/components/sections/SeasonalSection";
@@ -11,6 +12,7 @@ export default function Home() {
   return (
     <>
       <HeroSection />
+      <BestDestinationsSection />
       <UpcomingDetoxSection />
       <WhySection />
       <SeasonalSection />

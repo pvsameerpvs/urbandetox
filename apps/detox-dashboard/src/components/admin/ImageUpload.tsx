@@ -8,15 +8,15 @@ import { Upload, X, ImageIcon } from "lucide-react";
 interface ImageUploadProps {
   value: string;
   onChange: (value: string) => void;
-  label?: string;
   maxSizeMB?: number;
+  label?: string;
 }
 
-export function ImageUpload({ value, onChange, label = "Cover Image", maxSizeMB = 5 }: ImageUploadProps) {
+export function ImageUpload({ value, onChange, maxSizeMB = 5 }: ImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleFile = (file: File) => {
+  function handleFile(file: File) {
     setError(null);
     if (file.size > maxSizeMB * 1024 * 1024) {
       setError(`Image too large. Max ${maxSizeMB}MB.`);
@@ -24,55 +24,61 @@ export function ImageUpload({ value, onChange, label = "Cover Image", maxSizeMB 
     }
     const reader = new FileReader();
     reader.onloadend = () => {
-      const result = reader.result as string;
-      onChange(result);
+      onChange(reader.result as string);
     };
     reader.readAsDataURL(file);
-  };
+  }
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith("image/")) {
-      handleFile(file);
-    }
-  };
-
-  const isValidUrl = value && (value.startsWith("http") || value.startsWith("data:image"));
+  const hasImage = value && (value.startsWith("http") || value.startsWith("data:image"));
 
   return (
-    <div className="space-y-2">
-      <label className="text-sm font-medium">{label}</label>
-      {isValidUrl ? (
-        <div className="relative rounded-xl overflow-hidden border border-border/40 bg-secondary/20">
-          <div className="relative w-full h-40">
-            <Image src={value} alt="Preview" fill sizes="400px" className="object-cover" unoptimized />
+    <div className="space-y-3">
+      <div
+        className={`relative rounded-xl overflow-hidden border-2 border-dashed transition-colors ${
+          hasImage ? "border-border/40" : "border-border/60 hover:border-brand/40 bg-secondary/[0.03]"
+        }`}
+      >
+        {hasImage ? (
+          <div className="relative aspect-[16/9] w-full">
+            <Image src={value} alt="Cover preview" fill className="object-cover" sizes="600px" unoptimized />
+            <div className="absolute top-2 right-2 flex items-center gap-1.5">
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                className="h-8 rounded-lg bg-black/60 text-white hover:bg-black/80 backdrop-blur-sm border-0 text-xs"
+                onClick={() => inputRef.current?.click()}
+              >
+                <Upload className="h-3 w-3 mr-1" /> Change
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                className="h-8 rounded-lg bg-black/60 text-white hover:bg-red-600 backdrop-blur-sm border-0 text-xs"
+                onClick={() => onChange("")}
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
           </div>
+        ) : (
           <button
             type="button"
-            onClick={() => onChange("")}
-            className="absolute top-2 right-2 h-7 w-7 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 transition-colors"
+            onClick={() => inputRef.current?.click()}
+            className="w-full aspect-[16/9] flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-brand transition-colors"
           >
-            <X className="h-3.5 w-3.5" />
+            <div className="h-12 w-12 rounded-xl bg-secondary/50 flex items-center justify-center">
+              <ImageIcon className="h-6 w-6" />
+            </div>
+            <div className="text-center">
+              <p className="text-sm font-medium">Click to upload cover image</p>
+              <p className="text-xs text-muted-foreground mt-0.5">PNG, JPG, WEBP up to {maxSizeMB}MB</p>
+            </div>
           </button>
-        </div>
-      ) : (
-        <div
-          onClick={() => inputRef.current?.click()}
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={handleDrop}
-          className="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border/60 bg-secondary/10 hover:bg-secondary/20 transition-colors cursor-pointer h-40"
-        >
-          <div className="h-10 w-10 rounded-full bg-secondary/50 flex items-center justify-center">
-            <ImageIcon className="h-5 w-5 text-muted-foreground" />
-          </div>
-          <div className="text-center">
-            <p className="text-sm font-medium text-foreground">Click to upload</p>
-            <p className="text-xs text-muted-foreground mt-0.5">or drag and drop</p>
-          </div>
-          <p className="text-[10px] text-muted-foreground">PNG, JPG up to {maxSizeMB}MB</p>
-        </div>
-      )}
+        )}
+      </div>
+
       <input
         ref={inputRef}
         type="file"
@@ -84,11 +90,7 @@ export function ImageUpload({ value, onChange, label = "Cover Image", maxSizeMB 
           e.target.value = "";
         }}
       />
-      {isValidUrl && (
-        <Button type="button" variant="outline" size="sm" className="rounded-lg h-8 text-xs" onClick={() => inputRef.current?.click()}>
-          <Upload className="h-3.5 w-3.5 mr-1.5" /> Change Image
-        </Button>
-      )}
+
       {error && <p className="text-xs text-red-500">{error}</p>}
     </div>
   );

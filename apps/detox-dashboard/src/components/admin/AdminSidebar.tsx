@@ -21,6 +21,7 @@ const navItems = [
   { href: "/packages", label: "Packages", icon: Package },
   { href: "/departures", label: "Departures", icon: CalendarDays },
   { href: "/bookings", label: "Bookings", icon: BookOpen, badge: true },
+  { href: "/guides", label: "Guides", icon: BookOpen },
   { href: "/seasonal-tags", label: "Seasonal Tags", icon: Tag },
   { href: "/users", label: "Users", icon: Users },
 ];
