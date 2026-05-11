@@ -30,7 +30,7 @@ const socialLinks = [
 
 export function Footer() {
   return (
-    <footer className="w-full bg-[#0a1628] text-white relative overflow-hidden">
+    <footer className="w-full bg-sidebar-dark text-white relative overflow-hidden">
       {/* Dot pattern */}
       <div
         className="absolute inset-0 opacity-[0.03]"

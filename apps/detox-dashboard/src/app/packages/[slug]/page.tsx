@@ -1,0 +1,108 @@
+"use client";
+
+import { useParams, notFound } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@urbandetox/ui";
+import { ArrowLeft, Pencil, Plus } from "lucide-react";
+import { useAdminPackage } from "@/hooks/use-admin-data";
+import { getDestinationBySlug, getDepartureByCode } from "@/lib/admin-data";
+import { getAllBookings } from "@/lib/bookings";
+import { useAdminDepartures } from "@/hooks/use-admin-data";
+import { PackageHero } from "./components/PackageHero";
+import { PackageStats } from "./components/PackageStats";
+import { PackageDepartures } from "./components/PackageDepartures";
+import { PackageBookings } from "./components/PackageBookings";
+
+export default function PackageDetailPage() {
+  const params = useParams();
+  const slug = String(params.slug);
+  const pkg = useAdminPackage(slug);
+  const allDepartures = useAdminDepartures();
+
+  if (!pkg) notFound();
+
+  const dest = getDestinationBySlug(pkg.destinationSlug);
+  const departures = allDepartures.filter((d) => d.packageSlug === slug);
+
+  // Cross-reference bookings
+  const bookingsRaw = getAllBookings();
+  const bookingCodes = departures.map((d) => d.code);
+  const relevantBookings = bookingsRaw
+    .filter((b) => bookingCodes.includes(b.departureCode))
+    .map((b) => {
+      const dep = getDepartureByCode(b.departureCode);
+      const primary = b.travelers.find((t) => t.type === "primary");
+      return {
+        ...b,
+        id: b.departureCode,
+        primaryName: primary?.name || "—",
+        primaryPhone: primary?.phone || "",
+        primaryEmail: primary?.email || "",
+        travelerCount: b.travelers.length,
+        startDate: dep?.startDate,
+        endDate: dep?.endDate,
+      };
+    });
+
+  const totalSeats = departures.reduce((sum, d) => sum + d.seatsTotal, 0);
+  const seatsBooked = departures.reduce((sum, d) => sum + (d.seatsTotal - d.seatsLeft), 0);
+  const totalRevenue = relevantBookings.reduce((sum, b) => {
+    const dep = getDepartureByCode(b.departureCode);
+    const price = dep?.offerPrice ?? dep?.price ?? 0;
+    return sum + price * b.travelers.length;
+  }, 0);
+
+  return (
+    <div className="max-w-4xl mx-auto space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <Link href="/packages" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-3 transition-colors">
+            <ArrowLeft className="h-4 w-4" /> Back to Packages
+          </Link>
+          <h1 className="text-2xl font-bold tracking-tight">Package Overview</h1>
+          <p className="text-sm text-muted-foreground mt-1">View departures, bookings, and performance for this package.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" className="rounded-xl h-10 text-sm" asChild>
+            <Link href={`/packages/${slug}/edit`}><Pencil className="mr-1.5 h-4 w-4" /> Edit</Link>
+          </Button>
+          <Button className="rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-10 text-sm font-semibold shadow-lg shadow-brand/10" asChild>
+            <Link href="/departures/new"><Plus className="mr-1.5 h-4 w-4" /> Add Dates</Link>
+          </Button>
+        </div>
+      </div>
+
+      {/* Hero */}
+      <PackageHero pkg={pkg} destName={dest?.name || pkg.destinationSlug} />
+
+      {/* Stats */}
+      <PackageStats
+        departureCount={departures.length}
+        totalSeats={totalSeats}
+        seatsBooked={seatsBooked}
+        totalRevenue={totalRevenue}
+      />
+
+      {/* Departures */}
+      <div>
+        <div className="flex items-center gap-3 mb-4">
+          <span className="h-px w-8 bg-brand/60" />
+          <span className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">Departures</span>
+          <span className="text-xs text-muted-foreground">({departures.length})</span>
+        </div>
+        <PackageDepartures departures={departures} />
+      </div>
+
+      {/* Bookings */}
+      <div>
+        <div className="flex items-center gap-3 mb-4">
+          <span className="h-px w-8 bg-brand/60" />
+          <span className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">Recent Bookings</span>
+          <span className="text-xs text-muted-foreground">({relevantBookings.length})</span>
+        </div>
+        <PackageBookings bookings={relevantBookings} />
+      </div>
+    </div>
+  );
+}

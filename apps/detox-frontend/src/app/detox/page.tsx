@@ -11,7 +11,7 @@ export default function DetoxBrowsePage() {
 
   return (
     <main className="min-h-screen bg-white">
-      <div className="relative bg-[#0a1628] overflow-hidden">
+      <div className="relative bg-sidebar-dark overflow-hidden">
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `radial-gradient(circle, white 1px, transparent 1px)`, backgroundSize: "24px 24px" }} />
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14 sm:py-20 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>

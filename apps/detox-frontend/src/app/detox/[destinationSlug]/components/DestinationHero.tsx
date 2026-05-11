@@ -13,7 +13,7 @@ interface DestinationHeroProps {
 
 export function DestinationHero({ destination, packageCount }: DestinationHeroProps) {
   return (
-    <div className="relative bg-[#0a1628] overflow-hidden">
+    <div className="relative bg-sidebar-dark overflow-hidden">
       <div className="absolute inset-0">
         <Image
           src={destination.image}
@@ -22,7 +22,7 @@ export function DestinationHero({ destination, packageCount }: DestinationHeroPr
           className="object-cover opacity-40"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a1628]/60 via-[#0a1628]/80 to-[#0a1628]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-sidebar-dark/60 via-sidebar-dark/80 to-sidebar-dark" />
       </div>
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <Link

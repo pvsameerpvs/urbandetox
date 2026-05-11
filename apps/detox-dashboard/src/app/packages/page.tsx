@@ -77,8 +77,11 @@ export default function PackagesPage() {
                 <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/30">
                   <span className="text-base font-bold text-brand">{formatPrice(pkg.startingPrice)}</span>
                   <div className="flex items-center gap-2">
-                    <Link href={`/packages/${pkg.slug}/edit`} className="text-xs font-semibold text-brand hover:text-brand/80 inline-flex items-center gap-1 transition-colors">
-                      Edit <ArrowRight className="h-3 w-3" />
+                    <Link href={`/packages/${pkg.slug}`} className="text-xs font-semibold text-brand hover:text-brand/80 inline-flex items-center gap-1 transition-colors">
+                      View <ArrowRight className="h-3 w-3" />
+                    </Link>
+                    <Link href={`/packages/${pkg.slug}/edit`} className="text-xs font-semibold text-muted-foreground hover:text-foreground inline-flex items-center gap-1 transition-colors">
+                      Edit
                     </Link>
                     <button onClick={() => handleDeleteClick(pkg.slug)} className="text-xs text-red-500 hover:text-red-700 transition-colors">Delete</button>
                   </div>

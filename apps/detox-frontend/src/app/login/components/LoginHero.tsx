@@ -26,8 +26,8 @@ export function LoginHero() {
         className="object-cover"
         priority
       />
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0a1628]/85 via-[#0a1628]/50 to-[#0a1628]/75" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0a1628]/90 via-transparent to-[#0a1628]/30" />
+      <div className="absolute inset-0 bg-gradient-to-br from-sidebar-dark/85 via-sidebar-dark/50 to-sidebar-dark/75" />
+      <div className="absolute inset-0 bg-gradient-to-t from-sidebar-dark/90 via-transparent to-sidebar-dark/30" />
 
       <div className="relative z-10 p-8 xl:p-10">
         <Link href="/" className="inline-block">
