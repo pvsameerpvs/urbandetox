@@ -1,13 +1,22 @@
 "use client";
 
-import { Card, CardContent } from "@urbandetox/ui";
+import Link from "next/link";
+import { Card } from "@urbandetox/ui";
 import { Button } from "@urbandetox/ui";
 import { formatPrice } from "@urbandetox/utils";
 import { CalendarDays, Plus, Users, AlertCircle } from "lucide-react";
-import { fetchDepartures, fetchPackageBySlug, fetchDestinationBySlug } from "@/lib/data";
+import { getPackageBySlug, getDestinationBySlug, deleteDeparture } from "@/lib/admin-data";
+import { useAdminDepartures } from "@/hooks/use-admin-data";
 
 export default function DeparturesPage() {
-  const departures = fetchDepartures().sort((a, b) => a.startDate.localeCompare(b.startDate));
+  const departures = useAdminDepartures().sort((a, b) => a.startDate.localeCompare(b.startDate));
+
+  const handleDelete = (id: string) => {
+    if (confirm("Delete this departure?")) {
+      deleteDeparture(id);
+      window.location.reload();
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -16,8 +25,8 @@ export default function DeparturesPage() {
           <h1 className="text-2xl font-bold tracking-tight">Departures</h1>
           <p className="text-sm text-muted-foreground mt-1">Manage trip dates, availability, and pricing.</p>
         </div>
-        <Button className="rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-10 px-4 text-sm font-semibold shadow-lg shadow-brand/10">
-          <Plus className="mr-1.5 h-4 w-4" /> Add Dates
+        <Button className="rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-10 px-4 text-sm font-semibold shadow-lg shadow-brand/10" asChild>
+          <Link href="/departures/new"><Plus className="mr-1.5 h-4 w-4" /> Add Dates</Link>
         </Button>
       </div>
 
@@ -32,13 +41,13 @@ export default function DeparturesPage() {
                 <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Price</th>
                 <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Seats</th>
                 <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Status</th>
-                <th className="text-right px-4 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Action</th>
+                <th className="text-right px-4 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Actions</th>
               </tr>
             </thead>
             <tbody>
               {departures.map((dep) => {
-                const pkg = fetchPackageBySlug(dep.packageSlug);
-                const dest = fetchDestinationBySlug(dep.destinationSlug);
+                const pkg = getPackageBySlug(dep.packageSlug);
+                const dest = getDestinationBySlug(dep.destinationSlug);
                 const isFull = dep.status === "full";
                 const isFilling = dep.status === "filling";
                 return (
@@ -82,7 +91,12 @@ export default function DeparturesPage() {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <Button variant="ghost" size="sm" className="h-7 text-xs">Edit</Button>
+                      <div className="flex items-center justify-end gap-2">
+                        <Button variant="ghost" size="sm" className="h-7 text-xs" asChild>
+                          <Link href={`/departures/${dep.id}/edit`}>Edit</Link>
+                        </Button>
+                        <button onClick={() => handleDelete(dep.id)} className="text-xs text-red-500 hover:text-red-700 transition-colors px-2">Delete</button>
+                      </div>
                     </td>
                   </tr>
                 );

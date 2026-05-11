@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@urbandetox/ui";
 import { formatPrice } from "@urbandetox/utils";
-import { BookOpen, Users, CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import { Users, CheckCircle2, Clock, AlertCircle } from "lucide-react";
 
 const mockBookings = [
   { id: "B-001", customer: "Rahul Sharma", email: "rahul@email.com", trip: "Kashmir 3-Day Detox", code: "KAS3-JUN20", date: "Jun 20, 2026", travelers: 2, amount: 57000, status: "paid", onboarding: "completed" },
