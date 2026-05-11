@@ -12,9 +12,10 @@ interface PackageHeroProps {
   destinationName: string;
   durationLabel: string;
   guideLed: boolean;
+  seasonalTag?: string | null;
 }
 
-export function PackageHero({ image, title, subtitle, destinationName, durationLabel, guideLed }: PackageHeroProps) {
+export function PackageHero({ image, title, subtitle, destinationName, durationLabel, guideLed, seasonalTag }: PackageHeroProps) {
   return (
     <section className="relative">
       <div className="relative h-[60vh] sm:h-[65vh] min-h-[420px] w-full overflow-hidden">
@@ -32,6 +33,11 @@ export function PackageHero({ image, title, subtitle, destinationName, durationL
                 <Badge className="bg-white/90 text-foreground border-0 text-xs font-medium backdrop-blur-sm">
                   <Clock className="mr-1 h-3 w-3" /> {durationLabel}
                 </Badge>
+                {seasonalTag && (
+                  <Badge className="bg-brand/20 text-brand border-0 text-xs font-medium backdrop-blur-sm">
+                    {seasonalTag}
+                  </Badge>
+                )}
                 {guideLed && (
                   <Badge className="bg-brand text-brand-foreground border-0 text-xs font-medium">
                     <Star className="mr-1 h-3 w-3" /> Guide-led

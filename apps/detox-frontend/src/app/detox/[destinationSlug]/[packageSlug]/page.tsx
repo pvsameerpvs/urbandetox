@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { fetchPackageBySlug, fetchDeparturesByPackage, fetchGuides, fetchDestinationBySlug } from "@/lib/data";
 import { PackageHero } from "./components/PackageHero";
 import { InfoBar } from "./components/InfoBar";
+import { OverviewSection } from "./components/OverviewSection";
 import { HighlightsSection } from "./components/HighlightsSection";
 import { GallerySection } from "./components/GallerySection";
 import { ItinerarySection } from "./components/ItinerarySection";
@@ -22,13 +23,16 @@ const containerVariants = {
 
 export default function DetoxDetailPage() {
   const params = useParams();
-  const slug = params.packageSlug as string;
-  const pkg = fetchPackageBySlug(slug);
+  const destinationSlug = params.destinationSlug as string;
+  const packageSlug = params.packageSlug as string;
+
+  const pkg = fetchPackageBySlug(packageSlug);
   const dest = pkg ? fetchDestinationBySlug(pkg.destinationSlug) : undefined;
   const departures = pkg ? fetchDeparturesByPackage(pkg.slug) : [];
   const guides = fetchGuides().filter((g) => g.destinationSlug === pkg?.destinationSlug).slice(0, 3);
 
-  if (!pkg || !dest) {
+  // Validate: URL destinationSlug must match package's actual destination
+  if (!pkg || !dest || dest.slug !== destinationSlug) {
     notFound();
   }
 
@@ -44,6 +48,7 @@ export default function DetoxDetailPage() {
         destinationName={dest.name}
         durationLabel={pkg.durationLabel}
         guideLed={pkg.guideLed}
+        seasonalTag={pkg.seasonalTag}
       />
 
       <InfoBar
@@ -72,20 +77,5 @@ export default function DetoxDetailPage() {
 
       <MobilePackageCTA startingPrice={pkg.startingPrice} nextDepartureCode={nextDep?.code ?? null} />
     </main>
-  );
-}
-
-function OverviewSection({ description, durationLabel, subtitle }: { description: string; durationLabel: string; subtitle: string }) {
-  return (
-    <motion.section initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-      <div className="flex items-center gap-3 mb-5">
-        <span className="h-px w-8 bg-brand/60" />
-        <span className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">Overview</span>
-      </div>
-      <p className="text-base sm:text-lg leading-relaxed text-muted-foreground">
-        {description} This {durationLabel.toLowerCase()} detox is designed for people who want{" "}
-        {subtitle.toLowerCase()}. Expect small groups, local stays, guided walks, and intentional downtime.
-      </p>
-    </motion.section>
   );
 }

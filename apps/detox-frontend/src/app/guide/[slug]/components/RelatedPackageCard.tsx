@@ -16,7 +16,7 @@ export function RelatedPackageCard({ slug }: PackageLinkProps) {
   if (!pkg) return null;
 
   return (
-    <Link href={`/detox/${pkg.slug}`} className="group block">
+    <Link href={`/detox/${dest?.slug}/${pkg.slug}`} className="group block">
       <Card className="overflow-hidden border-border/60 bg-card">
         <div className="aspect-[16/10] overflow-hidden">
           <Image src={pkg.coverImage} alt={pkg.title} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="(max-width: 640px) 100vw, 33vw" />

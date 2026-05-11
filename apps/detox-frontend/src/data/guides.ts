@@ -25,7 +25,7 @@ Crisp mornings, clear skies, and the best visibility. Nights get cold, which mak
 If you want clear skies and easy trails, pick winter. If you want raw nature and fewer people, pick monsoon. If you want balance, pick early summer.
     `.trim(),
     image: "https://images.unsplash.com/photo-1567359781514-3b964e2b04d6?q=80&w=800&auto=format&fit=crop",
-    relatedPackageSlugs: ["kodai-2day-detox", "kodai-3day-detox"],
+    relatedPackageSlugs: ["kodaikanal-5days", "kodaikanal-6days"],
     featured: true,
   },
   {
@@ -52,35 +52,33 @@ Malabar cuisine is seafood-forward, but we accommodate vegetarians easily. Meals
 Cotton clothes, strong mosquito repellent, a good book, and an open mind.
     `.trim(),
     image: "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?q=80&w=800&auto=format&fit=crop",
-    relatedPackageSlugs: ["north-kerala-detox"],
+    relatedPackageSlugs: ["north-kerala-3days"],
     featured: true,
   },
   {
     id: "guide-3",
-    slug: "2day-vs-3day-kodai",
-    title: "2-Day or 3-Day Kodai: Which Fits You",
+    slug: "5day-vs-6day-kodai",
+    title: "5-Day or 6-Day Kodai: Which Fits You",
     category: "Travel Tips",
     destinationSlug: "kodaikanal",
     excerpt:
-      "The 2-day detox is a weekend reset. The 3-day detox is a deeper pause. Here is how to decide.",
+      "The 5-day detox is a deep reset. The 6-day adds Silent Valley and village immersion. Here is how to decide.",
     content: `
-**Choose the 2-Day Detox if:**
-- You have a busy schedule and can only spare a weekend
-- You want a taste of the experience before committing to longer trips
-- You prefer light activity and early nights
-- You are traveling from nearby cities like Bangalore or Coimbatore
+**Choose the 5-Day Detox if:**
+- You want a full week of rest but cannot spare 6 days
+- You prefer a mix of trails, silence, and bonfire nights
+- You want stargazing and journaling without extra trekking
 
-**Choose the 3-Day Detox if:**
-- You want deeper stillness and longer forest immersion
-- You enjoy moderate trails and want to see more viewpoints
-- You want time for journaling and reflection
-- You are traveling from farther cities like Mumbai or Hyderabad
+**Choose the 6-Day Detox if:**
+- You want the Silent Valley overnight experience
+- You enjoy longer treks and village culture
+- You want the complete Kodaikanal trail portfolio
 
 **The main difference:**
-The 2-day focuses on arrival, one full experience, and departure. The 3-day gives you a full middle day with no travel pressure, which is where most of the transformation happens.
+The 5-day covers all core experiences. The 6-day adds one extra day with Silent Valley trek and a local village visit.
     `.trim(),
     image: "https://images.unsplash.com/photo-1595658658481-51fc2c627e23?q=80&w=800&auto=format&fit=crop",
-    relatedPackageSlugs: ["kodai-2day-detox", "kodai-3day-detox"],
+    relatedPackageSlugs: ["kodaikanal-5days", "kodaikanal-6days"],
     featured: true,
   },
   {
@@ -120,7 +118,7 @@ Packing light is part of the mindset. Here is the essential list for a hill stat
 - Work laptop (seriously)
     `.trim(),
     image: "https://images.unsplash.com/photo-1626262886066-51917197e982?q=80&w=800&auto=format&fit=crop",
-    relatedPackageSlugs: ["kodai-2day-detox", "kodai-3day-detox"],
+    relatedPackageSlugs: ["kodaikanal-5days", "kodaikanal-6days", "kodaikanal-12days"],
     featured: false,
   },
   {
@@ -155,7 +153,7 @@ Most Urban Detox travelers join solo. Here is why it works and what to expect.
 By Day 2, most solo travelers forget they came alone. The group becomes a temporary tribe.
     `.trim(),
     image: "https://images.unsplash.com/photo-1501555088652-021faa106b9b?q=80&w=800&auto=format&fit=crop",
-    relatedPackageSlugs: ["kodai-2day-detox", "kodai-3day-detox", "north-kerala-detox", "gokarna-coastal-detox"],
+    relatedPackageSlugs: ["kodaikanal-5days", "kodaikanal-6days", "north-kerala-3days", "gokarna-3days"],
     featured: false,
   },
   {
@@ -187,7 +185,7 @@ Hot local teas, deep-fried banana chips, and warming curries. Monsoon meals hit 
 People who do not mind getting wet, love dramatic skies, and want fewer crowds.
     `.trim(),
     image: "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?q=80&w=800&auto=format&fit=crop",
-    relatedPackageSlugs: ["north-kerala-detox", "kodai-3day-detox"],
+    relatedPackageSlugs: ["north-kerala-3days", "kodaikanal-6days"],
     featured: true,
   },
 ];

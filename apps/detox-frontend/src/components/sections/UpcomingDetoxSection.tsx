@@ -163,7 +163,7 @@ function DepartureCard({
               disabled={isFull}
               asChild
             >
-              <Link href={isFull ? `/detox/${pkg.slug}` : `/book/${dep.code}`}>
+              <Link href={isFull ? `/detox/${dest.slug}/${pkg.slug}` : `/book/${dep.code}`}>
                 {isFull ? "Waitlist" : "Book"}
                 {!isFull && <ArrowRight className="ml-1.5 h-3.5 w-3.5" />}
               </Link>

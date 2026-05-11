@@ -52,6 +52,23 @@ export const destinations: Destination[] = [
     meetingPoint: "Gokarna Bus Stand",
     vibe: "Free, coastal, fire-led",
   },
+  {
+    id: "dest-4",
+    slug: "kashmir",
+    name: "Kashmir",
+    region: "Jammu & Kashmir - Himalayas",
+    description:
+      "The crown of India. Snow-capped peaks, emerald valleys, and serene lakes. Kashmir is our most immersive detox destination — ten days of mountain silence, houseboat stillness, and alpine meadow walks.",
+    image: "https://images.unsplash.com/photo-1566836610593-62a6488a15b1?q=80&w=1200&auto=format&fit=crop",
+    gallery: [
+      "https://images.unsplash.com/photo-1566836610593-62a6488a15b1?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1595658658481-51fc2c627e23?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&auto=format&fit=crop",
+    ],
+    meetingPoint: "Srinagar Airport",
+    vibe: "Deep, alpine, lake-led",
+  },
 ];
 
 export function getDestinationBySlug(slug: string): Destination | undefined {
