@@ -2,3 +2,9 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@urbandetox/tailwind-config/theme.css";
+
+/* Dashboard pure white background */
+:root {
+  --background: #ffffff;
+  --sidebar: #ffffff;
+}

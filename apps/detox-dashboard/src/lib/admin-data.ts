@@ -92,6 +92,10 @@ export function getDepartures(): Departure[] {
   return load(DEP_KEY, initialDepartures);
 }
 
+export function getDepartureByCode(code: string): Departure | undefined {
+  return getDepartures().find((d) => d.code === code);
+}
+
 export function createDeparture(dep: Departure) {
   const all = getDepartures();
   all.push(dep);
