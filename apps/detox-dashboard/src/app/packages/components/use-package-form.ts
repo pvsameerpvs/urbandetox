@@ -1,27 +1,59 @@
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { SEASONAL_TAGS } from "@urbandetox/utils";
-import type { ItineraryDay } from "@urbandetox/utils";
 
-export interface PackageFormState {
-  title: string;
-  subtitle: string;
-  destinationSlug: string;
-  duration: number;
-  startingPrice: number;
-  groupSize: string;
-  style: string;
-  seasonalTag: string;
-  coverImage: string;
-  highlights: string[];
-  itinerary: ItineraryDay[];
-  included: string[];
-  notIncluded: string[];
-  gallery: string[];
-  faqs: { question: string; answer: string }[];
+const itineraryDaySchema = z.object({
+  day: z.number(),
+  title: z.string().min(1, "Day title is required"),
+  description: z.string().min(1, "Description is required"),
+  activities: z.array(z.string()),
+  stay: z.string(),
+  meals: z.string(),
+  image: z.string(),
+  travelNotes: z.string(),
+});
+
+export const packageSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  subtitle: z.string().min(1, "Subtitle is required"),
+  destinationSlug: z.string().min(1, "Destination is required"),
+  duration: z.number().min(1, "Duration must be at least 1 day"),
+  startingPrice: z.number().min(0, "Price must be 0 or more"),
+  groupSize: z.string().min(1, "Group size is required"),
+  style: z.string().min(1, "Style is required"),
+  seasonalTag: z.string().min(1, "Seasonal tag is required"),
+  coverImage: z.string().min(1, "Cover image is required"),
+  highlights: z.array(z.string()).min(1, "At least one highlight is required"),
+  included: z.array(z.string()),
+  notIncluded: z.array(z.string()),
+  gallery: z.array(z.string()),
+  faqs: z.array(z.object({ question: z.string(), answer: z.string() })),
+  itinerary: z.array(itineraryDaySchema).min(1, "At least one day is required"),
+});
+
+export type PackageFormData = z.infer<typeof packageSchema>;
+
+interface InitialData {
+  title?: string;
+  subtitle?: string;
+  destinationSlug?: string;
+  duration?: number;
+  startingPrice?: number;
+  groupSize?: string;
+  style?: string;
+  seasonalTag?: string;
+  coverImage?: string;
+  highlights?: string[];
+  included?: string[];
+  notIncluded?: string[];
+  gallery?: string[];
+  faqs?: { question: string; answer: string }[];
+  itinerary?: { day: number; title: string; description: string; activities: string[]; stay?: string; meals?: string; image?: string; travelNotes?: string }[];
 }
 
-export function usePackageForm(initialDestinationSlug: string, initialData?: Partial<PackageFormState>) {
-  const [form, setForm] = useState<PackageFormState>({
+export function usePackageForm(initialDestinationSlug: string, initialData?: InitialData) {
+  const defaultValues: PackageFormData = {
     title: initialData?.title || "",
     subtitle: initialData?.subtitle || "",
     destinationSlug: initialData?.destinationSlug || initialDestinationSlug,
@@ -32,111 +64,117 @@ export function usePackageForm(initialDestinationSlug: string, initialData?: Par
     seasonalTag: initialData?.seasonalTag || SEASONAL_TAGS[0],
     coverImage: initialData?.coverImage || "",
     highlights: initialData?.highlights?.length ? initialData.highlights : [""],
-    itinerary: initialData?.itinerary?.length ? initialData.itinerary : [{ day: 1, title: "", description: "", activities: [""], stay: "", meals: "", image: "", travelNotes: "" }],
     included: initialData?.included?.length ? initialData.included : [""],
     notIncluded: initialData?.notIncluded?.length ? initialData.notIncluded : [""],
-    gallery: initialData?.gallery?.length ? initialData.gallery : [],
+    gallery: initialData?.gallery || [],
     faqs: initialData?.faqs?.length ? initialData.faqs : [{ question: "", answer: "" }],
+    itinerary: initialData?.itinerary?.length
+      ? initialData.itinerary.map((d) => ({
+          day: d.day,
+          title: d.title,
+          description: d.description,
+          activities: d.activities || [""],
+          stay: d.stay || "",
+          meals: d.meals || "",
+          image: d.image || "",
+          travelNotes: d.travelNotes || "",
+        }))
+      : [{ day: 1, title: "", description: "", activities: [""], stay: "", meals: "", image: "", travelNotes: "" }],
+  };
+
+  const form = useForm<PackageFormData>({
+    resolver: zodResolver(packageSchema),
+    defaultValues,
   });
 
-  const setField = <K extends keyof PackageFormState>(field: K, value: PackageFormState[K]) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
+  /* eslint-disable react-hooks/incompatible-library */
+  const highlights = form.watch("highlights");
+  const included = form.watch("included");
+  const notIncluded = form.watch("notIncluded");
+  const gallery = form.watch("gallery");
+  const faqs = form.watch("faqs");
+  const itinerary = form.watch("itinerary");
+  /* eslint-enable react-hooks/incompatible-library */
+
+  const updateArrayItem = (name: "highlights" | "included" | "notIncluded" | "gallery", index: number, value: string) => {
+    const arr = [...form.getValues(name)];
+    arr[index] = value;
+    form.setValue(name, arr, { shouldValidate: true });
   };
 
-  const updateHighlight = (index: number, value: string) => {
-    setForm((prev) => {
-      const h = [...prev.highlights];
-      h[index] = value;
-      return { ...prev, highlights: h };
-    });
+  const appendArrayItem = (name: "highlights" | "included" | "notIncluded" | "gallery", value: string) => {
+    form.setValue(name, [...form.getValues(name), value], { shouldValidate: true });
   };
-  const addHighlight = () => setForm((prev) => ({ ...prev, highlights: [...prev.highlights, ""] }));
-  const removeHighlight = (index: number) => setForm((prev) => ({ ...prev, highlights: prev.highlights.filter((_, i) => i !== index) }));
 
-  const updateIncluded = (index: number, value: string) => {
-    setForm((prev) => {
-      const arr = [...prev.included];
-      arr[index] = value;
-      return { ...prev, included: arr };
-    });
+  const removeArrayItem = (name: "highlights" | "included" | "notIncluded" | "gallery", index: number) => {
+    form.setValue(name, form.getValues(name).filter((_, i) => i !== index), { shouldValidate: true });
   };
-  const addIncluded = () => setForm((prev) => ({ ...prev, included: [...prev.included, ""] }));
-  const removeIncluded = (index: number) => setForm((prev) => ({ ...prev, included: prev.included.filter((_, i) => i !== index) }));
-
-  const updateNotIncluded = (index: number, value: string) => {
-    setForm((prev) => {
-      const arr = [...prev.notIncluded];
-      arr[index] = value;
-      return { ...prev, notIncluded: arr };
-    });
-  };
-  const addNotIncluded = () => setForm((prev) => ({ ...prev, notIncluded: [...prev.notIncluded, ""] }));
-  const removeNotIncluded = (index: number) => setForm((prev) => ({ ...prev, notIncluded: prev.notIncluded.filter((_, i) => i !== index) }));
 
   const updateFaq = (index: number, field: "question" | "answer", value: string) => {
-    setForm((prev) => {
-      const faqs = [...prev.faqs];
-      faqs[index] = { ...faqs[index], [field]: value };
-      return { ...prev, faqs };
-    });
+    const arr = [...form.getValues("faqs")];
+    arr[index] = { ...arr[index], [field]: value };
+    form.setValue("faqs", arr, { shouldValidate: true });
   };
-  const addFaq = () => setForm((prev) => ({ ...prev, faqs: [...prev.faqs, { question: "", answer: "" }] }));
-  const removeFaq = (index: number) => setForm((prev) => ({ ...prev, faqs: prev.faqs.filter((_, i) => i !== index) }));
 
-  const addGallery = (value?: string) => setForm((prev) => ({ ...prev, gallery: [...prev.gallery, value || ""] }));
-  const removeGallery = (index: number) => setForm((prev) => ({ ...prev, gallery: prev.gallery.filter((_, i) => i !== index) }));
+  const appendFaq = () => {
+    form.setValue("faqs", [...form.getValues("faqs"), { question: "", answer: "" }], { shouldValidate: true });
+  };
+
+  const removeFaq = (index: number) => {
+    form.setValue("faqs", form.getValues("faqs").filter((_, i) => i !== index), { shouldValidate: true });
+  };
 
   const updateItineraryDay = (index: number, field: string, value: unknown) => {
-    setForm((prev) => {
-      const it = [...prev.itinerary];
-      it[index] = { ...it[index], [field]: value };
-      return { ...prev, itinerary: it };
-    });
+    const arr = [...form.getValues("itinerary")];
+    arr[index] = { ...arr[index], [field]: value };
+    form.setValue("itinerary", arr, { shouldValidate: true });
   };
 
   const updateActivity = (dayIndex: number, actIndex: number, value: string) => {
-    setForm((prev) => {
-      const it = [...prev.itinerary];
-      const acts = [...it[dayIndex].activities];
-      acts[actIndex] = value;
-      it[dayIndex] = { ...it[dayIndex], activities: acts };
-      return { ...prev, itinerary: it };
-    });
+    const arr = [...form.getValues("itinerary")];
+    const acts = [...arr[dayIndex].activities];
+    acts[actIndex] = value;
+    arr[dayIndex] = { ...arr[dayIndex], activities: acts };
+    form.setValue("itinerary", arr, { shouldValidate: true });
   };
 
   const addActivity = (dayIndex: number) => {
-    setForm((prev) => {
-      const it = [...prev.itinerary];
-      it[dayIndex] = { ...it[dayIndex], activities: [...it[dayIndex].activities, ""] };
-      return { ...prev, itinerary: it };
-    });
+    const arr = [...form.getValues("itinerary")];
+    arr[dayIndex] = { ...arr[dayIndex], activities: [...arr[dayIndex].activities, ""] };
+    form.setValue("itinerary", arr, { shouldValidate: true });
   };
 
   const addDay = () => {
-    setForm((prev) => {
-      const nextDay = prev.itinerary.length + 1;
-      return { ...prev, itinerary: [...prev.itinerary, { day: nextDay, title: "", description: "", activities: [""], stay: "", meals: "", image: "", travelNotes: "" }] };
-    });
+    const arr = [...form.getValues("itinerary")];
+    const nextDay = arr.length + 1;
+    form.setValue("itinerary", [...arr, { day: nextDay, title: "", description: "", activities: [""], stay: "", meals: "", image: "", travelNotes: "" }], { shouldValidate: true });
   };
 
   const removeDay = (index: number) => {
-    setForm((prev) => {
-      if (prev.itinerary.length <= 1) return prev;
-      const filtered = prev.itinerary.filter((_, i) => i !== index).map((d, i) => ({ ...d, day: i + 1 }));
-      return { ...prev, itinerary: filtered };
-    });
+    const arr = form.getValues("itinerary");
+    if (arr.length <= 1) return;
+    const filtered = arr.filter((_, i) => i !== index).map((d, i) => ({ ...d, day: i + 1 }));
+    form.setValue("itinerary", filtered, { shouldValidate: true });
   };
 
   return {
     form,
-    setField,
-    updateHighlight, addHighlight, removeHighlight,
-    updateIncluded, addIncluded, removeIncluded,
-    updateNotIncluded, addNotIncluded, removeNotIncluded,
-    updateFaq, addFaq, removeFaq,
-    addGallery, removeGallery,
+    highlights,
+    included,
+    notIncluded,
+    gallery,
+    faqs,
+    itinerary,
+    updateArrayItem,
+    appendArrayItem,
+    removeArrayItem,
+    updateFaq,
+    appendFaq,
+    removeFaq,
     updateItineraryDay,
-    updateActivity, addActivity,
-    addDay, removeDay,
+    updateActivity,
+    addActivity,
+    addDay,
+    removeDay,
   };
 }

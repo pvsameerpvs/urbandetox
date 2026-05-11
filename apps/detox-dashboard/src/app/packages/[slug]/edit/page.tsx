@@ -6,7 +6,7 @@ import { updatePackage } from "@/lib/admin-data";
 import { useAdminPackage, useAdminDestinations } from "@/hooks/use-admin-data";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { usePackageForm } from "@/app/packages/components/use-package-form";
+import { usePackageForm, type PackageFormData } from "@/app/packages/components/use-package-form";
 import { BasicInfoFields } from "@/app/packages/components/basic-info-fields";
 import { HighlightsFields } from "@/app/packages/components/highlights-fields";
 import { ArrayInput } from "@/app/packages/components/array-input";
@@ -17,7 +17,7 @@ import { ItineraryFields } from "@/app/packages/components/itinerary-fields";
 export default function EditPackagePage() {
   const params = useParams();
   const router = useRouter();
-  const slug = params.slug as string;
+  const slug = String(params.slug);
   const pkg = useAdminPackage(slug);
   const destinations = useAdminDestinations();
   const f = usePackageForm(pkg?.destinationSlug || "", {
@@ -47,21 +47,20 @@ export default function EditPackagePage() {
     );
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const durationLabel = `${f.form.duration} Days / ${f.form.duration - 1} Nights`;
+  function onSubmit(data: PackageFormData) {
+    const durationLabel = `${data.duration} Days / ${data.duration - 1} Nights`;
     updatePackage(slug, {
-      ...f.form,
+      ...data,
       durationLabel,
-      highlights: f.form.highlights.filter(Boolean),
-      included: f.form.included.filter(Boolean),
-      notIncluded: f.form.notIncluded.filter(Boolean), 
-      gallery: f.form.gallery.filter(Boolean),
-      faqs: f.form.faqs.filter((q) => q.question && q.answer),
-      itinerary: f.form.itinerary.map((d) => ({ ...d, activities: d.activities.filter(Boolean) })),
+      highlights: data.highlights.filter(Boolean),
+      included: data.included.filter(Boolean),
+      notIncluded: data.notIncluded.filter(Boolean),
+      gallery: data.gallery.filter(Boolean),
+      faqs: data.faqs.filter((q) => q.question && q.answer),
+      itinerary: data.itinerary.map((d) => ({ ...d, activities: d.activities.filter(Boolean) })),
     });
     router.push("/packages");
-  };
+  }
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -71,11 +70,11 @@ export default function EditPackagePage() {
       <h1 className="text-2xl font-bold tracking-tight mb-1">Edit Package</h1>
       <p className="text-sm text-muted-foreground mb-6">Update {pkg.title} details.</p>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={f.form.handleSubmit(onSubmit)} className="space-y-6">
         <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
           <CardContent className="p-6">
             <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Basic Info</h3>
-            <BasicInfoFields form={f.form} setField={f.setField} destinations={destinations} />
+            <BasicInfoFields control={f.form.control} destinations={destinations} />
           </CardContent>
         </Card>
 
@@ -83,13 +82,13 @@ export default function EditPackagePage() {
           <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
             <CardContent className="p-6">
               <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Included</h3>
-              <ArrayInput items={f.form.included} onUpdate={f.updateIncluded} onAdd={f.addIncluded} onRemove={f.removeIncluded} placeholder="Included item" />
+              <ArrayInput items={f.included} onUpdate={(i, v) => f.updateArrayItem("included", i, v)} onAdd={() => f.appendArrayItem("included", "")} onRemove={(i) => f.removeArrayItem("included", i)} placeholder="Included item" />
             </CardContent>
           </Card>
           <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
             <CardContent className="p-6">
               <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Not Included</h3>
-              <ArrayInput items={f.form.notIncluded} onUpdate={f.updateNotIncluded} onAdd={f.addNotIncluded} onRemove={f.removeNotIncluded} placeholder="Not included item" />
+              <ArrayInput items={f.notIncluded} onUpdate={(i, v) => f.updateArrayItem("notIncluded", i, v)} onAdd={() => f.appendArrayItem("notIncluded", "")} onRemove={(i) => f.removeArrayItem("notIncluded", i)} placeholder="Not included item" />
             </CardContent>
           </Card>
         </div>
@@ -97,14 +96,14 @@ export default function EditPackagePage() {
         <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
           <CardContent className="p-6">
             <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Highlights</h3>
-            <HighlightsFields highlights={f.form.highlights} onUpdate={f.updateHighlight} onAdd={f.addHighlight} onRemove={f.removeHighlight} />
+            <HighlightsFields highlights={f.highlights} onUpdate={(i, v) => f.updateArrayItem("highlights", i, v)} onAdd={() => f.appendArrayItem("highlights", "")} onRemove={(i) => f.removeArrayItem("highlights", i)} />
           </CardContent>
         </Card>
 
         <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
           <CardContent className="p-6">
             <ItineraryFields
-              itinerary={f.form.itinerary}
+              itinerary={f.itinerary}
               onUpdateDay={f.updateItineraryDay}
               onUpdateActivity={f.updateActivity}
               onAddActivity={f.addActivity}
@@ -117,14 +116,14 @@ export default function EditPackagePage() {
         <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
           <CardContent className="p-6">
             <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Gallery Images</h3>
-            <GalleryUpload items={f.form.gallery} onAdd={f.addGallery} onRemove={f.removeGallery} />
+            <GalleryUpload items={f.gallery} onAdd={(v) => f.appendArrayItem("gallery", v)} onRemove={(i) => f.removeArrayItem("gallery", i)} />
           </CardContent>
         </Card>
 
         <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
           <CardContent className="p-6">
             <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">FAQs</h3>
-            <FaqsFields faqs={f.form.faqs} onUpdate={f.updateFaq} onAdd={f.addFaq} onRemove={f.removeFaq} />
+            <FaqsFields faqs={f.faqs} onUpdate={f.updateFaq} onAdd={f.appendFaq} onRemove={f.removeFaq} />
           </CardContent>
         </Card>
 

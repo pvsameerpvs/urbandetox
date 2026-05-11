@@ -1,35 +1,69 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, Button, Input, Label, Textarea } from "@urbandetox/ui";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Card, CardContent, Button, Input, Textarea } from "@urbandetox/ui";
 import { createDestination } from "@/lib/admin-data";
 import { generateId } from "@/lib/id";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { GalleryUpload } from "@/components/admin/GalleryUpload";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
+const schema = z.object({
+  name: z.string().min(1, "Destination name is required"),
+  region: z.string().min(1, "Region is required"),
+  description: z.string().min(1, "Description is required"),
+  image: z.string().min(1, "Cover image is required"),
+  meetingPoint: z.string().min(1, "Meeting point is required"),
+  vibe: z.string().min(1, "Vibe is required"),
+  gallery: z.array(z.string()),
+});
+
+type FormData = z.infer<typeof schema>;
+
 export default function NewDestinationPage() {
   const router = useRouter();
-  const [form, setForm] = useState({
-    name: "",
-    region: "",
-    description: "",
-    image: "",
-    meetingPoint: "",
-    vibe: "",
-    gallery: [""],
+  const form = useForm<FormData>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      name: "",
+      region: "",
+      description: "",
+      image: "",
+      meetingPoint: "",
+      vibe: "",
+      gallery: [],
+    },
   });
 
-  const setField = (field: string, value: string | string[]) => setForm({ ...form, [field]: value });
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const nameValue = form.watch("name");
+  const computedSlug = nameValue
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const slug = form.name.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-");
-    createDestination({ ...form, id: generateId("dest"), slug, gallery: form.gallery.filter(Boolean) });
+  function onSubmit(data: FormData) {
+    createDestination({
+      ...data,
+      id: generateId("dest"),
+      slug: computedSlug || "untitled",
+      gallery: data.gallery.filter(Boolean),
+    });
     router.push("/destinations");
-  };
+  }
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -41,47 +75,127 @@ export default function NewDestinationPage() {
 
       <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
         <CardContent className="p-6">
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div className="space-y-2">
-                <Label>Name</Label>
-                <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Kashmir" className="h-11 rounded-xl" required />
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g. Kashmir" className="h-11 rounded-xl" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormItem>
+                  <FormLabel>Slug</FormLabel>
+                  <Input value={computedSlug} readOnly className="h-11 rounded-xl bg-secondary/30" />
+                </FormItem>
               </div>
-              <div className="space-y-2">
-                <Label>Slug</Label>
-                <Input value={form.name.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-")} readOnly className="h-11 rounded-xl bg-secondary/30" />
+
+              <FormField
+                control={form.control}
+                name="region"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Region</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. Jammu & Kashmir - Himalayas" className="h-11 rounded-xl" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Describe the destination..." className="rounded-xl min-h-[100px]" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="image"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cover Image</FormLabel>
+                    <FormControl>
+                      <ImageUpload value={field.value} onChange={field.onChange} label="Cover Image" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="gallery"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Gallery Images</FormLabel>
+                    <FormControl>
+                      <GalleryUpload
+                        items={field.value}
+                        onAdd={(v) => field.onChange([...field.value, v])}
+                        onRemove={(i) => field.onChange(field.value.filter((_, j) => j !== i))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <FormField
+                  control={form.control}
+                  name="meetingPoint"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Meeting Point</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g. Srinagar Airport" className="h-11 rounded-xl" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="vibe"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Vibe</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g. Deep, alpine, lake-led" className="h-11 rounded-xl" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
-            </div>
-            <div className="space-y-2">
-              <Label>Region</Label>
-              <Input value={form.region} onChange={(e) => setForm({ ...form, region: e.target.value })} placeholder="e.g. Jammu & Kashmir - Himalayas" className="h-11 rounded-xl" required />
-            </div>
-            <div className="space-y-2">
-              <Label>Description</Label>
-              <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Describe the destination..." className="rounded-xl min-h-[100px]" required />
-            </div>
-            <ImageUpload value={form.image} onChange={(v) => setField("image", v)} label="Cover Image" />
-            <div className="space-y-2">
-              <Label>Gallery Images</Label>
-              <GalleryUpload items={form.gallery} onAdd={(v) => setForm({ ...form, gallery: [...form.gallery, v] })} onRemove={(i) => setForm({ ...form, gallery: form.gallery.filter((_, j) => j !== i) })} />
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div className="space-y-2">
-                <Label>Meeting Point</Label>
-                <Input value={form.meetingPoint} onChange={(e) => setForm({ ...form, meetingPoint: e.target.value })} placeholder="e.g. Srinagar Airport" className="h-11 rounded-xl" required />
+
+              <div className="flex items-center gap-3 pt-2">
+                <Button type="submit" className="rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-11 px-6 text-sm font-semibold shadow-lg shadow-brand/10">
+                  Create Destination
+                </Button>
+                <Button type="button" variant="outline" className="rounded-xl h-11 px-6 text-sm" asChild>
+                  <Link href="/destinations">Cancel</Link>
+                </Button>
               </div>
-              <div className="space-y-2">
-                <Label>Vibe</Label>
-                <Input value={form.vibe} onChange={(e) => setForm({ ...form, vibe: e.target.value })} placeholder="e.g. Deep, alpine, lake-led" className="h-11 rounded-xl" required />
-              </div>
-            </div>
-            <div className="flex items-center gap-3 pt-2">
-              <Button type="submit" className="rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-11 px-6 text-sm font-semibold shadow-lg shadow-brand/10">Create Destination</Button>
-              <Button type="button" variant="outline" className="rounded-xl h-11 px-6 text-sm" asChild>
-                <Link href="/destinations">Cancel</Link>
-              </Button>
-            </div>
-          </form>
+            </form>
+          </Form>
         </CardContent>
       </Card>
     </div>
