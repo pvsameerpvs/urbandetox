@@ -91,6 +91,15 @@ export interface FaqItem {
   category: string;
 }
 
+export interface SeasonalTag {
+  id: string;
+  name: string;
+  slug: string;
+  iconName: string;
+  label: string;
+  sortOrder: number;
+}
+
 export interface BookingFormData {
   fullName: string;
   phone: string;

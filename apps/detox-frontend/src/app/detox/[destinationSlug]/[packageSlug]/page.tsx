@@ -3,7 +3,7 @@
 import { useParams, notFound } from "next/navigation";
 import { motion } from "framer-motion";
 import { fetchPackageBySlug, fetchDeparturesByPackage, fetchGuides, fetchDestinationBySlug } from "@/lib/data";
-import { safeImageUrl } from "@/lib/image-url";
+import { safeImageUrl } from "@urbandetox/utils";
 import { PackageHero } from "./components/PackageHero";
 import { InfoBar } from "./components/InfoBar";
 import { OverviewSection } from "./components/OverviewSection";
@@ -16,11 +16,8 @@ import { RelatedGuidesSection } from "./components/RelatedGuidesSection";
 import { PackageFAQsSection } from "./components/PackageFAQsSection";
 import { PackageSidebar } from "./components/PackageSidebar";
 import { MobilePackageCTA } from "./components/MobilePackageCTA";
+import { containerVariants } from "@/lib/animations";
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
-};
 
 export default function DetoxDetailPage() {
   const params = useParams();

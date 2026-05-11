@@ -142,7 +142,7 @@ export function HeroSection() {
                     <span className="text-foreground">{destLabel}</span>
                   </SelectValue>
                 </SelectTrigger>
-                <SelectContent className="z-[100]">
+                <SelectContent>
                   {DESTINATIONS.map((d) => (
                     <SelectItem key={d.value} value={d.value}>
                       {d.label}
@@ -240,7 +240,7 @@ export function HeroSection() {
                     <span className="text-foreground">{durLabel}</span>
                   </SelectValue>
                 </SelectTrigger>
-                <SelectContent className="z-[100]">
+                <SelectContent>
                   {DURATIONS.map((d) => (
                     <SelectItem key={d.value} value={d.value}>
                       {d.label}

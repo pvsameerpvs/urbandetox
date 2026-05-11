@@ -23,7 +23,7 @@ interface SelectFieldProps {
   className?: string;
 }
 
-export function SelectField({ name, label, options, placeholder = "Select...", className = "h-11 rounded-xl w-full" }: SelectFieldProps) {
+export function SelectField({ name, label, options, placeholder = "Select...", className = "h-11 rounded-xl" }: SelectFieldProps) {
   const { control } = useFormContext();
   return (
     <FormField

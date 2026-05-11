@@ -7,7 +7,7 @@ import { Card, CardContent, Button } from "@urbandetox/ui";
 import { MapPin, ArrowRight, Plus } from "lucide-react";
 import { getPackagesByDestination, deleteDestination } from "@/lib/admin-data";
 import { useAdminDestinations } from "@/hooks/use-admin-data";
-import { safeImageUrl } from "@/lib/image-url";
+import { safeImageUrl } from "@urbandetox/utils";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { toast } from "sonner";
 

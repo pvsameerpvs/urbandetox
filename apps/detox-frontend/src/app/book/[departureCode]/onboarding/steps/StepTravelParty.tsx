@@ -1,7 +1,7 @@
 "use client";
 
 
-import { cn } from "@/lib/utils";
+import { cn } from "@urbandetox/utils";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { User, Users, Upload, Camera } from "lucide-react";

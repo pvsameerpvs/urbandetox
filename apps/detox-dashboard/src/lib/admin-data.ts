@@ -1,11 +1,13 @@
-import type { Destination, Package, Departure } from "@urbandetox/utils";
+import type { Destination, Package, Departure, SeasonalTag } from "@urbandetox/utils";
 import { destinations as initialDestinations } from "@/data/destinations";
 import { packages as initialPackages } from "@/data/packages";
 import { departures as initialDepartures } from "@/data/departures";
+import { initialSeasonalTags } from "@urbandetox/utils";
 
 const DEST_KEY = "ud-admin-destinations";
 const PKG_KEY = "ud-admin-packages";
 const DEP_KEY = "ud-admin-departures";
+const TAGS_KEY = "ud-admin-seasonal-tags";
 
 function load<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
@@ -90,18 +92,6 @@ export function getDepartures(): Departure[] {
   return load(DEP_KEY, initialDepartures);
 }
 
-export function getDeparturesByPackage(packageSlug: string): Departure[] {
-  return getDepartures().filter((d) => d.packageSlug === packageSlug);
-}
-
-export function getUpcomingDepartures(limit = 50): Departure[] {
-  const today = new Date().toISOString().split("T")[0];
-  return getDepartures()
-    .filter((d) => d.startDate >= today && d.status !== "closed")
-    .sort((a, b) => a.startDate.localeCompare(b.startDate))
-    .slice(0, limit);
-}
-
 export function createDeparture(dep: Departure) {
   const all = getDepartures();
   all.push(dep);
@@ -122,4 +112,32 @@ export function deleteDeparture(id: string) {
   save(DEP_KEY, all);
 }
 
+/* ─── Seasonal Tags ──────────────────────── */
+export function getSeasonalTags(): SeasonalTag[] {
+  return load(TAGS_KEY, initialSeasonalTags);
+}
+
+export function createSeasonalTag(tag: SeasonalTag) {
+  const all = getSeasonalTags();
+  all.push(tag);
+  save(TAGS_KEY, all);
+}
+
+export function updateSeasonalTag(id: string, data: Partial<SeasonalTag>) {
+  const all = getSeasonalTags();
+  const idx = all.findIndex((t) => t.id === id);
+  if (idx >= 0) {
+    all[idx] = { ...all[idx], ...data };
+    save(TAGS_KEY, all);
+  }
+}
+
+export function deleteSeasonalTag(id: string) {
+  const all = getSeasonalTags().filter((t) => t.id !== id);
+  save(TAGS_KEY, all);
+}
+
+export function getPackagesUsingTag(tagName: string): number {
+  return getPackages().filter((p) => p.seasonalTag === tagName).length;
+}
 

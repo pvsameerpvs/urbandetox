@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Compass, Users, Heart, Leaf } from "lucide-react";
+import { containerVariants, itemVariants } from "@/lib/animations";
 
 const features = [
   { icon: Compass, title: "Offbeat First", description: "We skip tourist traps. Every destination is chosen for quiet, beauty, and real disconnection. You will not find crowds here." },
@@ -11,15 +12,7 @@ const features = [
   { icon: Leaf, title: "Guided Stillness", description: "Nature walks, silence sessions, and intentional downtime. Not a tour. A reset. Every activity has a purpose." },
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
-};
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
-};
 
 export function Differentiators() {
   return (

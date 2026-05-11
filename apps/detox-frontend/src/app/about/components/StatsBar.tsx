@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Mountain, Users, MapPin, Sunrise } from "lucide-react";
+import { containerVariants, itemVariants } from "@/lib/animations";
 
 const stats = [
   { label: "Detoxes Hosted", value: "50+", icon: Mountain },
@@ -11,15 +12,7 @@ const stats = [
   { label: "Years Running", value: "3", icon: Sunrise },
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
-};
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
-};
 
 export function StatsBar() {
   return (

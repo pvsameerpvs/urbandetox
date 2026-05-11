@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { cn } from "@urbandetox/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, LucideIcon } from "lucide-react";
 

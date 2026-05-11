@@ -9,7 +9,7 @@ import { ProfileSectionHeader } from "../components/ProfileSectionHeader";
 import { IconInput } from "../components/IconInput";
 import { SaveButton } from "../components/SaveButton";
 import { useUserProfile } from "@/lib/user-profile";
-import { cn } from "@/lib/utils";
+import { cn } from "@urbandetox/utils";
 import { User, Phone, Mail, CalendarDays, Camera } from "lucide-react";
 
 const genderOptions = [

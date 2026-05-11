@@ -3,11 +3,8 @@
 import { motion } from "framer-motion";
 import { fetchDestinations } from "@/lib/data";
 import { DestinationBrowseCard } from "./components/DestinationBrowseCard";
+import { containerVariants } from "@/lib/animations";
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
-};
 
 export default function DetoxBrowsePage() {
   const destinations = fetchDestinations();

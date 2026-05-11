@@ -3,6 +3,7 @@
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { cn } from "@urbandetox/utils";
 import { Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@urbandetox/ui";
 import {
   FormField,
@@ -164,14 +165,43 @@ export function DepartureForm({ mode, initialData, onSubmit, submitLabel, cancel
                 <FormLabel>Status</FormLabel>
                 <FormControl>
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className="h-11 rounded-xl w-full">
-                      <SelectValue placeholder="Select status" />
+                    <SelectTrigger className="h-11 rounded-xl">
+                      <SelectValue placeholder="Select status">
+                        {field.value && (
+                          <span className="flex items-center gap-2">
+                            <span className={cn(
+                              "h-2 w-2 rounded-full",
+                              field.value === "open" && "bg-emerald-500",
+                              field.value === "filling" && "bg-amber-500",
+                              field.value === "full" && "bg-red-500",
+                              field.value === "closed" && "bg-slate-400"
+                            )} />
+                            <span className="capitalize">{field.value}</span>
+                          </span>
+                        )}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="open">Open</SelectItem>
-                      <SelectItem value="filling">Filling</SelectItem>
-                      <SelectItem value="full">Full</SelectItem>
-                      <SelectItem value="closed">Closed</SelectItem>
+                      <SelectItem value="open">
+                        <span className="flex items-center gap-2">
+                          <span className="h-2 w-2 rounded-full bg-emerald-500" /> Open
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="filling">
+                        <span className="flex items-center gap-2">
+                          <span className="h-2 w-2 rounded-full bg-amber-500" /> Filling
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="full">
+                        <span className="flex items-center gap-2">
+                          <span className="h-2 w-2 rounded-full bg-red-500" /> Full
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="closed">
+                        <span className="flex items-center gap-2">
+                          <span className="h-2 w-2 rounded-full bg-slate-400" /> Closed
+                        </span>
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>

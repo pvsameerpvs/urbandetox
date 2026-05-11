@@ -1,7 +1,8 @@
 import { Controller } from "react-hook-form";
 import type { Control } from "react-hook-form";
 import { Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@urbandetox/ui";
-import { SEASONAL_TAGS } from "@urbandetox/utils";
+import { useAdminSeasonalTags } from "@/hooks/use-admin-data";
+import { getLucideIcon } from "@/components/admin/IconPicker";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import type { PackageFormData } from "./use-package-form";
 
@@ -11,6 +12,7 @@ interface BasicInfoFieldsProps {
 }
 
 export function BasicInfoFields({ control, destinations }: BasicInfoFieldsProps) {
+  const tags = useAdminSeasonalTags();
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -32,7 +34,7 @@ export function BasicInfoFields({ control, destinations }: BasicInfoFieldsProps)
             <div className="space-y-2">
               <label className="text-sm font-medium">Destination</label>
               <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger className="h-11 rounded-xl w-full">
+                <SelectTrigger className="h-11 rounded-xl">
                   <SelectValue placeholder="Select destination" />
                 </SelectTrigger>
                 <SelectContent>
@@ -107,22 +109,43 @@ export function BasicInfoFields({ control, destinations }: BasicInfoFieldsProps)
         <Controller
           control={control}
           name="seasonalTag"
-          render={({ field, fieldState }) => (
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Seasonal Tag</label>
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger className="h-11 rounded-xl w-full">
-                  <SelectValue placeholder="Select tag" />
-                </SelectTrigger>
-                <SelectContent>
-                  {SEASONAL_TAGS.map((t) => (
-                    <SelectItem key={t} value={t}>{t}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {fieldState.error && <p className="text-xs text-red-500">{fieldState.error.message}</p>}
-            </div>
-          )}
+          render={({ field, fieldState }) => {
+            const selectedTag = tags.find((t) => t.name === field.value);
+            return (
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Seasonal Tag</label>
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger className="h-11 rounded-xl">
+                    <SelectValue placeholder="Select tag">
+                      {selectedTag && (() => {
+                        const Icon = getLucideIcon(selectedTag.iconName);
+                        return (
+                          <span className="flex items-center gap-2">
+                            <Icon className="h-4 w-4 text-brand" />
+                            {selectedTag.name}
+                          </span>
+                        );
+                      })()}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {tags.map((t) => {
+                      const Icon = getLucideIcon(t.iconName);
+                      return (
+                        <SelectItem key={t.id} value={t.name}>
+                          <span className="flex items-center gap-2">
+                            <Icon className="h-4 w-4 text-brand" />
+                            {t.name}
+                          </span>
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+                {fieldState.error && <p className="text-xs text-red-500">{fieldState.error.message}</p>}
+              </div>
+            );
+          }}
         />
       </div>
       <Controller

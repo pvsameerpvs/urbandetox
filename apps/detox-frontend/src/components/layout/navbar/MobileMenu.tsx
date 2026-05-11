@@ -8,7 +8,7 @@ import { Menu, X, Compass, BookOpen, Info, Phone, LogIn, MapPin, ArrowRight, Use
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { cn } from "@urbandetox/utils";
 import { useUserProfile } from "@/lib/user-profile";
 
 const navLinks = [

@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@urbandetox/utils";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2 } from "lucide-react";
 

@@ -1,7 +1,8 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { SEASONAL_TAGS } from "@urbandetox/utils";
+import { useAdminSeasonalTags } from "@/hooks/use-admin-data";
+import { initialSeasonalTags } from "@urbandetox/utils";
 
 const itineraryDaySchema = z.object({
   day: z.number(),
@@ -53,6 +54,9 @@ interface InitialData {
 }
 
 export function usePackageForm(initialDestinationSlug: string, initialData?: InitialData) {
+  const tags = useAdminSeasonalTags();
+  const firstTag = tags[0]?.name || initialSeasonalTags[0]?.name || "";
+
   const defaultValues: PackageFormData = {
     title: initialData?.title || "",
     subtitle: initialData?.subtitle || "",
@@ -61,7 +65,7 @@ export function usePackageForm(initialDestinationSlug: string, initialData?: Ini
     startingPrice: initialData?.startingPrice || 0,
     groupSize: initialData?.groupSize || "6 to 12",
     style: initialData?.style || "",
-    seasonalTag: initialData?.seasonalTag || SEASONAL_TAGS[0],
+    seasonalTag: initialData?.seasonalTag || firstTag,
     coverImage: initialData?.coverImage || "",
     highlights: initialData?.highlights?.length ? initialData.highlights : [""],
     included: initialData?.included?.length ? initialData.included : [""],

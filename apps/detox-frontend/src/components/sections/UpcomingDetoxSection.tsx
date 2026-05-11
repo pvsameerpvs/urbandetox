@@ -7,23 +7,13 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { fetchUpcomingDepartures, fetchPackageBySlug, fetchDestinationBySlug } from "@/lib/data";
 import { formatPrice, formatDateRange } from "@urbandetox/utils";
-import { cn } from "@/lib/utils";
+import { cn } from "@urbandetox/utils";
 import { Calendar, ArrowRight, MapPin, Clock } from "lucide-react";
 import { motion } from "framer-motion";
+import { containerVariants, itemVariants } from "@/lib/animations";
 
 /* ─── Animations ───────────────────────────── */
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 },
-  },
-};
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
-};
 
 /* ─── Small helper for status badge ─────────── */
 function StatusBadge({

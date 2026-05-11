@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { cn } from "@urbandetox/utils";
 import { Mail, Phone, MessageCircle, MapPin } from "lucide-react";
+import { containerVariants, itemVariants } from "@/lib/animations";
 
 const BRAND = {
   email: "hello@urbandetox.in",
@@ -20,15 +21,7 @@ const cards = [
   { icon: MapPin, label: "Base", value: BRAND.address, color: "bg-amber-50 text-amber-600" },
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
-};
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
-};
 
 export function ContactCards() {
   return (

@@ -5,17 +5,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { fetchTestimonials } from "@/lib/data";
 import { Star, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { cn } from "@urbandetox/utils";
+import { containerVariants, itemVariants } from "@/lib/animations";
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
-};
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
-};
 
 export function TestimonialsSection() {
   const testimonials = fetchTestimonials(4);

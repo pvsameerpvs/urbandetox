@@ -1,15 +1,12 @@
-
 import { fetchFeaturedPackages } from "@/lib/data";
 import { SeasonalRow } from "./SeasonalRow";
 import type { LucideIcon } from "lucide-react";
-import { CloudRain, Sun, Waves, Mountain } from "lucide-react";
+import * as Icons from "lucide-react";
+import { initialSeasonalTags } from "@urbandetox/utils";
 
-const seasonalMeta: Record<string, { icon: LucideIcon; label: string }> = {
-  "Monsoon Detox": { icon: CloudRain, label: "Monsoon Escapes" },
-  "Summer Escape": { icon: Sun, label: "Summer Escapes" },
-  "Coastal Detox": { icon: Waves, label: "Coastal Retreats" },
-  "Extended Detox": { icon: Mountain, label: "Extended Journeys" },
-};
+function getIconComponent(name: string): LucideIcon {
+  return (Icons as unknown as Record<string, LucideIcon>)[name] || Icons.Sun;
+}
 
 export function SeasonalSection() {
   const featured = fetchFeaturedPackages();
@@ -17,12 +14,16 @@ export function SeasonalSection() {
   const tags = Array.from(new Set(featured.map((p) => p.seasonalTag).filter((t): t is string => !!t)));
 
   const grouped = tags
-    .map((tag) => ({
-      tag,
-      meta: seasonalMeta[tag],
-      packages: featured.filter((p) => p.seasonalTag === tag),
-    }))
-    .filter((g) => g.meta && g.packages.length > 0);
+    .map((tag) => {
+      const meta = initialSeasonalTags.find((t) => t.name === tag);
+      return {
+        tag,
+        label: meta?.label || tag,
+        icon: meta ? getIconComponent(meta.iconName) : Icons.Sun,
+        packages: featured.filter((p) => p.seasonalTag === tag),
+      };
+    })
+    .filter((g) => g.packages.length > 0);
 
   return (
     <section className="py-20 sm:py-28 bg-white">
@@ -46,8 +47,8 @@ export function SeasonalSection() {
         </div>
 
         {/* Rows */}
-        {grouped.map(({ tag, meta, packages }) => (
-          <SeasonalRow key={tag} label={meta.label} icon={meta.icon} packages={packages} />
+        {grouped.map(({ tag, label, icon, packages }) => (
+          <SeasonalRow key={tag} label={label} icon={icon} packages={packages} />
         ))}
       </div>
     </section>

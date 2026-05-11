@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { fetchGuides, fetchGuideCategories, fetchFeaturedGuides } from "@/lib/data";
 import { Search, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { cn } from "@urbandetox/utils";
 import { GuideHero } from "./components/GuideHero";
 import { GuideCard } from "./components/GuideCard";
 import { FeaturedGuide } from "./components/FeaturedGuide";

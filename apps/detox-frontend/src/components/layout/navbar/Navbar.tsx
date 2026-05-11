@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@urbandetox/utils";
 import { useNavbarTheme } from "./hooks/use-navbar-theme";
 import { NavbarLogo } from "./NavbarLogo";
 import { NavbarNavLinks } from "./NavbarNavLinks";

@@ -3,7 +3,8 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Compass, Users, ShieldCheck, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { cn } from "@urbandetox/utils";
+import { containerVariants, itemVariants } from "@/lib/animations";
 
 const reasons = [
   {
@@ -36,15 +37,7 @@ const reasons = [
   },
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.12 } },
-};
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" as const } },
-};
 
 function ReasonCard({
   num,

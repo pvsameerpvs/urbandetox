@@ -8,7 +8,7 @@ import { formatPrice } from "@urbandetox/utils";
 import { MapPin, Clock, ArrowRight, Plus, Tag } from "lucide-react";
 import { getDestinationBySlug, deletePackage } from "@/lib/admin-data";
 import { useAdminPackages } from "@/hooks/use-admin-data";
-import { safeImageUrl } from "@/lib/image-url";
+import { safeImageUrl } from "@urbandetox/utils";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { toast } from "sonner";
 

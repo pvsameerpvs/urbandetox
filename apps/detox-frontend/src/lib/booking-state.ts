@@ -48,11 +48,6 @@ export function loadBookingState(departureCode: string): BookingState | null {
   }
 }
 
-export function clearBookingState(departureCode: string) {
-  if (typeof window === "undefined") return;
-  localStorage.removeItem(STORAGE_KEY(departureCode));
-}
-
 export function createPrimaryTraveler(
   personal: {
     fullName: string;

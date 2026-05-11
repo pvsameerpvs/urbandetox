@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { format, parseISO } from "date-fns";
-import { cn } from "@/lib/utils";
+import { cn } from "@urbandetox/utils";
 import { Calendar, MapPin, CheckCircle2, AlertCircle, ArrowRight, X } from "lucide-react";
 import { motion } from "framer-motion";
 

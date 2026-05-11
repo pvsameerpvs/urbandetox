@@ -1,10 +1,10 @@
 import { Package, Departure, GuideArticle, Destination } from "@urbandetox/utils";
 import { destinations, getDestinationBySlug } from "@/data/destinations";
-import { getPackageBySlug, getFeaturedPackages, getAllPackages, getPackagesByDestination } from "@/data/packages";
+import { getPackageBySlug, getFeaturedPackages, getPackagesByDestination } from "@/data/packages";
 import { getDeparturesByPackageSlug, getDepartureByCode, getUpcomingDepartures } from "@/data/departures";
-import { getGuideBySlug, getFeaturedGuides, getAllGuides, getRelatedGuides, getGuideCategories, getGuidesByCategory } from "@/data/guides";
+import { getGuideBySlug, getFeaturedGuides, getAllGuides, getRelatedGuides, getGuideCategories } from "@/data/guides";
 import { testimonials, getTestimonials } from "@/data/testimonials";
-import { faqs, getFaqsByCategory, getAllFaqs, getFaqCategories } from "@/data/faqs";
+import { faqs, getAllFaqs, getFaqCategories } from "@/data/faqs";
 
 // This is the smart data layer.
 // Later, replace these functions with Supabase / API calls.
@@ -16,10 +16,6 @@ export function fetchDestinations(): Destination[] {
 
 export function fetchDestinationBySlug(slug: string): Destination | undefined {
   return getDestinationBySlug(slug);
-}
-
-export function fetchPackages(): Package[] {
-  return getAllPackages();
 }
 
 export function fetchPackageBySlug(slug: string): Package | undefined {
@@ -66,16 +62,8 @@ export function fetchGuideCategories(): string[] {
   return getGuideCategories();
 }
 
-export function fetchGuidesByCategory(category: string): GuideArticle[] {
-  return getGuidesByCategory(category);
-}
-
 export function fetchTestimonials(limit = 4): typeof testimonials {
   return getTestimonials(limit);
-}
-
-export function fetchFaqs(category?: string): typeof faqs {
-  return getFaqsByCategory(category);
 }
 
 export function fetchFaqCategories(): string[] {

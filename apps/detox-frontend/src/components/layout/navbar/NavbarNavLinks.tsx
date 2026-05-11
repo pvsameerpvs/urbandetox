@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn } from "@urbandetox/utils";
 import { NAV_LINKS } from "./nav-data";
 import { useActiveLink } from "./use-active-link";
 

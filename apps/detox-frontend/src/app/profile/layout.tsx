@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { cn } from "@urbandetox/utils";
 import { User, Heart, FileText, PhoneCall, ArrowLeft, MapPin, Compass } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 

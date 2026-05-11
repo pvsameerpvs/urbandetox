@@ -10,13 +10,6 @@ export const BRAND = {
   address: "Bangalore, India",
 } as const;
 
-export const SEASONAL_TAGS = [
-  "Summer Escape",
-  "Monsoon Detox",
-  "Coastal Detox",
-  "Extended Detox",
-] as const;
-
 export const DESTINATIONS = [
   { label: "All Destinations", value: "all" },
   { label: "Kodaikanal", value: "kodaikanal" },
