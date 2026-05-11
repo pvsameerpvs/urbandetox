@@ -1,20 +1,57 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
-import { Card, Button } from "@urbandetox/ui";
-import { formatPrice } from "@urbandetox/utils";
-import { CalendarDays, Plus, Users, AlertCircle } from "lucide-react";
+import { Card, CardContent, Button } from "@urbandetox/ui";
+import {
+  Plus,
+  Route,
+  CheckCircle2,
+  AlertCircle,
+  XCircle,
+  Clock,
+  Users,
+  Search,
+} from "lucide-react";
 import { getPackageBySlug, getDestinationBySlug, deleteDeparture } from "@/lib/admin-data";
 import { useAdminDepartures } from "@/hooks/use-admin-data";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { toast } from "sonner";
+import { DepartureTable } from "./components/DepartureTable";
 
 export default function DeparturesPage() {
   const allDepartures = useAdminDepartures();
-  const departures = [...allDepartures].sort((a, b) => a.startDate.localeCompare(b.startDate));
+  const [search, setSearch] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingId, setPendingId] = useState<string | null>(null);
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    let list = [...allDepartures];
+    if (q) {
+      list = list.filter((d) => {
+        const pkg = getPackageBySlug(d.packageSlug);
+        const dest = getDestinationBySlug(d.destinationSlug);
+        return (
+          d.code.toLowerCase().includes(q) ||
+          pkg?.title?.toLowerCase().includes(q) ||
+          dest?.name?.toLowerCase().includes(q) ||
+          d.startDate.includes(q)
+        );
+      });
+    }
+    return list.sort((a, b) => a.startDate.localeCompare(b.startDate));
+  }, [allDepartures, search]);
+
+  const stats = useMemo(() => {
+    const total = allDepartures.length;
+    const open = allDepartures.filter((d) => d.status === "open").length;
+    const filling = allDepartures.filter((d) => d.status === "filling").length;
+    const full = allDepartures.filter((d) => d.status === "full").length;
+    const closed = allDepartures.filter((d) => d.status === "closed").length;
+    const totalSeats = allDepartures.reduce((sum, d) => sum + d.seatsTotal, 0);
+    return { total, open, filling, full, closed, totalSeats };
+  }, [allDepartures]);
 
   const handleDeleteClick = (id: string) => {
     setPendingId(id);
@@ -36,6 +73,7 @@ export default function DeparturesPage() {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Departures</h1>
@@ -46,81 +84,95 @@ export default function DeparturesPage() {
         </Button>
       </div>
 
-      <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border/40 bg-secondary/[0.03]">
-                <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Code</th>
-                <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Package</th>
-                <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Dates</th>
-                <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Price</th>
-                <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Seats</th>
-                <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Status</th>
-                <th className="text-right px-4 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {departures.map((dep) => {
-                const pkg = getPackageBySlug(dep.packageSlug);
-                const dest = getDestinationBySlug(dep.destinationSlug);
-                const isFull = dep.status === "full";
-                const isFilling = dep.status === "filling";
-                return (
-                  <tr key={dep.id} className="border-b border-border/30 hover:bg-secondary/[0.02] transition-colors">
-                    <td className="px-4 py-3 font-mono text-xs font-medium">{dep.code}</td>
-                    <td className="px-4 py-3">
-                      <p className="font-medium text-xs">{pkg?.title}</p>
-                      <p className="text-[10px] text-muted-foreground">{dest?.name}</p>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-1.5 text-xs">
-                        <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" />
-                        <span>{dep.startDate}</span>
-                        <span className="text-muted-foreground">→</span>
-                        <span>{dep.endDate}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <p className="text-xs font-bold">{formatPrice(dep.offerPrice ?? dep.price)}</p>
-                      {dep.offerPrice && dep.offerPrice < dep.price && (
-                        <p className="text-[10px] text-muted-foreground line-through">{formatPrice(dep.price)}</p>
-                      )}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-1.5 text-xs">
-                        <Users className="h-3.5 w-3.5 text-muted-foreground" />
-                        <span className={isFilling ? "text-amber-600 font-medium" : isFull ? "text-red-500 font-medium" : ""}>
-                          {dep.seatsLeft}/{dep.seatsTotal}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                        dep.status === "open" ? "bg-emerald-100 text-emerald-700" :
-                        dep.status === "filling" ? "bg-amber-100 text-amber-700" :
-                        dep.status === "full" ? "bg-red-100 text-red-700" :
-                        "bg-muted text-muted-foreground"
-                      }`}>
-                        {dep.status === "filling" && <AlertCircle className="h-3 w-3" />}
-                        {dep.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Button variant="ghost" size="sm" className="h-7 text-xs" asChild>
-                          <Link href={`/departures/${dep.id}/edit`}>Edit</Link>
-                        </Button>
-                        <button onClick={() => handleDeleteClick(dep.id)} className="text-xs text-red-500 hover:text-red-700 transition-colors px-2">Delete</button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+      {/* Stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+        <Card className="border border-border/40 bg-white rounded-2xl">
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-brand/10 flex items-center justify-center">
+              <Route className="h-5 w-5 text-brand" />
+            </div>
+            <div>
+              <p className="text-xl font-bold leading-none">{stats.total}</p>
+              <p className="text-xs text-muted-foreground mt-1">Total Departures</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border border-border/40 bg-white rounded-2xl">
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+              <CheckCircle2 className="h-5 w-5 text-emerald-700" />
+            </div>
+            <div>
+              <p className="text-xl font-bold leading-none">{stats.open}</p>
+              <p className="text-xs text-muted-foreground mt-1">Open</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border border-border/40 bg-white rounded-2xl">
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-amber-100 flex items-center justify-center">
+              <AlertCircle className="h-5 w-5 text-amber-700" />
+            </div>
+            <div>
+              <p className="text-xl font-bold leading-none">{stats.filling}</p>
+              <p className="text-xs text-muted-foreground mt-1">Filling Fast</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border border-border/40 bg-white rounded-2xl">
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-red-100 flex items-center justify-center">
+              <XCircle className="h-5 w-5 text-red-700" />
+            </div>
+            <div>
+              <p className="text-xl font-bold leading-none">{stats.full}</p>
+              <p className="text-xs text-muted-foreground mt-1">Fully Booked</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border border-border/40 bg-white rounded-2xl">
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-gray-100 flex items-center justify-center">
+              <Clock className="h-5 w-5 text-gray-600" />
+            </div>
+            <div>
+              <p className="text-xl font-bold leading-none">{stats.closed}</p>
+              <p className="text-xs text-muted-foreground mt-1">Closed</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border border-border/40 bg-white rounded-2xl">
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-purple-100 flex items-center justify-center">
+              <Users className="h-5 w-5 text-purple-700" />
+            </div>
+            <div>
+              <p className="text-xl font-bold leading-none">{stats.totalSeats}</p>
+              <p className="text-xs text-muted-foreground mt-1">Total Seats</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Search */}
+      <div className="relative max-w-sm">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <input
+          type="text"
+          placeholder="Search by code, package, destination..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full h-11 pl-10 pr-4 rounded-xl border border-border/40 bg-white text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand/20"
+        />
+      </div>
+
+      {/* Table */}
+      <DepartureTable
+        departures={filtered}
+        getPackageBySlug={getPackageBySlug}
+        getDestinationBySlug={getDestinationBySlug}
+        onDeleteClick={handleDeleteClick}
+      />
 
       <ConfirmDialog
         open={confirmOpen}
