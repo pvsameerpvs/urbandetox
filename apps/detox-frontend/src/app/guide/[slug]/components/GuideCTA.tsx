@@ -3,15 +3,46 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 
 export function GuideCTA() {
   return (
-    <div className="mt-12 rounded-xl bg-brand p-6 text-center sm:p-8">
-      <h3 className="text-xl font-semibold text-white mb-2">Ready to detox?</h3>
-      <p className="text-white/80 mb-4">Explore upcoming departures and book your reset.</p>
-      <Button className="bg-white text-brand hover:bg-white/90" asChild>
-        <Link href="/detox">Explore Detox <ArrowRight className="ml-2 h-4 w-4" /></Link>
-      </Button>
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6 }}
+      className="relative mt-12 sm:mt-16 rounded-2xl overflow-hidden"
+    >
+      <div className="absolute inset-0 bg-sidebar-dark" />
+      <div
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
+        }}
+      />
+      <div className="relative z-10 px-6 py-10 sm:px-10 sm:py-14 text-center">
+        <div className="inline-flex items-center gap-3 mb-5">
+          <span className="h-px w-8 bg-white/40" />
+          <span className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">Take Action</span>
+          <span className="h-px w-8 bg-white/40" />
+        </div>
+        <h3 className="text-2xl sm:text-3xl font-bold text-white mb-3 leading-tight">
+          Ready for your <span className="text-brand">reset?</span>
+        </h3>
+        <p className="text-sm sm:text-base text-white/60 leading-relaxed max-w-md mx-auto mb-6">
+          Browse upcoming detoxes, pick your destination, and step into curated offbeat escapes designed for real disconnection.
+        </p>
+        <Button
+          className="rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-12 px-8 text-sm font-semibold shadow-lg shadow-brand/20"
+          asChild
+        >
+          <Link href="/detox">
+            Explore Detoxes <ArrowRight className="ml-2 h-4 w-4" />
+          </Link>
+        </Button>
+      </div>
+    </motion.div>
   );
 }
