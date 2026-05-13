@@ -1,11 +1,12 @@
 "use client";
 
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+;
+;
+;
+;
 import { MapPin, Camera, Upload } from "lucide-react";
 import type { CommonDetails } from "@/lib/booking-state";
+import { Label, Button, Checkbox, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@urbandetox/ui"
 
 interface StepFinalConfirmProps {
   common: CommonDetails;

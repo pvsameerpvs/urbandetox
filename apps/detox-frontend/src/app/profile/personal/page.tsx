@@ -2,15 +2,16 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+;
+;
+;
 import { ProfileSectionHeader } from "../components/ProfileSectionHeader";
 import { IconInput } from "../components/IconInput";
 import { SaveButton } from "../components/SaveButton";
 import { useUserProfile } from "@/lib/user-profile";
 import { cn } from "@urbandetox/utils";
 import { User, Phone, Mail, CalendarDays, Camera } from "lucide-react";
+import { Card, CardContent, Button, Avatar, AvatarFallback } from "@urbandetox/ui"
 
 const genderOptions = [
   { value: "male", label: "Male" },

@@ -3,7 +3,7 @@
 import { useState, useEffect, startTransition } from "react";
 import { useParams, notFound } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
+;
 import { BookingHeader } from "../../components/BookingHeader";
 import { BookingHero } from "../../components/BookingHero";
 import { Stepper } from "../../components/Stepper";
@@ -19,6 +19,7 @@ import { loadBookingState, saveBookingState, type Traveler, type CommonDetails }
 import { fetchDepartureByCode, fetchPackageBySlug, fetchDestinationBySlug } from "@/lib/data";
 import { formatDateRange } from "@urbandetox/utils";
 import { Users, Utensils, PhoneCall, FileCheck } from "lucide-react";
+import { Card, CardContent } from "@urbandetox/ui"
 
 const steps = [
   { id: 1, label: "Travel Party", icon: Users, desc: "Review travelers" },

@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+;
+;
+;
+;
 import {
   Calendar,
   MapPin,
@@ -15,6 +15,7 @@ import {
 import { motion } from "framer-motion";
 import { useUserProfile } from "@/lib/user-profile";
 import { quickLinks, recentBookings } from "./data";
+import { Card, CardContent, Badge, Avatar, AvatarFallback, Button } from "@urbandetox/ui"
 
 export default function ProfileDashboard() {
   const { profile } = useUserProfile();

@@ -44,8 +44,7 @@ interface DepartureFormProps {
 
 export function DepartureForm({ mode, initialData, onSubmit, submitLabel, cancelHref, packages, destinations }: DepartureFormProps) {
   const form = useForm<DepartureFormData>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(schema as any),
+    resolver: zodResolver(schema),
     defaultValues: {
       code: initialData?.code || "",
       packageSlug: initialData?.packageSlug || "",

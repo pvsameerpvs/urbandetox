@@ -2,15 +2,16 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+;
+;
+;
+;
 import { ProfileSectionHeader } from "../components/ProfileSectionHeader";
 import { IconInput } from "../components/IconInput";
 import { SaveButton } from "../components/SaveButton";
 import { useUserProfile } from "@/lib/user-profile";
 import { PhoneCall, User, Heart, AlertCircle, Phone, Mail, Plus, Trash2, CheckCircle2 } from "lucide-react";
+import { Card, CardContent, Button, Badge, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@urbandetox/ui"
 
 const relationOptions = [
   { value: "spouse", label: "Spouse / Partner" },

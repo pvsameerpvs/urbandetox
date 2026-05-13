@@ -1,8 +1,9 @@
 
-import { Card, CardContent } from "@/components/ui/card";
+;
 import { Plane, Mountain, Clock } from "lucide-react";
 import { parseISO, startOfToday } from "date-fns";
 import type { Trip } from "./TripCard";
+import { Card, CardContent } from "@urbandetox/ui"
 
 function getDaysUntil(startDate: string): number {
   const start = parseISO(startDate);

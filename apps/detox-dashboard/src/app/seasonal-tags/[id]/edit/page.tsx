@@ -39,8 +39,7 @@ export default function EditSeasonalTagPage() {
   const tag = tags.find((t) => t.id === id);
 
   const form = useForm<FormData>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(schema as any),
+    resolver: zodResolver(schema),
     defaultValues: {
       name: "",
       iconName: "Sun",

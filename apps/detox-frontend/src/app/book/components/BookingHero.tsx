@@ -1,8 +1,9 @@
 "use client";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Badge } from "@/components/ui/badge";
+;
 import { MapPin, Clock, Calendar } from "lucide-react";
+import { Badge } from "@urbandetox/ui"
 
 interface BookingHeroProps {
   image: string;

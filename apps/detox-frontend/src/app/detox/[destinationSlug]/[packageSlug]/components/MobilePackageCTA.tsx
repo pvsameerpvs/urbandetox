@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+;
 import { formatPrice } from "@urbandetox/utils";
 import { ArrowRight } from "lucide-react";
+import { Button } from "@urbandetox/ui"
 
 interface MobilePackageCTAProps {
   startingPrice: number;

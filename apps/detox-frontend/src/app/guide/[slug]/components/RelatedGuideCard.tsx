@@ -3,9 +3,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Card } from "@/components/ui/card";
+;
 import { fetchGuideBySlug } from "@/lib/data";
 import { BookOpen, ArrowRight } from "lucide-react";
+import { Card } from "@urbandetox/ui"
 
 interface GuideLinkProps {
   slug: string;

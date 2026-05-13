@@ -1,9 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
+;
 import { Mountain, Users, MapPin, Sunrise } from "lucide-react";
 import { containerVariants, itemVariants } from "@/lib/animations";
+import { Card, CardContent } from "@urbandetox/ui"
 
 const stats = [
   { label: "Detoxes Hosted", value: "50+", icon: Mountain },
@@ -11,8 +12,6 @@ const stats = [
   { label: "Destinations", value: "8", icon: MapPin },
   { label: "Years Running", value: "3", icon: Sunrise },
 ];
-
-
 
 export function StatsBar() {
   return (

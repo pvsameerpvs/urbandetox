@@ -1,7 +1,8 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
+;
 import { Check, Loader2 } from "lucide-react";
+import { Card, CardContent } from "@urbandetox/ui"
 
 interface OnboardingSubmittedProps {
   isVisible: boolean;

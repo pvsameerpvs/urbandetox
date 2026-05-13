@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+;
+;
 import { fetchGuides, fetchGuideCategories, fetchFeaturedGuides } from "@/lib/data";
 import { Search, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,6 +10,7 @@ import { cn } from "@urbandetox/utils";
 import { GuideHero } from "./components/GuideHero";
 import { GuideCard } from "./components/GuideCard";
 import { FeaturedGuide } from "./components/FeaturedGuide";
+import { Button, Input } from "@urbandetox/ui"
 
 export default function GuideListingPage() {
   const guides = useMemo(() => fetchGuides(), []);

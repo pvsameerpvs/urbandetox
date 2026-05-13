@@ -1,8 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
+;
 import { Check, X } from "lucide-react";
+import { Card, CardContent } from "@urbandetox/ui"
 
 interface InclusionsSectionProps {
   included: string[];

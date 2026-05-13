@@ -10,11 +10,9 @@ import {
   MapPin,
   ArrowRight,
   ExternalLink,
-  Wallet,
-  CreditCard,
-  Banknote,
 } from "lucide-react";
 import { cn } from "@urbandetox/utils";
+import { PaymentBadge } from "@/components/admin/PaymentBadge";
 import type { BookingWithMeta } from "@/lib/bookings";
 
 interface BookingTableProps {
@@ -130,24 +128,4 @@ export function BookingTable({ bookings }: BookingTableProps) {
   );
 }
 
-function PaymentBadge({ status }: { status?: string }) {
-  if (status === "paid") {
-    return (
-      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600">
-        <CreditCard className="h-3 w-3" /> Paid
-      </span>
-    );
-  }
-  if (status === "cod") {
-    return (
-      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-blue-600">
-        <Banknote className="h-3 w-3" /> COD
-      </span>
-    );
-  }
-  return (
-    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-muted-foreground">
-      <Wallet className="h-3 w-3" /> Pending
-    </span>
-  );
-}
+

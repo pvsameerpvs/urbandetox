@@ -3,8 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Badge } from "@/components/ui/badge";
+;
 import { BookOpen, MapPin, Clock, ArrowLeft } from "lucide-react";
+import { Badge } from "@urbandetox/ui"
 
 interface GuideHeroProps {
   title: string;

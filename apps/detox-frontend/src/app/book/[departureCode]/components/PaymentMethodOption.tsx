@@ -1,8 +1,9 @@
 "use client";
 
 import { cn } from "@urbandetox/utils";
-import { Badge } from "@/components/ui/badge";
+;
 import { CheckCircle2 } from "lucide-react";
+import { Badge } from "@urbandetox/ui"
 
 type PaymentMethod = "razorpay" | "cod";
 

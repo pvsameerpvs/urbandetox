@@ -1,14 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/card";
+;
 import { fetchTestimonials } from "@/lib/data";
 import { Star, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@urbandetox/utils";
 import { containerVariants, itemVariants } from "@/lib/animations";
-
-
+import { Card, CardContent } from "@urbandetox/ui"
 
 export function TestimonialsSection() {
   const testimonials = fetchTestimonials(4);

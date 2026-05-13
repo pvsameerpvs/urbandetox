@@ -2,14 +2,15 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+;
+;
+;
 import { Progress } from "@/components/ui/progress";
 import { format, parseISO } from "date-fns";
 import { cn } from "@urbandetox/utils";
 import { Calendar, MapPin, CheckCircle2, AlertCircle, ArrowRight, X } from "lucide-react";
 import { motion } from "framer-motion";
+import { Card, CardContent, Badge, Button } from "@urbandetox/ui"
 
 export interface Trip {
   id: string;

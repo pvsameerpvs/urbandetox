@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+;
+;
+;
 import { Check, GraduationCap, ArrowRight } from "lucide-react";
+import { Button, Card, CardContent, Separator } from "@urbandetox/ui"
 
 const features = [
   "Faculty oversight integration",

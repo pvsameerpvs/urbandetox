@@ -1,9 +1,9 @@
 import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+;
+;
 import { Check } from "lucide-react";
 import { Calendar, MapPin, Users, Clock } from "lucide-react";
-
+import { Card, CardContent, Separator } from "@urbandetox/ui"
 
 interface PriceLine {
   label: string;

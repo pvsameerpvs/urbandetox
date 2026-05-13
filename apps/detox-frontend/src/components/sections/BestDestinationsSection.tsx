@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
+;
 import { motion } from "framer-motion";
 import { MapPin, ArrowRight, Compass, Images } from "lucide-react";
 import { fetchDestinations, fetchPackagesByDestination } from "@/lib/data";
 import { cn } from "@urbandetox/utils";
+import { Badge } from "@urbandetox/ui"
 
 const destMeta: Record<string, { label: string; featured?: boolean }> = {
   kodaikanal: { label: "Signature", featured: true },

@@ -33,8 +33,7 @@ export default function NewSeasonalTagPage() {
   const router = useRouter();
 
   const form = useForm<FormData>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(schema as any),
+    resolver: zodResolver(schema),
     defaultValues: {
       name: "",
       iconName: "Sun",

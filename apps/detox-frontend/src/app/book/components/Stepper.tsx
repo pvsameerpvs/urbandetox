@@ -1,8 +1,9 @@
 "use client";
 import { motion } from "framer-motion";
 import { cn } from "@urbandetox/utils";
-import { Card, CardContent } from "@/components/ui/card";
+;
 import { Check, LucideIcon } from "lucide-react";
+import { Card, CardContent } from "@urbandetox/ui"
 
 interface Step {
   id: number;

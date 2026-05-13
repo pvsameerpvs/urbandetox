@@ -1,5 +1,6 @@
-import { Card, CardContent } from "@/components/ui/card";
+;
 import { Calendar, Users, MapPin, MessageCircle, Download } from "lucide-react";
+import { Card, CardContent } from "@urbandetox/ui"
 
 interface NextStep {
   icon: typeof Calendar;

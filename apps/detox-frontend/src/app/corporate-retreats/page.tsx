@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+;
+;
+;
 import { Check, Building2, ArrowRight } from "lucide-react";
+import { Button, Card, CardContent, Separator } from "@urbandetox/ui"
 
 const inclusions = [
   "Custom itinerary design",

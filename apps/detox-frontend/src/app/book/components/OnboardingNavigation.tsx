@@ -1,5 +1,6 @@
-import { Button } from "@/components/ui/button";
+;
 import { ChevronLeft, ChevronRight, Check, Loader2 } from "lucide-react";
+import { Button } from "@urbandetox/ui"
 
 interface OnboardingNavigationProps {
   step: number;

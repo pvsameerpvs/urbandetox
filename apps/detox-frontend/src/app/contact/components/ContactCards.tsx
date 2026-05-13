@@ -2,26 +2,18 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@urbandetox/utils";
 import { Mail, Phone, MessageCircle, MapPin } from "lucide-react";
 import { containerVariants, itemVariants } from "@/lib/animations";
-
-const BRAND = {
-  email: "hello@urbandetox.in",
-  phone: "+91-98765-43210",
-  whatsapp: "https://wa.me/919876543210",
-  address: "Bangalore, India",
-};
+import { Card, CardContent } from "@urbandetox/ui";
+import { BRAND } from "@urbandetox/utils";
 
 const cards = [
-  { icon: Mail, label: "Email", value: BRAND.email, href: `mailto:${BRAND.email}`, color: "bg-blue-50 text-blue-600" },
-  { icon: Phone, label: "Phone", value: BRAND.phone, href: `tel:${BRAND.phone.replace(/-/g, "")}`, color: "bg-emerald-50 text-emerald-600" },
-  { icon: MessageCircle, label: "WhatsApp", value: "Chat now", href: BRAND.whatsapp, external: true, color: "bg-green-50 text-green-600" },
+  { icon: Mail, label: "Email", value: BRAND.contact.email, href: `mailto:${BRAND.contact.email}`, color: "bg-blue-50 text-blue-600" },
+  { icon: Phone, label: "Phone", value: BRAND.contact.phone, href: `tel:${BRAND.contact.phone.replace(/-/g, "")}`, color: "bg-emerald-50 text-emerald-600" },
+  { icon: MessageCircle, label: "WhatsApp", value: "Chat now", href: BRAND.contact.whatsapp, external: true, color: "bg-green-50 text-green-600" },
   { icon: MapPin, label: "Base", value: BRAND.address, color: "bg-amber-50 text-amber-600" },
 ];
-
-
 
 export function ContactCards() {
   return (

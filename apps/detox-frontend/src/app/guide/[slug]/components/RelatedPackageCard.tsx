@@ -3,10 +3,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
+;
 import { fetchPackageBySlug, fetchDestinationBySlug } from "@/lib/data";
 import { formatPrice } from "@urbandetox/utils";
 import { MapPin, Clock, ArrowRight } from "lucide-react";
+import { Card, CardContent } from "@urbandetox/ui"
 
 interface PackageLinkProps {
   slug: string;

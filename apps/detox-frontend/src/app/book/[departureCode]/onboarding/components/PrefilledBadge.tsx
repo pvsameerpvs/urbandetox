@@ -1,7 +1,8 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
+;
 import { Sparkles } from "lucide-react";
+import { Badge } from "@urbandetox/ui"
 
 export function PrefilledBadge() {
   return (

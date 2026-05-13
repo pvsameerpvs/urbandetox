@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+;
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { Button } from "@urbandetox/ui"
 
 export function GuideCTA() {
   return (

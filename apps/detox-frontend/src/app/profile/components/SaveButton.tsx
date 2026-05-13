@@ -1,8 +1,9 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+;
+;
 import { Save } from "lucide-react";
+import { Button, Badge } from "@urbandetox/ui"
 
 interface SaveButtonProps {
   label: string;

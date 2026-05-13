@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Card } from "@/components/ui/card";
+;
 import { motion } from "framer-motion";
 import { MapPin, ArrowRight } from "lucide-react";
 import { fetchPackagesByDestination } from "@/lib/data";
 import type { Destination } from "@urbandetox/utils";
+import { Card } from "@urbandetox/ui"
 
 interface DestinationBrowseCardProps {
   destination: Destination;

@@ -1,5 +1,6 @@
-import { Separator } from "@/components/ui/separator";
+;
 import { LucideIcon } from "lucide-react";
+import { Separator } from "@urbandetox/ui"
 
 interface ProfileSectionHeaderProps {
   icon: LucideIcon;

@@ -1,32 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import {
-  Pencil, Trash2, ArrowUpDown, Sun, CloudRain, Waves, Mountain,
-  Snowflake, Moon, CloudSun, CloudLightning, Wind, Umbrella,
-  TreePine, Flame, Leaf, Flower2, Heart, Star, Sparkles,
-  Compass, MapPin, Tent, Anchor, Plane, Car, Bike,
-  Camera, Music, Coffee, Sunrise, Sunset, ThermometerSun,
-  Droplets, Bird, TreeDeciduous, CloudFog, PartyPopper,
-  Gem, Crown, Award, Zap,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { Pencil, Trash2, ArrowUpDown } from "lucide-react";
 import { cn } from "@urbandetox/utils";
 import type { SeasonalTag } from "@urbandetox/utils";
-
-const ICONS: Record<string, LucideIcon> = {
-  Sun, CloudRain, Waves, Mountain, Snowflake, Moon, CloudSun,
-  CloudLightning, Wind, Umbrella, TreePine, Flame, Leaf, Flower2,
-  Heart, Star, Sparkles, Compass, MapPin, Tent, Anchor, Plane,
-  Car, Bike, Camera, Music, Coffee, Sunrise, Sunset, ThermometerSun,
-  Droplets, Bird, TreeDeciduous, CloudFog, PartyPopper, Gem, Crown,
-  Award, Zap,
-};
-
-function TagIcon({ name }: { name: string }) {
-  const Icon = ICONS[name] || Sun;
-  return <Icon className="h-6 w-6 text-brand" />;
-}
+import { TagIcon } from "./TagIcon";
 
 interface SeasonalTagCardProps {
   tag: SeasonalTag;

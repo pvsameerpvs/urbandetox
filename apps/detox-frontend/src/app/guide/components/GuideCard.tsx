@@ -3,10 +3,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+;
+;
 import { BookOpen, Sparkles, Clock, ArrowRight } from "lucide-react";
 import { cn } from "@urbandetox/utils";
+import { Card, CardContent, Badge } from "@urbandetox/ui"
 
 interface Guide {
   id: string;

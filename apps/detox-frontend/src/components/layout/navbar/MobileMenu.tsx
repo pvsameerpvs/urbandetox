@@ -5,11 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Menu, X, Compass, BookOpen, Info, Phone, LogIn, MapPin, ArrowRight, User, LogOut } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+;
+;
+;
 import { cn } from "@urbandetox/utils";
 import { useUserProfile } from "@/lib/user-profile";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, Button, Avatar, AvatarFallback } from "@urbandetox/ui"
 
 const navLinks = [
   { href: "/detox", label: "Explore Detox", icon: Compass, desc: "Browse all retreats" },

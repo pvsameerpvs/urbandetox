@@ -4,12 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
+;
+;
+;
+;
 import { useUserProfile } from "@/lib/user-profile";
 import { Mail, Lock, Smartphone, ArrowRight, Eye, EyeOff, Chrome, ShieldCheck, Leaf, User, Fingerprint } from "lucide-react";
+import { Button, Input, Label, Separator } from "@urbandetox/ui"
 
 export function LoginForm() {
   const router = useRouter();
@@ -44,7 +45,7 @@ export function LoginForm() {
       </div>
 
       <Button variant="outline" className="w-full h-10 rounded-xl border-border/60 text-sm font-medium hover:bg-secondary mb-4">
-        <Chrome className="mr-2 h-4 w-4 text-[#4285F4]" /> Continue with Google
+        <Chrome className="mr-2 h-4 w-4 text-blue-500" /> Continue with Google
       </Button>
 
       <div className="relative mb-4">

@@ -1,8 +1,9 @@
 "use client";
 import { motion } from "framer-motion";
 import { CheckCircle, ArrowRight, MessageCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
+;
 import Link from "next/link";
+import { Button } from "@urbandetox/ui"
 
 export function SuccessHero() {
   return (

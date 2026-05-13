@@ -1,12 +1,13 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
+;
 import { motion } from "framer-motion";
 import { ContactHero } from "./components/ContactHero";
 import { ContactCards } from "./components/ContactCards";
 import { ContactForm } from "./components/ContactForm";
 import { SideInfo } from "./components/SideInfo";
 import { CheckCircle2, Headphones, Clock } from "lucide-react";
+import { Card, CardContent } from "@urbandetox/ui"
 
 export default function ContactPage() {
   return (

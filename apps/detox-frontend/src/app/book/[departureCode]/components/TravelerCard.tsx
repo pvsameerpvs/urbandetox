@@ -1,13 +1,14 @@
 "use client";
 
 import { cn } from "@urbandetox/utils";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+;
+;
+;
+;
+;
 import type { Traveler } from "@/lib/booking-state";
 import { User, Users, Phone, ChevronDown, ChevronUp, Check, AlertCircle } from "lucide-react";
+import { Button, Input, Label, Badge, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@urbandetox/ui"
 
 interface TravelerCardProps {
   traveler: Traveler;

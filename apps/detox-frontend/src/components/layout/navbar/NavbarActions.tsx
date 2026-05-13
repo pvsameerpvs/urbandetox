@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+;
 import { ProfileDropdown } from "./ProfileDropdown";
 import { useUserProfile } from "@/lib/user-profile";
+import { Button } from "@urbandetox/ui"
 
 interface NavbarActionsProps {
   isLightMode: boolean;

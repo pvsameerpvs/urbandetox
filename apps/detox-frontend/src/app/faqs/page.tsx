@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+;
 import { fetchFaqCategories, fetchAllFaqs } from "@/lib/data";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@urbandetox/ui"
 
 export default function FaqsPage() {
   const categories = fetchFaqCategories();

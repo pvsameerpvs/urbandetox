@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+;
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+;
+;
+;
 import { useUserProfile } from "@/lib/user-profile";
 import { User, MapPin, Settings, LogOut, ChevronDown, Compass } from "lucide-react";
+import { Avatar, AvatarFallback, Button, Badge, Separator } from "@urbandetox/ui"
 
 export function ProfileDropdown() {
   const { profile, logout } = useUserProfile();

@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Badge } from "@/components/ui/badge";
+;
 import { MapPin } from "lucide-react";
+import { Badge } from "@urbandetox/ui"
 
 export function StorySection() {
   return (

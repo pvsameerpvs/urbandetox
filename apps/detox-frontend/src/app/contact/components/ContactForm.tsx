@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+;
+;
+;
+;
 import { Clock, CheckCircle2, Send } from "lucide-react";
+import { Button, Input, Label, Textarea } from "@urbandetox/ui"
 
 export function ContactForm() {
   const [sent, setSent] = useState(false);

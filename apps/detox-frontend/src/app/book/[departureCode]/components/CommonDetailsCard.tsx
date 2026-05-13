@@ -1,10 +1,11 @@
 "use client";
 
-import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
+;
+;
+;
 import type { CommonDetails } from "@/lib/booking-state";
 import { MessageSquare, HelpCircle } from "lucide-react";
+import { Label, Card, CardContent, Checkbox } from "@urbandetox/ui"
 
 interface CommonDetailsProps {
   common: CommonDetails;

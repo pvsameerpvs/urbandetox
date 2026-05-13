@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams, notFound } from "next/navigation";
 import { Card, CardContent, Badge } from "@urbandetox/ui";
+import { InfoItem } from "../components/InfoItem";
 import {
   ArrowLeft,
   Phone,
@@ -136,16 +137,6 @@ export default function UserDetailPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
-  );
-}
-
-function InfoItem({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
-  return (
-    <div className="flex items-center gap-2 text-sm">
-      <span className="text-muted-foreground">{icon}</span>
-      <span className="text-muted-foreground text-xs">{label}:</span>
-      <span className="font-medium">{value || "—"}</span>
     </div>
   );
 }

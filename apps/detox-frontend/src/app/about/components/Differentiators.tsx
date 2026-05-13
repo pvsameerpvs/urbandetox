@@ -1,9 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
+;
 import { Compass, Users, Heart, Leaf } from "lucide-react";
 import { containerVariants, itemVariants } from "@/lib/animations";
+import { Card, CardContent } from "@urbandetox/ui"
 
 const features = [
   { icon: Compass, title: "Offbeat First", description: "We skip tourist traps. Every destination is chosen for quiet, beauty, and real disconnection. You will not find crowds here." },
@@ -11,8 +12,6 @@ const features = [
   { icon: Heart, title: "Local Stays", description: "Family-run cottages and homestays. Clean, safe, and authentic. Not luxury, but real — with hosts who care." },
   { icon: Leaf, title: "Guided Stillness", description: "Nature walks, silence sessions, and intentional downtime. Not a tour. A reset. Every activity has a purpose." },
 ];
-
-
 
 export function Differentiators() {
   return (

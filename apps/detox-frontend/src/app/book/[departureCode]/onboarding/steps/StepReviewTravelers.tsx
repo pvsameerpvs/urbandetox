@@ -1,9 +1,10 @@
 "use client";
 
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+;
+;
 import { User, Phone } from "lucide-react";
 import type { Traveler } from "@/lib/booking-state";
+import { Label, Input } from "@urbandetox/ui"
 
 interface StepReviewTravelersProps {
   travelers: Traveler[];

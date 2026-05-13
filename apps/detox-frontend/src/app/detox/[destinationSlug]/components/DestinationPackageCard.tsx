@@ -2,30 +2,22 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+;
+;
+;
 import { formatPrice, formatDateRange } from "@urbandetox/utils";
 import { Clock, Calendar as CalendarIcon, Users, ArrowRight, MapPin } from "lucide-react";
 import type { Package } from "@urbandetox/utils";
 import type { Departure } from "@urbandetox/utils";
 import type { Destination } from "@urbandetox/utils";
+import { Card, CardContent, Badge, Button } from "@urbandetox/ui";
+import { StatusBadge } from "@/components/StatusBadge";
 
 interface DestinationPackageCardProps {
   pkg: Package;
   destination: Destination;
   upcomingCount: number;
   nextDeparture: Departure | null;
-}
-
-function StatusBadge({ status, seatsLeft }: { status: string; seatsLeft: number }) {
-  if (status === "full") {
-    return <Badge variant="secondary" className="bg-muted/80 text-muted-foreground backdrop-blur-sm text-xs border-0">Full</Badge>;
-  }
-  if (status === "filling") {
-    return <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100 border-0 text-xs">{seatsLeft} left</Badge>;
-  }
-  return <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-0 text-xs">{seatsLeft} left</Badge>;
 }
 
 export function DestinationPackageCard({ pkg, destination, upcomingCount, nextDeparture }: DestinationPackageCardProps) {

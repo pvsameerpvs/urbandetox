@@ -1,10 +1,11 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
+;
 import { Compass, Users, ShieldCheck, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@urbandetox/utils";
 import { containerVariants, itemVariants } from "@/lib/animations";
+import { Card, CardContent } from "@urbandetox/ui"
 
 const reasons = [
   {
@@ -36,8 +37,6 @@ const reasons = [
       "Guided silence, nature walks, and intentional downtime. Not a tour. A reset.",
   },
 ];
-
-
 
 function ReasonCard({
   num,

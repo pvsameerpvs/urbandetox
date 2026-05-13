@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useParams, notFound } from "next/navigation";
 import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+;
+;
 import { BookingHeader } from "../components/BookingHeader";
 import { BookingHero } from "../components/BookingHero";
 import { MobileBookingCTA } from "../components/MobileBookingCTA";
@@ -19,6 +19,7 @@ import { createPrimaryTraveler, createCompanionTraveler, createDefaultCommon, sa
 import { fetchDepartureByCode, fetchPackageBySlug, fetchDestinationBySlug, fetchDeparturesByPackage } from "@/lib/data";
 import { User, ChevronRight } from "lucide-react";
 import { parseISO, format } from "date-fns";
+import { Card, CardContent, Button } from "@urbandetox/ui"
 
 export default function BookingPage() {
   const params = useParams();
@@ -50,7 +51,6 @@ export default function BookingPage() {
   const totalPrice = currentPrice * travelerCount;
   const gst = Math.round(totalPrice * 0.05);
   const grandTotal = totalPrice + gst;
-
 
   const allTravelersValid = travelers.every((t) => t.name.trim().length > 2 && t.phone.trim().length > 5);
   const incompleteCount = travelers.filter((t) => t.name.trim().length <= 2 || t.phone.trim().length <= 5).length;

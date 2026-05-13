@@ -1,14 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+;
+;
 import { ArrowRight, Building2, GraduationCap } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@urbandetox/utils";
 import { containerVariants, itemVariants } from "@/lib/animations";
-
-
+import { Card, CardContent, Button } from "@urbandetox/ui"
 
 export function CorporateUniversitySection() {
   return (

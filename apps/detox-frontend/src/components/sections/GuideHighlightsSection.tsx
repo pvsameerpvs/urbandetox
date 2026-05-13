@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/card";
+;
 import { fetchFeaturedGuides } from "@/lib/data";
 import { ArrowRight, BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@urbandetox/utils";
 import { containerVariants, itemVariants } from "@/lib/animations";
-
-
+import { Card, CardContent } from "@urbandetox/ui"
 
 export function GuideHighlightsSection() {
   const guides = fetchFeaturedGuides(4);

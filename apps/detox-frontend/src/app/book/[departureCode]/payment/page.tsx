@@ -3,9 +3,9 @@
 import { useState, useEffect, startTransition } from "react";
 import { useParams, notFound } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+;
+;
+;
 import { BookingHeader } from "../../components/BookingHeader";
 import { BookingSummaryCard } from "../../components/BookingSummaryCard";
 import { MobileBookingCTA } from "../../components/MobileBookingCTA";
@@ -16,6 +16,7 @@ import { loadBookingState, saveBookingState } from "@/lib/booking-state";
 import { fetchDepartureByCode, fetchPackageBySlug, fetchDestinationBySlug } from "@/lib/data";
 import { formatPrice, formatDateRange } from "@urbandetox/utils";
 import { CreditCard, Wallet, Lock, Loader2, Shield } from "lucide-react";
+import { Button, Card, CardContent, Separator } from "@urbandetox/ui"
 
 type PaymentMethod = "razorpay" | "cod";
 type PaymentStatus = "idle" | "processing" | "success" | "failure";

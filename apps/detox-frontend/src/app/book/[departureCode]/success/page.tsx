@@ -2,16 +2,17 @@
 
 import { useState, useEffect, startTransition } from "react";
 import { useParams, notFound } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+;
+;
 import { SuccessHero, SuccessActions } from "../../components/SuccessHero";
 import { NextStepsGrid } from "../../components/NextStepsGrid";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { loadBookingState } from "@/lib/booking-state";
 import { fetchDepartureByCode, fetchPackageBySlug, fetchDestinationBySlug } from "@/lib/data";
 import { formatPrice, formatDateRange } from "@urbandetox/utils";
-import { Badge } from "@/components/ui/badge";
+;
 import { CheckCircle2, FileCheck } from "lucide-react";
+import { Card, CardContent, Separator, Badge } from "@urbandetox/ui"
 
 export default function SuccessPage() {
   const params = useParams();

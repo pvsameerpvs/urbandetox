@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+;
+;
 import { ArrowRight, User, Settings } from "lucide-react";
 import { TripStatsBar } from "./components/TripStatsBar";
 import { TripCard } from "./components/TripCard";
@@ -10,6 +10,7 @@ import { EmptyState } from "./components/EmptyState";
 import { PastTripsSection } from "./components/PastTripsSection";
 import { useUserProfile } from "@/lib/user-profile";
 import type { Trip } from "./components/TripCard";
+import { Button, Avatar, AvatarFallback } from "@urbandetox/ui"
 
 const mockTrips: Trip[] = [
   {

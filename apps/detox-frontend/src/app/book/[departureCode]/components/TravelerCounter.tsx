@@ -1,8 +1,9 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
+;
 import { Minus, Plus, Users } from "lucide-react";
 import { formatPrice } from "@urbandetox/utils";
+import { Input } from "@urbandetox/ui"
 
 interface TravelerCounterProps {
   count: number;

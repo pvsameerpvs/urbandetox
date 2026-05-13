@@ -1,6 +1,7 @@
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+;
+;
 import { LucideIcon } from "lucide-react";
+import { Input, Label } from "@urbandetox/ui"
 
 interface IconInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange"> {
   label: string;
