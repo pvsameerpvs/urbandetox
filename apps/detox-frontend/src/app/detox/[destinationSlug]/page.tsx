@@ -1,16 +1,17 @@
-"use client";
-
-import { useParams, notFound } from "next/navigation";
-import { fetchDestinationBySlug, fetchPackagesByDestination, fetchUpcomingDepartures } from "@/lib/data";
+import { notFound } from "next/navigation";
+import { fetchDestinationBySlug, fetchPackagesByDestination, fetchUpcomingDepartures } from "@/lib/api";
 import { DestinationHero } from "./components/DestinationHero";
 import { DestinationPackages } from "./components/DestinationPackages";
 
-export default function DestinationPage() {
-  const params = useParams();
-  const slug = String(params.destinationSlug);
-  const dest = fetchDestinationBySlug(slug);
-  const packages = dest ? fetchPackagesByDestination(slug) : [];
-  const upcoming = fetchUpcomingDepartures(50);
+interface PageProps {
+  params: Promise<{ destinationSlug: string }>;
+}
+
+export default async function DestinationPage({ params }: PageProps) {
+  const { destinationSlug } = await params;
+  const dest = await fetchDestinationBySlug(destinationSlug);
+  const packages = dest ? await fetchPackagesByDestination(destinationSlug) : [];
+  const upcoming = await fetchUpcomingDepartures(50);
 
   if (!dest || packages.length === 0) {
     notFound();

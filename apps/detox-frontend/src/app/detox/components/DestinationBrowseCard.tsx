@@ -2,19 +2,18 @@
 
 import Link from "next/link";
 import Image from "next/image";
-;
 import { motion } from "framer-motion";
 import { MapPin, ArrowRight } from "lucide-react";
-import { fetchPackagesByDestination } from "@/lib/data";
 import type { Destination } from "@urbandetox/utils";
 import { Card } from "@urbandetox/ui"
 
 interface DestinationBrowseCardProps {
   destination: Destination;
+  packageCount?: number;
 }
 
-export function DestinationBrowseCard({ destination }: DestinationBrowseCardProps) {
-  const count = fetchPackagesByDestination(destination.slug).length;
+export function DestinationBrowseCard({ destination, packageCount }: DestinationBrowseCardProps) {
+  const count = packageCount ?? 0;
 
   return (
     <motion.div

@@ -1,4 +1,4 @@
-import { Package } from "@urbandetox/utils";
+import { Package } from "./types";
 
 export const packages: Package[] = [
   /* ─── KASHMIR ─────────────────────────────── */

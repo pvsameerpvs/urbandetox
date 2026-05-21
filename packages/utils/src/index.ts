@@ -6,3 +6,8 @@ export * from "./utils";
 export * from "./seasonal-tags";
 export * from "./image";
 export * from "./guides";
+export * from "./destinations";
+export * from "./packages";
+export * from "./departures";
+export * from "./faqs";
+export * from "./testimonials";

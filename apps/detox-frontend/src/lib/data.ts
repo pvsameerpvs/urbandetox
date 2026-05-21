@@ -1,14 +1,31 @@
-import { Package, Departure, GuideArticle, Destination } from "@urbandetox/utils";
-import { destinations, getDestinationBySlug } from "@/data/destinations";
-import { getPackageBySlug, getFeaturedPackages, getPackagesByDestination } from "@/data/packages";
-import { getDeparturesByPackageSlug, getDepartureByCode, getUpcomingDepartures } from "@/data/departures";
-import { getGuideBySlug, getFeaturedGuides, getAllGuides, getRelatedGuides, getGuideCategories } from "@urbandetox/utils";
-import { testimonials, getTestimonials } from "@/data/testimonials";
-import { faqs, getAllFaqs, getFaqCategories } from "@/data/faqs";
+import {
+  destinations,
+  getDestinationBySlug,
+  packages,
+  getPackageBySlug,
+  getFeaturedPackages,
+  getPackagesByDestination,
+  getDeparturesByPackageSlug,
+  getDepartureByCode,
+  getUpcomingDepartures,
+  getGuideBySlug,
+  getFeaturedGuides,
+  getAllGuides,
+  getRelatedGuides,
+  getGuideCategories,
+  testimonials,
+  getTestimonials,
+  faqs,
+  getAllFaqs,
+  getFaqCategories,
+  type Package,
+  type Departure,
+  type GuideArticle,
+  type Destination,
+} from "@urbandetox/utils";
 
-// This is the smart data layer.
-// Later, replace these functions with Supabase / API calls.
-// Components stay unchanged.
+// Local data layer — used by client components and as fallback.
+// Server components should prefer lib/api.ts for backend integration.
 
 export function fetchDestinations(): Destination[] {
   return destinations;

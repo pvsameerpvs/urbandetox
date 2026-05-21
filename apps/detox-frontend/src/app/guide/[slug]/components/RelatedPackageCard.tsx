@@ -3,21 +3,17 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-;
-import { fetchPackageBySlug, fetchDestinationBySlug } from "@/lib/data";
+import type { Package, Destination } from "@urbandetox/utils";
 import { formatPrice } from "@urbandetox/utils";
 import { MapPin, Clock, ArrowRight } from "lucide-react";
 import { Card, CardContent } from "@urbandetox/ui"
 
-interface PackageLinkProps {
-  slug: string;
+interface RelatedPackageCardProps {
+  pkg: Package;
+  dest?: Destination;
 }
 
-export function RelatedPackageCard({ slug }: PackageLinkProps) {
-  const pkg = fetchPackageBySlug(slug);
-  const dest = pkg ? fetchDestinationBySlug(pkg.destinationSlug) : undefined;
-  if (!pkg) return null;
-
+export function RelatedPackageCard({ pkg, dest }: RelatedPackageCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
