@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@urbandetox/ui";
 import { MapPin, Package, CalendarDays, BookOpen } from "lucide-react";
 import { useAdminDestinations, useAdminPackages, useAdminDepartures } from "@/hooks/use-admin-data";
-import { StatCard } from "@/components/admin/StatCard";
+import { StatCard } from "@/components/ui/StatCard";
 
 export default function AdminDashboardPage() {
   const destinations = useAdminDestinations();

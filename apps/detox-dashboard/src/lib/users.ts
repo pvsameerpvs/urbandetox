@@ -1,5 +1,7 @@
 "use client";
 
+import { usersApi } from "@/features/users";
+
 export interface UserProfile {
   id: string;
   fullName: string;
@@ -20,20 +22,17 @@ export interface UserProfile {
   bookingsCount: number;
 }
 
-const STORAGE_KEY = "ud-admin-users";
-
 export function getAllUsers(): UserProfile[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+  return usersApi.getAll();
+}
+
+export function getUserById(id: string): UserProfile | undefined {
+  return usersApi.getById(id);
 }
 
 export function seedDemoUsers() {
   if (typeof window === "undefined") return;
+  const STORAGE_KEY = "ud-admin-users";
   if (localStorage.getItem(STORAGE_KEY)) return;
 
   const users: UserProfile[] = [

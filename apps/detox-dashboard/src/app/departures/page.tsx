@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { getPackageBySlug, getDestinationBySlug, deleteDeparture } from "@/lib/admin-data";
 import { useAdminDepartures } from "@/hooks/use-admin-data";
-import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { toast } from "sonner";
 import { DepartureTable } from "./components/DepartureTable";
 

@@ -1,6 +1,6 @@
 import { Input, Button, Textarea } from "@urbandetox/ui";
 import type { ItineraryDay } from "@urbandetox/utils";
-import { ImageUploadInline } from "@/components/admin/ImageUploadInline";
+import { ImageUploadInline } from "@/components/shared/ImageUploadInline";
 import { Plus } from "lucide-react";
 
 interface ItineraryFieldsProps {

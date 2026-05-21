@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { getAllBookings, type BookingWithMeta } from "@/lib/bookings";
 import { getDepartureByCode, getPackageBySlug, getDestinationBySlug } from "@/lib/admin-data";
-import { useBookingNotifications } from "@/components/admin/BookingNotificationContext";
+import { useBookingNotifications } from "@/components/layout/BookingNotificationContext";
 import { BookingTable } from "./components/BookingTable";
 import { seedDemoBookings } from "./lib/seedDemoBookings";
 

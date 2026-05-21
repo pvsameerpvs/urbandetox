@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { AdminSidebar } from "@/components/admin/AdminSidebar";
-import { AdminTopbar } from "@/components/admin/AdminTopbar";
-import { BookingNotificationProvider } from "@/components/admin/BookingNotificationContext";
+import { AdminSidebar } from "@/components/layout/AdminSidebar";
+import { AdminTopbar } from "@/components/layout/AdminTopbar";
+import { BookingNotificationProvider } from "@/components/layout/BookingNotificationContext";
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);

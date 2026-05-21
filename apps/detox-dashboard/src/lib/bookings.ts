@@ -1,6 +1,7 @@
 "use client";
 
 import { type BookingState } from "@urbandetox/utils";
+import { bookingsApi } from "@/features/bookings";
 
 export interface BookingWithMeta extends BookingState {
   id: string;
@@ -16,31 +17,10 @@ export interface BookingWithMeta extends BookingState {
   price?: number;
 }
 
-const STORAGE_PREFIX = "urbandetox-booking-";
-
 export function getAllBookings(): BookingState[] {
-  if (typeof window === "undefined") return [];
-  const bookings: BookingState[] = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key && key.startsWith(STORAGE_PREFIX)) {
-      try {
-        const raw = localStorage.getItem(key);
-        if (raw) bookings.push(JSON.parse(raw));
-      } catch {
-        // skip corrupted entries
-      }
-    }
-  }
-  return bookings;
+  return bookingsApi.getAll();
 }
 
 export function getBooking(departureCode: string): BookingState | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = localStorage.getItem(`${STORAGE_PREFIX}${departureCode}`);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
+  return bookingsApi.getByCode(departureCode);
 }

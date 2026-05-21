@@ -15,9 +15,9 @@ import {
 } from "@/components/ui/form";
 import { createSeasonalTag } from "@/lib/admin-data";
 import { generateId } from "@/lib/id";
-import { PageHeader } from "@/components/admin/PageHeader";
-import { FormActions } from "@/components/admin/FormActions";
-import { IconPicker } from "@/components/admin/IconPicker";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { FormActions } from "@/components/forms/FormActions";
+import { IconPicker } from "@/components/shared/IconPicker";
 import { toast } from "sonner";
 
 const schema = z.object({

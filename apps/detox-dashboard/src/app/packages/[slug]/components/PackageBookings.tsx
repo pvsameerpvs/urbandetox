@@ -9,7 +9,7 @@ import {
   ExternalLink,
   CalendarDays,
 } from "lucide-react";
-import { PaymentBadge } from "@/components/admin/PaymentBadge";
+import { PaymentBadge } from "@/components/ui/PaymentBadge";
 import type { BookingWithMeta } from "@/lib/bookings";
 
 interface PackageBookingsProps {

@@ -10,7 +10,7 @@ import {
   ExternalLink,
   Route,
 } from "lucide-react";
-import { StatusBadge } from "@/components/admin/StatusBadge";
+import { StatusBadge } from "@/components/ui/StatusBadge";
 import { cn } from "@urbandetox/utils";
 import type { Departure } from "@urbandetox/utils";
 

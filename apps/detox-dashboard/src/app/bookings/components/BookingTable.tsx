@@ -12,7 +12,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { cn } from "@urbandetox/utils";
-import { PaymentBadge } from "@/components/admin/PaymentBadge";
+import { PaymentBadge } from "@/components/ui/PaymentBadge";
 import type { BookingWithMeta } from "@/lib/bookings";
 
 interface BookingTableProps {

@@ -2,8 +2,8 @@ import { Controller } from "react-hook-form";
 import type { Control } from "react-hook-form";
 import { Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@urbandetox/ui";
 import { useAdminSeasonalTags } from "@/hooks/use-admin-data";
-import { getLucideIcon } from "@/components/admin/IconPicker";
-import { ImageUpload } from "@/components/admin/ImageUpload";
+import { getLucideIcon } from "@/components/shared/IconPicker";
+import { ImageUpload } from "@/components/shared/ImageUpload";
 import type { PackageFormData } from "./use-package-form";
 
 interface BasicInfoFieldsProps {

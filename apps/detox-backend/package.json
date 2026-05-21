@@ -9,13 +9,20 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src/"
+    "lint": "eslint src/",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "tsx src/db/seed.ts"
   },
   "dependencies": {
+    "@urbandetox/utils": "workspace:*",
     "cors": "^2.8.6",
     "dotenv": "^16.6.1",
+    "drizzle-orm": "^0.45.2",
     "express": "^4.22.1",
-    "@urbandetox/utils": "workspace:*"
+    "express-async-errors": "^3.1.1",
+    "postgres": "^3.4.9"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
@@ -23,6 +30,7 @@
     "@types/node": "^22.0.0",
     "@urbandetox/eslint-config": "workspace:*",
     "@urbandetox/typescript-config": "workspace:*",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^9.0.0",
     "tsx": "^4.19.0",
     "typescript": "^5.8.0"

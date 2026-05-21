@@ -9,7 +9,7 @@ import { MapPin, Clock, ArrowRight, Plus, Tag } from "lucide-react";
 import { getDestinationBySlug, deletePackage } from "@/lib/admin-data";
 import { useAdminPackages } from "@/hooks/use-admin-data";
 import { safeImageUrl } from "@urbandetox/utils";
-import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { toast } from "sonner";
 
 export default function PackagesPage() {

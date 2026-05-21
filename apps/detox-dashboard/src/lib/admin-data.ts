@@ -1,147 +1,93 @@
 import type { Destination, Package, Departure, SeasonalTag } from "@urbandetox/utils";
-import { destinations as initialDestinations } from "@/data/destinations";
-import { packages as initialPackages } from "@/data/packages";
-import { departures as initialDepartures } from "@/data/departures";
-import { initialSeasonalTags } from "@urbandetox/utils";
+import { destinationsApi } from "@/features/destinations";
+import { packagesApi } from "@/features/packages";
+import { departuresApi } from "@/features/departures";
+import { seasonalTagsApi } from "@/features/seasonal-tags";
 
-const DEST_KEY = "ud-admin-destinations";
-const PKG_KEY = "ud-admin-packages";
-const DEP_KEY = "ud-admin-departures";
-const TAGS_KEY = "ud-admin-seasonal-tags";
-
-function load<T>(key: string, fallback: T): T {
-  if (typeof window === "undefined") return fallback;
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-function save<T>(key: string, data: T) {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(key, JSON.stringify(data));
-}
-
-/* ─── Destinations ─────────────────────────── */
+/* ─── Destinations (backward-compat wrappers) ─────────────────── */
 export function getDestinations(): Destination[] {
-  return load(DEST_KEY, initialDestinations);
+  return destinationsApi.getAll();
 }
 
 export function getDestinationBySlug(slug: string): Destination | undefined {
-  return getDestinations().find((d) => d.slug === slug);
+  return destinationsApi.getBySlug(slug);
 }
 
 export function createDestination(dest: Destination) {
-  const all = getDestinations();
-  all.push(dest);
-  save(DEST_KEY, all);
+  destinationsApi.create(dest);
 }
 
 export function updateDestination(slug: string, data: Partial<Destination>) {
-  const all = getDestinations();
-  const idx = all.findIndex((d) => d.slug === slug);
-  if (idx >= 0) {
-    all[idx] = { ...all[idx], ...data };
-    save(DEST_KEY, all);
-  }
+  destinationsApi.updateBySlug(slug, data);
 }
 
 export function deleteDestination(slug: string) {
-  const all = getDestinations().filter((d) => d.slug !== slug);
-  save(DEST_KEY, all);
+  destinationsApi.deleteBySlug(slug);
 }
 
-/* ─── Packages ─────────────────────────────── */
+/* ─── Packages (backward-compat wrappers) ──────────────────────── */
 export function getPackages(): Package[] {
-  return load(PKG_KEY, initialPackages);
+  return packagesApi.getAll();
 }
 
 export function getPackageBySlug(slug: string): Package | undefined {
-  return getPackages().find((p) => p.slug === slug);
+  return packagesApi.getBySlug(slug);
 }
 
 export function getPackagesByDestination(destinationSlug: string): Package[] {
-  return getPackages().filter((p) => p.destinationSlug === destinationSlug);
+  return packagesApi.getByDestination(destinationSlug);
 }
 
 export function createPackage(pkg: Package) {
-  const all = getPackages();
-  if (all.some((p) => p.slug === pkg.slug)) return;
-  all.push(pkg);
-  save(PKG_KEY, all);
+  packagesApi.create(pkg);
 }
 
 export function updatePackage(slug: string, data: Partial<Package>) {
-  const all = getPackages();
-  const idx = all.findIndex((p) => p.slug === slug);
-  if (idx >= 0) {
-    all[idx] = { ...all[idx], ...data, slug }; // preserve original slug
-    save(PKG_KEY, all);
-  }
+  packagesApi.updateBySlug(slug, data);
 }
 
 export function deletePackage(slug: string) {
-  const all = getPackages().filter((p) => p.slug !== slug);
-  save(PKG_KEY, all);
+  packagesApi.deleteBySlug(slug);
 }
 
-/* ─── Departures ─────────────────────────── */
+/* ─── Departures (backward-compat wrappers) ──────────────────── */
 export function getDepartures(): Departure[] {
-  return load(DEP_KEY, initialDepartures);
+  return departuresApi.getAll();
 }
 
 export function getDepartureByCode(code: string): Departure | undefined {
-  return getDepartures().find((d) => d.code === code);
+  return departuresApi.getByCode(code);
 }
 
 export function createDeparture(dep: Departure) {
-  const all = getDepartures();
-  all.push(dep);
-  save(DEP_KEY, all);
+  departuresApi.create(dep);
 }
 
 export function updateDeparture(id: string, data: Partial<Departure>) {
-  const all = getDepartures();
-  const idx = all.findIndex((d) => d.id === id);
-  if (idx >= 0) {
-    all[idx] = { ...all[idx], ...data };
-    save(DEP_KEY, all);
-  }
+  departuresApi.update(id, data);
 }
 
 export function deleteDeparture(id: string) {
-  const all = getDepartures().filter((d) => d.id !== id);
-  save(DEP_KEY, all);
+  departuresApi.delete(id);
 }
 
-/* ─── Seasonal Tags ──────────────────────── */
+/* ─── Seasonal Tags (backward-compat wrappers) ───────────────── */
 export function getSeasonalTags(): SeasonalTag[] {
-  return load(TAGS_KEY, initialSeasonalTags);
+  return seasonalTagsApi.getAll();
 }
 
 export function createSeasonalTag(tag: SeasonalTag) {
-  const all = getSeasonalTags();
-  all.push(tag);
-  save(TAGS_KEY, all);
+  seasonalTagsApi.create(tag);
 }
 
 export function updateSeasonalTag(id: string, data: Partial<SeasonalTag>) {
-  const all = getSeasonalTags();
-  const idx = all.findIndex((t) => t.id === id);
-  if (idx >= 0) {
-    all[idx] = { ...all[idx], ...data };
-    save(TAGS_KEY, all);
-  }
+  seasonalTagsApi.update(id, data);
 }
 
 export function deleteSeasonalTag(id: string) {
-  const all = getSeasonalTags().filter((t) => t.id !== id);
-  save(TAGS_KEY, all);
+  seasonalTagsApi.delete(id);
 }
 
 export function getPackagesUsingTag(tagName: string): number {
-  return getPackages().filter((p) => p.seasonalTag === tagName).length;
+  return packagesApi.countByTag(tagName);
 }
-

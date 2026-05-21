@@ -12,8 +12,8 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { FormSection } from "@/components/admin/FormSection";
-import { FormActions } from "@/components/admin/FormActions";
+import { FormSection } from "@/components/forms/FormSection";
+import { FormActions } from "@/components/forms/FormActions";
 import type { Departure, Package, Destination } from "@urbandetox/utils";
 import { MapPin, PackageIcon, CalendarDays, Users, CreditCard, Tag } from "lucide-react";
 

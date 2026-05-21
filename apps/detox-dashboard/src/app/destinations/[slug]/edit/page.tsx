@@ -6,7 +6,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { updateDestination } from "@/lib/admin-data";
 import { useAdminDestination } from "@/hooks/use-admin-data";
-import { PageHeader } from "@/components/admin/PageHeader";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { DestinationForm, type DestinationFormData } from "../../components/DestinationForm";
 
 export default function EditDestinationPage() {

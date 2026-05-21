@@ -8,7 +8,7 @@ import { MapPin, ArrowRight, Plus } from "lucide-react";
 import { getPackagesByDestination, deleteDestination } from "@/lib/admin-data";
 import { useAdminDestinations } from "@/hooks/use-admin-data";
 import { safeImageUrl } from "@urbandetox/utils";
-import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { toast } from "sonner";
 
 export default function DestinationsPage() {

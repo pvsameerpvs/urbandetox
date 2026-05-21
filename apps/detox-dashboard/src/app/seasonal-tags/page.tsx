@@ -6,7 +6,7 @@ import { Button } from "@urbandetox/ui";
 import { Plus, ArrowLeft, Tag } from "lucide-react";
 import { useAdminSeasonalTags } from "@/hooks/use-admin-data";
 import { getPackagesUsingTag, deleteSeasonalTag } from "@/lib/admin-data";
-import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { SeasonalTagCard } from "./components/SeasonalTagCard";
 import { toast } from "sonner";
 import type { SeasonalTag } from "@urbandetox/utils";

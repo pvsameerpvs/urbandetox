@@ -7,8 +7,8 @@ import { Input } from "@urbandetox/ui";
 import { Textarea } from "@urbandetox/ui";
 import { Label } from "@urbandetox/ui";
 import { Checkbox } from "@urbandetox/ui";
-import { FormSection } from "@/components/admin/FormSection";
-import { ImageUpload } from "@/components/admin/ImageUpload";
+import { FormSection } from "@/components/forms/FormSection";
+import { ImageUpload } from "@/components/shared/ImageUpload";
 import { getDestinations, getPackages } from "@/lib/admin-data";
 import type { GuideArticle, Destination, Package } from "@urbandetox/utils";
 

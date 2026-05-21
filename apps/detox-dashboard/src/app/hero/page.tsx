@@ -11,7 +11,7 @@ import { getHeroImages, setHeroImages, getActiveHeroIndex, setActiveHeroIndex, g
 import { toast } from "sonner";
 import { RotateCcw, Eye, Check, ImageIcon, Type, AlignLeft, MousePointerClick } from "lucide-react";
 import Link from "next/link";
-import { HeroSlot } from "@/components/admin/HeroSlot";
+import { HeroSlot } from "@/components/shared/HeroSlot";
 
 const DEFAULT_HERO = "https://images.unsplash.com/photo-1501555088652-021faa106b9b?q=80&w=2000&auto=format&fit=crop";
 

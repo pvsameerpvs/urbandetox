@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AdminShell } from "@/components/admin/AdminShell";
+import { AdminShell } from "@/components/layout/AdminShell";
 import { Toaster } from "sonner";
 
 const geistSans = Geist({ variable: "--font-sans", subsets: ["latin"] });

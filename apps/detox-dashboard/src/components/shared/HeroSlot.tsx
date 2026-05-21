@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Badge } from "@urbandetox/ui";
 import { Sparkles, Check, Trash2 } from "lucide-react";
-import { ImageUpload } from "@/components/admin/ImageUpload";
+import { ImageUpload } from "@/components/shared/ImageUpload";
 
 interface HeroSlotProps {
   index: number;

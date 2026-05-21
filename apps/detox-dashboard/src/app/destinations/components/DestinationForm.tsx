@@ -4,8 +4,8 @@ import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Input, Textarea } from "@urbandetox/ui";
-import { ImageUpload } from "@/components/admin/ImageUpload";
-import { GalleryUpload } from "@/components/admin/GalleryUpload";
+import { ImageUpload } from "@/components/shared/ImageUpload";
+import { GalleryUpload } from "@/components/shared/GalleryUpload";
 import {
   FormField,
   FormItem,
@@ -13,8 +13,8 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { FormSection } from "@/components/admin/FormSection";
-import { FormActions } from "@/components/admin/FormActions";
+import { FormSection } from "@/components/forms/FormSection";
+import { FormActions } from "@/components/forms/FormActions";
 import type { Destination } from "@urbandetox/utils";
 
 const schema = z.object({

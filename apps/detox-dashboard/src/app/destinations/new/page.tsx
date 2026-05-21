@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { createDestination } from "@/lib/admin-data";
 import { generateId } from "@/lib/id";
-import { PageHeader } from "@/components/admin/PageHeader";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { DestinationForm, type DestinationFormData } from "../components/DestinationForm";
 
 export default function NewDestinationPage() {

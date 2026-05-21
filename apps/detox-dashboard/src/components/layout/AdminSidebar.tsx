@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@urbandetox/utils";
-import { useBookingNotifications } from "@/components/admin/BookingNotificationContext";
+import { useBookingNotifications } from "@/components/layout/BookingNotificationContext";
 import {
   LayoutDashboard,
   MapPin,

@@ -12,7 +12,7 @@ import { usePackageForm, type PackageFormData } from "@/app/packages/components/
 import { BasicInfoFields } from "@/app/packages/components/basic-info-fields";
 import { HighlightsFields } from "@/app/packages/components/highlights-fields";
 import { ArrayInput } from "@/app/packages/components/array-input";
-import { GalleryUpload } from "@/components/admin/GalleryUpload";
+import { GalleryUpload } from "@/components/shared/GalleryUpload";
 import { FaqsFields } from "@/app/packages/components/faqs-fields";
 import { ItineraryFields } from "@/app/packages/components/itinerary-fields";
 
