@@ -7,7 +7,7 @@ import { useParams, notFound } from "next/navigation";
 import { SuccessHero, SuccessActions } from "../../components/SuccessHero";
 import { NextStepsGrid } from "../../components/NextStepsGrid";
 import { useHydrated } from "@/hooks/use-hydrated";
-import { loadBookingState } from "@/lib/booking-state";
+import { loadBookingState } from "@/lib/booking-storage";
 import { fetchDepartureByCode, fetchPackageBySlug, fetchDestinationBySlug } from "@/lib/data";
 import { formatPrice, formatDateRange } from "@urbandetox/utils";
 ;

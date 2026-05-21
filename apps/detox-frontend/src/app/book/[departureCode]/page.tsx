@@ -15,7 +15,9 @@ import { CommonDetailsCard } from "./components/CommonDetailsCard";
 import { BookingPriceSummary } from "./components/BookingPriceSummary";
 import { useUserProfile } from "@/lib/user-profile";
 import { containerVariants, itemVariants } from "@/lib/animations";
-import { createPrimaryTraveler, createCompanionTraveler, createDefaultCommon, saveBookingState, type Traveler, type CommonDetails } from "@/lib/booking-state";
+import { type Traveler, type CommonDetails } from "@urbandetox/utils";
+import { createPrimaryTraveler, createCompanionTraveler, createDefaultCommon } from "@/lib/booking-factory";
+import { useBooking } from "@/hooks/use-booking";
 import { fetchDepartureByCode, fetchPackageBySlug, fetchDestinationBySlug, fetchDeparturesByPackage } from "@/lib/data";
 import { User, ChevronRight } from "lucide-react";
 import { parseISO, format } from "date-fns";
@@ -33,6 +35,8 @@ export default function BookingPage() {
 
   const pricePerPerson = departure.offerPrice ?? departure.price;
   const maxSeats = departure.seatsLeft;
+
+  const { save } = useBooking(code);
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(parseISO(departure.startDate));
   const [travelers, setTravelers] = useState<Traveler[]>([createPrimaryTraveler(profile.personal, profile.health)]);
@@ -57,7 +61,7 @@ export default function BookingPage() {
 
   const handleSubmit = () => {
     if (!allTravelersValid) return;
-    saveBookingState({ departureCode: code, travelers, common });
+    save({ travelers, common });
     window.location.href = `/book/${code}/payment`;
   };
 

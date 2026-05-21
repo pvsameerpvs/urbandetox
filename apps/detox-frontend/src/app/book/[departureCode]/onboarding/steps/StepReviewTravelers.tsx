@@ -3,7 +3,7 @@
 ;
 ;
 import { User, Phone } from "lucide-react";
-import type { Traveler } from "@/lib/booking-state";
+import type { Traveler } from "@urbandetox/utils";
 import { Label, Input } from "@urbandetox/ui"
 
 interface StepReviewTravelersProps {

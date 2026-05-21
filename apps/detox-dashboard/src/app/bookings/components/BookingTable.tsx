@@ -43,6 +43,7 @@ export function BookingTable({ bookings }: BookingTableProps) {
           <thead>
             <tr className="border-b border-border/40 bg-secondary/[0.03]">
               <th className="text-left px-4 py-3 font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">Customer</th>
+              <th className="text-left px-4 py-3 font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">Booked By</th>
               <th className="text-left px-4 py-3 font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">Trip</th>
               <th className="text-left px-4 py-3 font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">Dates</th>
               <th className="text-left px-4 py-3 font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">Travelers</th>
@@ -69,6 +70,12 @@ export function BookingTable({ bookings }: BookingTableProps) {
                       <p className="font-medium text-xs truncate">{b.primaryName || "—"}</p>
                       <p className="text-[10px] text-muted-foreground truncate">{b.primaryPhone || b.primaryEmail || "—"}</p>
                     </div>
+                  </div>
+                </td>
+                <td className="px-4 py-3.5">
+                  <div className="min-w-0">
+                    <p className="font-medium text-xs truncate">{b.bookedByName || "Guest"}</p>
+                    <p className="text-[10px] text-muted-foreground truncate">{b.bookedByPhone || b.bookedByEmail || "—"}</p>
                   </div>
                 </td>
                 <td className="px-4 py-3.5">

@@ -5,7 +5,7 @@
 ;
 ;
 import { MapPin, Camera, Upload } from "lucide-react";
-import type { CommonDetails } from "@/lib/booking-state";
+import type { CommonDetails } from "@urbandetox/utils";
 import { Label, Button, Checkbox, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@urbandetox/ui"
 
 interface StepFinalConfirmProps {

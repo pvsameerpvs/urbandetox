@@ -3,7 +3,7 @@
 ;
 ;
 ;
-import type { Traveler } from "@/lib/booking-state";
+import type { Traveler } from "@urbandetox/utils";
 import { Label, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@urbandetox/ui"
 
 interface StepHealthFoodProps {

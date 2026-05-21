@@ -8,7 +8,7 @@ import { useHydrated } from "@/hooks/use-hydrated";
 import { Sparkles } from "lucide-react";
 import type { Package, Departure } from "@urbandetox/utils";
 import type { Destination } from "@urbandetox/utils";
-import type { Traveler } from "@/lib/booking-state";
+import type { Traveler } from "@urbandetox/utils";
 import { Card, CardContent, Separator } from "@urbandetox/ui"
 
 interface OnboardingSidebarProps {

@@ -1,39 +1,6 @@
 "use client";
 
-export interface Traveler {
-  id: string;
-  type: "primary" | "companion";
-  name: string;
-  phone: string;
-  email: string;
-  dateOfBirth: string;
-  gender: string;
-  foodPreference: string;
-  allergies: string;
-  medicalConditions: string;
-  bloodGroup: string;
-  photoUrl: string;
-  idUrl: string;
-  idType: string;
-  emergencyName: string;
-  emergencyPhone: string;
-  emergencyRelation: string;
-}
-
-export interface CommonDetails {
-  groupNote: string;
-  modeOfArrival: string;
-  needsTravelHelp: boolean;
-}
-
-export interface BookingState {
-  departureCode: string;
-  travelers: Traveler[];
-  common: CommonDetails;
-  onboardingComplete?: boolean;
-  paymentStatus?: "paid" | "pending" | "cod";
-  paymentMethod?: "razorpay" | "cod";
-}
+import { type BookingState } from "@urbandetox/utils";
 
 export interface BookingWithMeta extends BookingState {
   id: string;

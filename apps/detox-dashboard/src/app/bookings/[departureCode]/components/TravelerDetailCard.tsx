@@ -16,28 +16,11 @@ import {
   FileText,
   User,
 } from "lucide-react";
-import { safeImageUrl } from "@urbandetox/utils";
+import { safeImageUrl, type Traveler } from "@urbandetox/utils";
 import { DetailRow } from "./DetailRow";
 
 interface TravelerDetailCardProps {
-  traveler: {
-    name: string;
-    phone: string;
-    email: string;
-    dateOfBirth: string;
-    gender: string;
-    foodPreference: string;
-    allergies: string;
-    medicalConditions: string;
-    bloodGroup: string;
-    photoUrl: string;
-    idUrl: string;
-    idType: string;
-    emergencyName: string;
-    emergencyPhone: string;
-    emergencyRelation: string;
-    type: string;
-  };
+  traveler: Traveler;
   isPrimary: boolean;
   index: number;
 }

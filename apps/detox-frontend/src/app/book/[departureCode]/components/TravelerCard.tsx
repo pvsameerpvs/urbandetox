@@ -6,7 +6,7 @@ import { cn } from "@urbandetox/utils";
 ;
 ;
 ;
-import type { Traveler } from "@/lib/booking-state";
+import type { Traveler } from "@urbandetox/utils";
 import { User, Users, Phone, ChevronDown, ChevronUp, Check, AlertCircle } from "lucide-react";
 import { Button, Input, Label, Badge, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@urbandetox/ui"
 

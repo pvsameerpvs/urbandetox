@@ -12,7 +12,7 @@ import { MobileBookingCTA } from "../../components/MobileBookingCTA";
 import { PaymentStatusAlert } from "../../components/PaymentStatusAlert";
 import { PaymentMethodOption } from "../components/PaymentMethodOption";
 import { useHydrated } from "@/hooks/use-hydrated";
-import { loadBookingState, saveBookingState } from "@/lib/booking-state";
+import { useBooking } from "@/hooks/use-booking";
 import { fetchDepartureByCode, fetchPackageBySlug, fetchDestinationBySlug } from "@/lib/data";
 import { formatPrice, formatDateRange } from "@urbandetox/utils";
 import { CreditCard, Wallet, Lock, Loader2, Shield } from "lucide-react";
@@ -30,14 +30,15 @@ export default function PaymentPage() {
 
   if (!departure || !pkg || !dest) notFound();
 
+  const { booking, save } = useBooking(code);
+
   const [travelerCount, setTravelerCount] = useState(1);
 
   useEffect(() => {
-    const saved = loadBookingState(code);
-    if (saved) {
-      startTransition(() => setTravelerCount(saved.travelers.length));
+    if (booking) {
+      startTransition(() => setTravelerCount(booking.travelers.length));
     }
-  }, [code]);
+  }, [booking]);
 
   const [method, setMethod] = useState<PaymentMethod>("razorpay");
   const [status, setStatus] = useState<PaymentStatus>("idle");
@@ -53,15 +54,7 @@ export default function PaymentPage() {
     setTimeout(() => {
       setStatus("success");
       // Persist payment status before redirecting
-      const current = loadBookingState(code);
-      if (current) {
-        saveBookingState({
-          ...current,
-          departureCode: code,
-          paymentStatus: method === "cod" ? "cod" : "paid",
-          paymentMethod: method,
-        });
-      }
+      save({ paymentStatus: method === "cod" ? "cod" : "paid", paymentMethod: method });
       setTimeout(() => { window.location.href = `/book/${code}/onboarding`; }, 2000);
     }, 2500);
   };

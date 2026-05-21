@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { toast } from "sonner";
-import { type BookingState } from "@/lib/bookings";
+import { type BookingState } from "@urbandetox/utils";
 import { getDepartureByCode, getPackageBySlug } from "@/lib/admin-data";
 
 interface BookingNotificationContextValue {

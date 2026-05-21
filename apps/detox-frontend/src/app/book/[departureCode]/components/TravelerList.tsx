@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Traveler } from "@/lib/booking-state";
+import type { Traveler } from "@urbandetox/utils";
 import { TravelerCard } from "./TravelerCard";
 
 interface TravelerListProps {

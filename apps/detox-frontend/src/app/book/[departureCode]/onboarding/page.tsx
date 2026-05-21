@@ -15,7 +15,8 @@ import { StepHealthFood } from "./steps/StepHealthFood";
 import { StepEmergencyContacts } from "./steps/StepEmergencyContacts";
 import { StepFinalConfirm } from "./steps/StepFinalConfirm";
 import { slideVariants } from "@/lib/animations";
-import { loadBookingState, saveBookingState, type Traveler, type CommonDetails } from "@/lib/booking-state";
+import { type Traveler, type CommonDetails } from "@urbandetox/utils";
+import { useBooking } from "@/hooks/use-booking";
 import { fetchDepartureByCode, fetchPackageBySlug, fetchDestinationBySlug } from "@/lib/data";
 import { formatDateRange } from "@urbandetox/utils";
 import { Users, Utensils, PhoneCall, FileCheck } from "lucide-react";
@@ -37,18 +38,19 @@ export default function OnboardingPage() {
 
   if (!departure || !pkg || !dest) notFound();
 
+  const { booking, save } = useBooking(code);
+
   const [travelers, setTravelers] = useState<Traveler[]>([]);
   const [common, setCommon] = useState<CommonDetails>({ groupNote: "", modeOfArrival: "", needsTravelHelp: false });
 
   useEffect(() => {
-    const saved = loadBookingState(code);
-    if (saved) {
+    if (booking) {
       startTransition(() => {
-        setTravelers(saved.travelers);
-        setCommon(saved.common);
+        setTravelers(booking.travelers);
+        setCommon(booking.common);
       });
     }
-  }, [code]);
+  }, [booking]);
 
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState(1);
@@ -67,7 +69,7 @@ export default function OnboardingPage() {
     setTimeout(() => {
       setSubmitting(false);
       setSubmitted(true);
-      saveBookingState({ departureCode: code, travelers, common, onboardingComplete: true });
+      save({ travelers, common, onboardingComplete: true });
       setTimeout(() => { window.location.href = `/book/${code}/success`; }, 1500);
     }, 2000);
   };

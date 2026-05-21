@@ -3,7 +3,7 @@
 ;
 ;
 ;
-import type { CommonDetails } from "@/lib/booking-state";
+import type { CommonDetails } from "@urbandetox/utils";
 import { MessageSquare, HelpCircle } from "lucide-react";
 import { Label, Card, CardContent, Checkbox } from "@urbandetox/ui"
 
