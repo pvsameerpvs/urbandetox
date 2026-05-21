@@ -11,10 +11,6 @@ export const BookingController = {
 
   async create(req: Request, res: Response) {
     const { departureCode, fullName, phone, email, travelers } = req.body;
-    if (!departureCode || !fullName || !phone) {
-      res.status(400).json({ error: "departureCode, fullName, and phone are required" });
-      return;
-    }
     const [dep] = await db
       .select()
       .from(departures)
