@@ -6,14 +6,15 @@ import Image from "next/image";
 import { Card, CardContent, Button } from "@urbandetox/ui";
 import { formatPrice } from "@urbandetox/utils";
 import { MapPin, Clock, ArrowRight, Plus, Tag } from "lucide-react";
-import { getDestinationBySlug, deletePackage } from "@/lib/admin-data";
-import { useAdminPackages } from "@/hooks/use-admin-data";
+import { deletePackage } from "@/lib/admin-data";
+import { useAdminPackages, useAdminDestinations } from "@/hooks/use-admin-data";
 import { safeImageUrl } from "@urbandetox/utils";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { toast } from "sonner";
 
 export default function PackagesPage() {
-  const packages = useAdminPackages();
+  const { data: packages } = useAdminPackages();
+  const { data: destinations } = useAdminDestinations();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingSlug, setPendingSlug] = useState<string | null>(null);
 
@@ -22,10 +23,10 @@ export default function PackagesPage() {
     setConfirmOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (!pendingSlug) return;
     try {
-      deletePackage(pendingSlug);
+      await deletePackage(pendingSlug);
       toast.success("Package deleted successfully");
       setTimeout(() => window.location.reload(), 400);
     } catch {
@@ -49,7 +50,7 @@ export default function PackagesPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {packages.map((pkg) => {
-          const dest = getDestinationBySlug(pkg.destinationSlug);
+          const dest = destinations.find((d) => d.slug === pkg.destinationSlug);
           return (
             <Card key={pkg.id} className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-500 group">
               <div className="relative h-[160px] overflow-hidden">

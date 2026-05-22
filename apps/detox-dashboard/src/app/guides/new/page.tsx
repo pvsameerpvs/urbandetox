@@ -10,7 +10,9 @@ export default function NewGuidePage() {
         <h1 className="text-2xl font-bold tracking-tight">New Guide</h1>
         <p className="text-sm text-muted-foreground mt-1">Create a travel guide, tip, or destination insight.</p>
       </div>
-      <GuideForm onSave={(guide) => createGuide(guide)} />
+      <GuideForm onSave={async (guide) => {
+        await createGuide(guide);
+      }} />
     </div>
   );
 }

@@ -1,7 +1,5 @@
-"use client";
-
 import { type BookingState } from "@urbandetox/utils";
-import { bookingsApi } from "@/features/bookings";
+import { fetchBookings } from "@/lib/api";
 
 export interface BookingWithMeta extends BookingState {
   id: string;
@@ -17,10 +15,15 @@ export interface BookingWithMeta extends BookingState {
   price?: number;
 }
 
-export function getAllBookings(): BookingState[] {
-  return bookingsApi.getAll();
+export async function getAllBookings(): Promise<BookingState[]> {
+  return fetchBookings<BookingState>();
 }
 
-export function getBooking(departureCode: string): BookingState | null {
-  return bookingsApi.getByCode(departureCode);
+export async function getBooking(departureCode: string): Promise<BookingState | null> {
+  try {
+    const all = await getAllBookings();
+    return all.find((b) => b.departureCode === departureCode) || null;
+  } catch {
+    return null;
+  }
 }

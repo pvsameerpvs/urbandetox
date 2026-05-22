@@ -18,9 +18,9 @@ export function useBookingNotifications() {
   return ctx;
 }
 
-function getBookingMeta(booking: BookingState) {
-  const dep = getDepartureByCode(booking.departureCode);
-  const pkg = dep ? getPackageBySlug(dep.packageSlug) : undefined;
+async function getBookingMeta(booking: BookingState) {
+  const dep = await getDepartureByCode(booking.departureCode);
+  const pkg = dep ? await getPackageBySlug(dep.packageSlug) : undefined;
   const primary = booking.travelers.find((t) => t.type === "primary");
   return {
     name: primary?.name || "New traveler",
@@ -57,7 +57,7 @@ export function BookingNotificationProvider({ children }: { children: React.Reac
     seenKeysRef.current = new Set(initKeys);
     initializedRef.current = true;
 
-    const interval = setInterval(() => {
+    const interval = setInterval(async () => {
       const currentKeys = getBookingKeys();
       const prevSeen = seenKeysRef.current;
       const newKeys = currentKeys.filter((k) => !prevSeen.has(k));
@@ -69,12 +69,12 @@ export function BookingNotificationProvider({ children }: { children: React.Reac
         seenKeysRef.current = nextSeen;
 
         // Show toasts for each new booking
-        newKeys.forEach((key) => {
+        for (const key of newKeys) {
           try {
             const raw = localStorage.getItem(key);
-            if (!raw) return;
+            if (!raw) continue;
             const booking: BookingState = JSON.parse(raw);
-            const meta = getBookingMeta(booking);
+            const meta = await getBookingMeta(booking);
             toast.success(`New booking from ${meta.name} — ${meta.packageTitle}`, {
               description: `${booking.travelers.length} traveler${booking.travelers.length > 1 ? "s" : ""}`,
               duration: 6000,
@@ -82,7 +82,7 @@ export function BookingNotificationProvider({ children }: { children: React.Reac
           } catch {
             // skip corrupted entries
           }
-        });
+        }
 
         // Increment unread count
         setUnreadCount((prev) => prev + newKeys.length);

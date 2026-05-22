@@ -19,8 +19,8 @@ export default function EditPackagePage() {
   const params = useParams();
   const router = useRouter();
   const slug = String(params.slug);
-  const pkg = useAdminPackage(slug);
-  const destinations = useAdminDestinations();
+  const { data: pkg } = useAdminPackage(slug);
+  const { data: destinations } = useAdminDestinations();
   const f = usePackageForm(pkg?.destinationSlug || "", {
     title: pkg?.title,
     subtitle: pkg?.subtitle,
@@ -48,10 +48,10 @@ export default function EditPackagePage() {
     );
   }
 
-  function onSubmit(data: PackageFormData) {
+  async function onSubmit(data: PackageFormData) {
     const durationLabel = `${data.duration} Days / ${data.duration - 1} Nights`;
     try {
-      updatePackage(slug, {
+      await updatePackage(slug, {
       ...data,
       durationLabel,
       highlights: data.highlights.filter(Boolean),

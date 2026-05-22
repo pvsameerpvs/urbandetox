@@ -21,4 +21,36 @@ export const DestinationController = {
     }
     res.json(dest);
   },
+
+  async create(req: Request, res: Response) {
+    const [record] = await db.insert(destinations).values(req.body).returning();
+    res.status(201).json(record);
+  },
+
+  async update(req: Request, res: Response) {
+    const slug = String(req.params.slug);
+    const [record] = await db
+      .update(destinations)
+      .set(req.body)
+      .where(eq(destinations.slug, slug))
+      .returning();
+    if (!record) {
+      res.status(404).json({ error: "Destination not found" });
+      return;
+    }
+    res.json(record);
+  },
+
+  async remove(req: Request, res: Response) {
+    const slug = String(req.params.slug);
+    const [record] = await db
+      .delete(destinations)
+      .where(eq(destinations.slug, slug))
+      .returning();
+    if (!record) {
+      res.status(404).json({ error: "Destination not found" });
+      return;
+    }
+    res.json({ success: true });
+  },
 } as const;

@@ -28,4 +28,36 @@ export const PackageController = {
     }
     res.json(pkg);
   },
+
+  async create(req: Request, res: Response) {
+    const [record] = await db.insert(packages).values(req.body).returning();
+    res.status(201).json(record);
+  },
+
+  async update(req: Request, res: Response) {
+    const slug = String(req.params.slug);
+    const [record] = await db
+      .update(packages)
+      .set(req.body)
+      .where(eq(packages.slug, slug))
+      .returning();
+    if (!record) {
+      res.status(404).json({ error: "Package not found" });
+      return;
+    }
+    res.json(record);
+  },
+
+  async remove(req: Request, res: Response) {
+    const slug = String(req.params.slug);
+    const [record] = await db
+      .delete(packages)
+      .where(eq(packages.slug, slug))
+      .returning();
+    if (!record) {
+      res.status(404).json({ error: "Package not found" });
+      return;
+    }
+    res.json({ success: true });
+  },
 } as const;

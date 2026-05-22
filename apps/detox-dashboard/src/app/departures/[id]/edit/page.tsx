@@ -13,9 +13,9 @@ export default function EditDeparturePage() {
   const params = useParams();
   const router = useRouter();
   const id = String(params.id);
-  const allDeps = useAdminDepartures();
-  const packages = useAdminPackages();
-  const destinations = useAdminDestinations();
+  const { data: allDeps } = useAdminDepartures();
+  const { data: packages } = useAdminPackages();
+  const { data: destinations } = useAdminDestinations();
   const dep = allDeps.find((d) => d.id === id);
 
   if (!dep) {
@@ -27,9 +27,9 @@ export default function EditDeparturePage() {
     );
   }
 
-  function handleSubmit(data: DepartureFormData) {
+  async function handleSubmit(data: DepartureFormData) {
     try {
-      updateDeparture(id, data);
+      await updateDeparture(id, data);
       toast.success("Departure updated successfully");
       router.push("/departures");
     } catch {

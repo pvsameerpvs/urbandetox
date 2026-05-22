@@ -18,14 +18,14 @@ import { ItineraryFields } from "@/app/packages/components/itinerary-fields";
 
 export default function NewPackagePage() {
   const router = useRouter();
-  const destinations = useAdminDestinations();
+  const { data: destinations } = useAdminDestinations();
   const f = usePackageForm(destinations[0]?.slug || "");
 
-  function onSubmit(data: PackageFormData) {
+  async function onSubmit(data: PackageFormData) {
     const slug = data.title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-");
     const durationLabel = `${data.duration} Days / ${data.duration - 1} Nights`;
     try {
-      createPackage({
+      await createPackage({
       ...data,
       id: generateId("pkg"),
       slug,

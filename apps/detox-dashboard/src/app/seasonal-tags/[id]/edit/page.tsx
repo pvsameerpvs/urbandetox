@@ -35,7 +35,7 @@ export default function EditSeasonalTagPage() {
   const params = useParams();
   const router = useRouter();
   const id = String(params.id);
-  const tags = useAdminSeasonalTags();
+  const { data: tags } = useAdminSeasonalTags();
   const tag = tags.find((t) => t.id === id);
 
   const form = useForm<FormData>({
@@ -68,10 +68,10 @@ export default function EditSeasonalTagPage() {
     );
   }
 
-  function onSubmit(data: FormData) {
+  async function onSubmit(data: FormData) {
     const slug = data.name.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-");
     try {
-      updateSeasonalTag(id, { ...data, slug });
+      await updateSeasonalTag(id, { ...data, slug });
       toast.success("Tag updated successfully");
       router.push("/seasonal-tags");
     } catch {

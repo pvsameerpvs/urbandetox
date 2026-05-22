@@ -13,7 +13,7 @@ export default function EditDestinationPage() {
   const params = useParams();
   const router = useRouter();
   const slug = String(params.slug);
-  const dest = useAdminDestination(slug);
+  const { data: dest } = useAdminDestination(slug);
 
   if (!dest) {
     return (
@@ -24,9 +24,9 @@ export default function EditDestinationPage() {
     );
   }
 
-  function handleSubmit(data: DestinationFormData) {
+  async function handleSubmit(data: DestinationFormData) {
     try {
-      updateDestination(slug, { ...data, gallery: data.gallery.filter(Boolean) });
+      await updateDestination(slug, { ...data, gallery: data.gallery.filter(Boolean) });
       toast.success("Destination updated successfully");
       router.push("/destinations");
     } catch {

@@ -56,4 +56,36 @@ export const GuideController = {
       .slice(0, l);
     res.json(related);
   },
+
+  async create(req: Request, res: Response) {
+    const [record] = await db.insert(guides).values(req.body).returning();
+    res.status(201).json(record);
+  },
+
+  async update(req: Request, res: Response) {
+    const id = String(req.params.id);
+    const [record] = await db
+      .update(guides)
+      .set(req.body)
+      .where(eq(guides.id, id))
+      .returning();
+    if (!record) {
+      res.status(404).json({ error: "Guide not found" });
+      return;
+    }
+    res.json(record);
+  },
+
+  async remove(req: Request, res: Response) {
+    const id = String(req.params.id);
+    const [record] = await db
+      .delete(guides)
+      .where(eq(guides.id, id))
+      .returning();
+    if (!record) {
+      res.status(404).json({ error: "Guide not found" });
+      return;
+    }
+    res.json({ success: true });
+  },
 } as const;

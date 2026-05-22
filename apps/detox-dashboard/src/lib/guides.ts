@@ -1,24 +1,30 @@
-"use client";
-
-import { guidesApi } from "@/features/guides";
+import { fetchGuides } from "@/lib/api";
 import type { GuideArticle } from "@urbandetox/utils";
 
-export function getAdminGuides(): GuideArticle[] {
-  return guidesApi.getAll();
+export async function getAdminGuides(): Promise<GuideArticle[]> {
+  return fetchGuides<GuideArticle>();
 }
 
-export function getAdminGuideById(id: string): GuideArticle | undefined {
-  return guidesApi.getById(id);
+export async function getAdminGuideById(id: string): Promise<GuideArticle | undefined> {
+  try {
+    const all = await getAdminGuides();
+    return all.find((g) => g.id === id);
+  } catch {
+    return undefined;
+  }
 }
 
-export function createGuide(guide: GuideArticle) {
-  guidesApi.create(guide);
+export async function createGuide(guide: GuideArticle): Promise<void> {
+  // await apiCreateGuide(guide);
+  throw new Error("Not implemented: createGuide via API");
 }
 
-export function updateGuide(id: string, updates: Partial<GuideArticle>) {
-  guidesApi.update(id, updates);
+export async function updateGuide(id: string, updates: Partial<GuideArticle>): Promise<void> {
+  // await apiUpdateGuide(id, updates);
+  throw new Error("Not implemented: updateGuide via API");
 }
 
-export function deleteGuide(id: string) {
-  guidesApi.delete(id);
+export async function deleteGuide(id: string): Promise<void> {
+  // await apiDeleteGuide(id);
+  throw new Error("Not implemented: deleteGuide via API");
 }

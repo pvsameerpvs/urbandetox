@@ -13,14 +13,16 @@ import {
   Users,
   Search,
 } from "lucide-react";
-import { getPackageBySlug, getDestinationBySlug, deleteDeparture } from "@/lib/admin-data";
-import { useAdminDepartures } from "@/hooks/use-admin-data";
+import { deleteDeparture } from "@/lib/admin-data";
+import { useAdminDepartures, useAdminPackages, useAdminDestinations } from "@/hooks/use-admin-data";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { toast } from "sonner";
 import { DepartureTable } from "./components/DepartureTable";
 
 export default function DeparturesPage() {
-  const allDepartures = useAdminDepartures();
+  const { data: allDepartures } = useAdminDepartures();
+  const { data: packages } = useAdminPackages();
+  const { data: destinations } = useAdminDestinations();
   const [search, setSearch] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingId, setPendingId] = useState<string | null>(null);
@@ -30,8 +32,8 @@ export default function DeparturesPage() {
     let list = [...allDepartures];
     if (q) {
       list = list.filter((d) => {
-        const pkg = getPackageBySlug(d.packageSlug);
-        const dest = getDestinationBySlug(d.destinationSlug);
+        const pkg = packages.find((p) => p.slug === d.packageSlug);
+        const dest = destinations.find((de) => de.slug === d.destinationSlug);
         return (
           d.code.toLowerCase().includes(q) ||
           pkg?.title?.toLowerCase().includes(q) ||
@@ -41,7 +43,7 @@ export default function DeparturesPage() {
       });
     }
     return list.sort((a, b) => a.startDate.localeCompare(b.startDate));
-  }, [allDepartures, search]);
+  }, [allDepartures, search, packages, destinations]);
 
   const stats = useMemo(() => {
     const total = allDepartures.length;
@@ -58,10 +60,10 @@ export default function DeparturesPage() {
     setConfirmOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (!pendingId) return;
     try {
-      deleteDeparture(pendingId);
+      await deleteDeparture(pendingId);
       toast.success("Departure deleted successfully");
       setTimeout(() => window.location.reload(), 400);
     } catch {
@@ -169,8 +171,8 @@ export default function DeparturesPage() {
       {/* Table */}
       <DepartureTable
         departures={filtered}
-        getPackageBySlug={getPackageBySlug}
-        getDestinationBySlug={getDestinationBySlug}
+        packages={packages}
+        destinations={destinations}
         onDeleteClick={handleDeleteClick}
       />
 

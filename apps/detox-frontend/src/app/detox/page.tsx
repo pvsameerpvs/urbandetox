@@ -1,6 +1,8 @@
 import { fetchDestinations, fetchPackagesByDestination } from "@/lib/api";
 import { DestinationBrowseCard } from "./components/DestinationBrowseCard";
 
+export const dynamic = "force-dynamic";
+
 export default async function DetoxBrowsePage() {
   const destinations = await fetchDestinations();
 

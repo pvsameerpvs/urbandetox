@@ -13,16 +13,16 @@ import {
 } from "lucide-react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { cn } from "@urbandetox/utils";
-import type { Departure } from "@urbandetox/utils";
+import type { Departure, Package, Destination } from "@urbandetox/utils";
 
 interface DepartureTableProps {
   departures: Departure[];
-  getPackageBySlug: (slug: string) => { title?: string } | undefined;
-  getDestinationBySlug: (slug: string) => { name?: string } | undefined;
+  packages: Package[];
+  destinations: Destination[];
   onDeleteClick: (id: string) => void;
 }
 
-export function DepartureTable({ departures, getPackageBySlug, getDestinationBySlug, onDeleteClick }: DepartureTableProps) {
+export function DepartureTable({ departures, packages, destinations, onDeleteClick }: DepartureTableProps) {
   if (departures.length === 0) {
     return (
       <Card className="border border-border/40 rounded-2xl bg-white">
@@ -56,8 +56,8 @@ export function DepartureTable({ departures, getPackageBySlug, getDestinationByS
           </thead>
           <tbody>
             {departures.map((dep) => {
-              const pkg = getPackageBySlug(dep.packageSlug);
-              const dest = getDestinationBySlug(dep.destinationSlug);
+              const pkg = packages.find((p) => p.slug === dep.packageSlug);
+              const dest = destinations.find((d) => d.slug === dep.destinationSlug);
               const fillPct = Math.round(((dep.seatsTotal - dep.seatsLeft) / dep.seatsTotal) * 100);
               const isFull = dep.status === "full";
               const isFilling = dep.status === "filling";
@@ -168,5 +168,3 @@ export function DepartureTable({ departures, getPackageBySlug, getDestinationByS
     </Card>
   );
 }
-
-

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useParams, notFound } from "next/navigation";
+import { useState, useEffect } from "react";
 import { Card, CardContent, Badge } from "@urbandetox/ui";
 import {
   ArrowLeft,
@@ -21,17 +22,55 @@ import { InfoBlock } from "./components/InfoBlock";
 import { PaymentInfoBlock } from "./components/PaymentInfoBlock";
 import { PaymentDetailsCard } from "./components/PaymentDetailsCard";
 import { TravelerDetailCard } from "./components/TravelerDetailCard";
+import type { BookingState, Package as PackageType, Destination, Departure } from "@urbandetox/utils";
 
 export default function BookingDetailPage() {
   const params = useParams();
   const code = String(params.departureCode);
 
-  const booking = getBooking(code);
-  if (!booking) notFound();
+  const [booking, setBooking] = useState<BookingState | null>(null);
+  const [departure, setDeparture] = useState<Departure | undefined>(undefined);
+  const [pkg, setPkg] = useState<PackageType | undefined>(undefined);
+  const [dest, setDest] = useState<Destination | undefined>(undefined);
+  const [loading, setLoading] = useState(true);
 
-  const departure = getDepartureByCode(code);
-  const pkg = departure ? getPackageBySlug(departure.packageSlug) : undefined;
-  const dest = departure ? getDestinationBySlug(departure.destinationSlug) : undefined;
+  useEffect(() => {
+    async function load() {
+      const fetchedBooking = await getBooking(code);
+      if (!fetchedBooking) {
+        setBooking(null);
+        setLoading(false);
+        return;
+      }
+      setBooking(fetchedBooking);
+
+      const fetchedDeparture = await getDepartureByCode(code);
+      setDeparture(fetchedDeparture);
+
+      if (fetchedDeparture) {
+        const [fetchedPkg, fetchedDest] = await Promise.all([
+          getPackageBySlug(fetchedDeparture.packageSlug),
+          getDestinationBySlug(fetchedDeparture.destinationSlug),
+        ]);
+        setPkg(fetchedPkg);
+        setDest(fetchedDest);
+      }
+
+      setLoading(false);
+    }
+
+    load();
+  }, [code]);
+
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div className="py-20 text-center text-muted-foreground">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!booking) notFound();
 
   const primary = booking.travelers.find((t) => t.type === "primary");
   const companions = booking.travelers.filter((t) => t.type === "companion");

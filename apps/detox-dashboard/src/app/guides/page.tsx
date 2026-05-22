@@ -1,14 +1,15 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@urbandetox/ui";
 import { Card, CardContent, Badge } from "@urbandetox/ui";
 import { getAdminGuides, deleteGuide } from "@/lib/guides";
-import { getDestinationBySlug } from "@/lib/admin-data";
+import { useAdminDestinations } from "@/hooks/use-admin-data";
+import type { GuideArticle } from "@urbandetox/utils";
 import { BookOpen, ExternalLink, Star, Eye, Pencil, Trash2, Plus } from "lucide-react";
 import { toast } from "sonner";
-import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -19,21 +20,26 @@ import {
 } from "@urbandetox/ui";
 
 export default function GuidesPage() {
-  const guides = getAdminGuides();
+  const [guides, setGuides] = useState<GuideArticle[]>([]);
+  const { data: destinations } = useAdminDestinations();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingId, setPendingId] = useState<string | null>(null);
+
+  useEffect(() => {
+    getAdminGuides().then(setGuides).catch(console.error);
+  }, []);
 
   function handleDeleteClick(id: string) {
     setPendingId(id);
     setConfirmOpen(true);
   }
 
-  function handleConfirmDelete() {
+  async function handleConfirmDelete() {
     if (!pendingId) return;
     try {
-      deleteGuide(pendingId);
+      await deleteGuide(pendingId);
       toast.success("Guide deleted successfully");
-      setTimeout(() => window.location.reload(), 400);
+      setGuides((prev) => prev.filter((g) => g.id !== pendingId));
     } catch {
       toast.error("Failed to delete guide");
     }
@@ -57,7 +63,7 @@ export default function GuidesPage() {
 
       <div className="grid gap-4">
         {guides.map((guide) => {
-          const dest = guide.destinationSlug ? getDestinationBySlug(guide.destinationSlug) : undefined;
+          const dest = guide.destinationSlug ? destinations.find((d) => d.slug === guide.destinationSlug) : undefined;
 
           return (
             <Card
@@ -165,7 +171,7 @@ export default function GuidesPage() {
           <DialogHeader>
             <DialogTitle>Delete Guide</DialogTitle>
             <DialogDescription>
-              This will permanently remove the guide from localStorage. This action cannot be undone.
+              This will permanently remove the guide. This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

@@ -6,8 +6,11 @@ import { guideSlugParam, guideListQuery, guideRelatedQuery } from "@/validators/
 const router = express.Router();
 
 router.get("/", validateQuery(guideListQuery), GuideController.list);
+router.post("/", GuideController.create);
 router.get("/categories", GuideController.getCategories);
 router.get("/:slug", validateParams(guideSlugParam), GuideController.getBySlug);
+router.put("/:id", GuideController.update);
+router.delete("/:id", GuideController.remove);
 router.get("/:slug/related", validateParams(guideSlugParam), validateQuery(guideRelatedQuery), GuideController.getRelated);
 
 export default router;

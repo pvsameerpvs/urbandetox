@@ -54,7 +54,7 @@ interface InitialData {
 }
 
 export function usePackageForm(initialDestinationSlug: string, initialData?: InitialData) {
-  const tags = useAdminSeasonalTags();
+  const { data: tags } = useAdminSeasonalTags();
   const firstTag = tags[0]?.name || initialSeasonalTags[0]?.name || "";
 
   const defaultValues: PackageFormData = {

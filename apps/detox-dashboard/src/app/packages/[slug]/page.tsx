@@ -4,6 +4,7 @@ import { useParams, notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@urbandetox/ui";
 import { ArrowLeft, Pencil, Plus } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useAdminPackage } from "@/hooks/use-admin-data";
 import { getDestinationBySlug, getDepartureByCode } from "@/lib/admin-data";
 import { getAllBookings } from "@/lib/bookings";
@@ -12,45 +13,73 @@ import { PackageHero } from "./components/PackageHero";
 import { PackageStats } from "./components/PackageStats";
 import { PackageDepartures } from "./components/PackageDepartures";
 import { PackageBookings } from "./components/PackageBookings";
+import type { Destination } from "@urbandetox/utils";
 
 export default function PackageDetailPage() {
   const params = useParams();
   const slug = String(params.slug);
-  const pkg = useAdminPackage(slug);
-  const allDepartures = useAdminDepartures();
+  const { data: pkg } = useAdminPackage(slug);
+  const { data: allDepartures } = useAdminDepartures();
+
+  const [dest, setDest] = useState<Destination | undefined>(undefined);
+  const [relevantBookings, setRelevantBookings] = useState<any[]>([]);
+  const [totalSeats, setTotalSeats] = useState(0);
+  const [seatsBooked, setSeatsBooked] = useState(0);
+  const [totalRevenue, setTotalRevenue] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   if (!pkg) notFound();
 
-  const dest = getDestinationBySlug(pkg.destinationSlug);
+  useEffect(() => {
+    async function load() {
+      if (!pkg) return;
+      const fetchedDest = await getDestinationBySlug(pkg.destinationSlug);
+      setDest(fetchedDest);
+
+      const departures = allDepartures.filter((d) => d.packageSlug === slug);
+      setTotalSeats(departures.reduce((sum, d) => sum + d.seatsTotal, 0));
+      setSeatsBooked(departures.reduce((sum, d) => sum + (d.seatsTotal - d.seatsLeft), 0));
+
+      const bookingsRaw = await getAllBookings();
+      const bookingCodes = departures.map((d) => d.code);
+
+      const relevant: any[] = [];
+      let revenue = 0;
+
+      for (const b of bookingsRaw.filter((b) => bookingCodes.includes(b.departureCode))) {
+        const dep = await getDepartureByCode(b.departureCode);
+        const primary = b.travelers.find((t) => t.type === "primary");
+        relevant.push({
+          ...b,
+          id: b.departureCode,
+          primaryName: primary?.name || "—",
+          primaryPhone: primary?.phone || "",
+          primaryEmail: primary?.email || "",
+          travelerCount: b.travelers.length,
+          startDate: dep?.startDate,
+          endDate: dep?.endDate,
+        });
+        const price = dep?.offerPrice ?? dep?.price ?? 0;
+        revenue += price * b.travelers.length;
+      }
+
+      setRelevantBookings(relevant);
+      setTotalRevenue(revenue);
+      setLoading(false);
+    }
+
+    load();
+  }, [pkg, slug, allDepartures]);
+
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div className="py-20 text-center text-muted-foreground">Loading...</div>
+      </div>
+    );
+  }
+
   const departures = allDepartures.filter((d) => d.packageSlug === slug);
-
-  // Cross-reference bookings
-  const bookingsRaw = getAllBookings();
-  const bookingCodes = departures.map((d) => d.code);
-  const relevantBookings = bookingsRaw
-    .filter((b) => bookingCodes.includes(b.departureCode))
-    .map((b) => {
-      const dep = getDepartureByCode(b.departureCode);
-      const primary = b.travelers.find((t) => t.type === "primary");
-      return {
-        ...b,
-        id: b.departureCode,
-        primaryName: primary?.name || "—",
-        primaryPhone: primary?.phone || "",
-        primaryEmail: primary?.email || "",
-        travelerCount: b.travelers.length,
-        startDate: dep?.startDate,
-        endDate: dep?.endDate,
-      };
-    });
-
-  const totalSeats = departures.reduce((sum, d) => sum + d.seatsTotal, 0);
-  const seatsBooked = departures.reduce((sum, d) => sum + (d.seatsTotal - d.seatsLeft), 0);
-  const totalRevenue = relevantBookings.reduce((sum, b) => {
-    const dep = getDepartureByCode(b.departureCode);
-    const price = dep?.offerPrice ?? dep?.price ?? 0;
-    return sum + price * b.travelers.length;
-  }, 0);
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">

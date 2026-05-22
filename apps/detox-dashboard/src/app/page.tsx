@@ -7,9 +7,9 @@ import { useAdminDestinations, useAdminPackages, useAdminDepartures } from "@/ho
 import { StatCard } from "@/components/ui/StatCard";
 
 export default function AdminDashboardPage() {
-  const destinations = useAdminDestinations();
-  const packages = useAdminPackages();
-  const departures = useAdminDepartures();
+  const { data: destinations } = useAdminDestinations();
+  const { data: packages } = useAdminPackages();
+  const { data: departures } = useAdminDepartures();
   const upcoming = [...departures.filter((d) => d.status !== "closed")].sort((a, b) => a.startDate.localeCompare(b.startDate));
   const fillingFast = upcoming.filter((d) => d.status === "filling" || d.seatsLeft <= 3);
 

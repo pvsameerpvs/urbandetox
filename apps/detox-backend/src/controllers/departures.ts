@@ -32,4 +32,36 @@ export const DepartureController = {
     }
     res.json(dep);
   },
+
+  async create(req: Request, res: Response) {
+    const [record] = await db.insert(departures).values(req.body).returning();
+    res.status(201).json(record);
+  },
+
+  async update(req: Request, res: Response) {
+    const id = String(req.params.id);
+    const [record] = await db
+      .update(departures)
+      .set(req.body)
+      .where(eq(departures.id, id))
+      .returning();
+    if (!record) {
+      res.status(404).json({ error: "Departure not found" });
+      return;
+    }
+    res.json(record);
+  },
+
+  async remove(req: Request, res: Response) {
+    const id = String(req.params.id);
+    const [record] = await db
+      .delete(departures)
+      .where(eq(departures.id, id))
+      .returning();
+    if (!record) {
+      res.status(404).json({ error: "Departure not found" });
+      return;
+    }
+    res.json({ success: true });
+  },
 } as const;

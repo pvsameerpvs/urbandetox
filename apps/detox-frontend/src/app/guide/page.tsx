@@ -1,6 +1,8 @@
 import { fetchGuides, fetchGuideCategories, fetchFeaturedGuides } from "@/lib/api";
 import { GuideListingClient } from "./GuideListingClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function GuideListingPage() {
   const guides = await fetchGuides();
   const categories = await fetchGuideCategories();

@@ -11,7 +11,7 @@ import {
   Banknote,
 } from "lucide-react";
 import { getAllBookings, type BookingWithMeta } from "@/lib/bookings";
-import { getDepartureByCode, getPackageBySlug, getDestinationBySlug } from "@/lib/admin-data";
+import { useAdminDepartures, useAdminPackages, useAdminDestinations } from "@/hooks/use-admin-data";
 import { useBookingNotifications } from "@/components/layout/BookingNotificationContext";
 import { BookingTable } from "./components/BookingTable";
 import { seedDemoBookings } from "./lib/seedDemoBookings";
@@ -19,16 +19,19 @@ import { seedDemoBookings } from "./lib/seedDemoBookings";
 export default function BookingsPage() {
   const [bookings, setBookings] = useState<BookingWithMeta[]>([]);
   const { clearUnread } = useBookingNotifications();
+  const { data: departures } = useAdminDepartures();
+  const { data: packages } = useAdminPackages();
+  const { data: destinations } = useAdminDestinations();
 
   useEffect(() => {
     clearUnread();
     seedDemoBookings();
-    const t = setTimeout(() => {
-      const raw = getAllBookings();
+    const t = setTimeout(async () => {
+      const raw = await getAllBookings();
       const enriched = raw.map((b) => {
-        const dep = getDepartureByCode(b.departureCode);
-        const pkg = dep ? getPackageBySlug(dep.packageSlug) : undefined;
-        const dest = dep ? getDestinationBySlug(dep.destinationSlug) : undefined;
+        const dep = departures.find((d) => d.code === b.departureCode);
+        const pkg = dep ? packages.find((p) => p.slug === dep.packageSlug) : undefined;
+        const dest = dep ? destinations.find((d) => d.slug === dep.destinationSlug) : undefined;
         const primary = b.travelers.find((t) => t.type === "primary");
         return {
           ...b,
@@ -48,7 +51,7 @@ export default function BookingsPage() {
       setBookings(enriched);
     }, 0);
     return () => clearTimeout(t);
-  }, [clearUnread]);
+  }, [clearUnread, departures, packages, destinations]);
 
   const stats = useMemo(() => {
     const total = bookings.length;

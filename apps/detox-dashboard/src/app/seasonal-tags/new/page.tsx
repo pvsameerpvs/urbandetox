@@ -42,10 +42,10 @@ export default function NewSeasonalTagPage() {
     },
   });
 
-  function onSubmit(data: FormData) {
+  async function onSubmit(data: FormData) {
     const slug = data.name.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-");
     try {
-      createSeasonalTag({
+      await createSeasonalTag({
         id: generateId("st"),
         name: data.name,
         slug,

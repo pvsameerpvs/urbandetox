@@ -10,12 +10,12 @@ import { DepartureForm, type DepartureFormData } from "../components/DepartureFo
 
 export default function NewDeparturePage() {
   const router = useRouter();
-  const packages = useAdminPackages();
-  const destinations = useAdminDestinations();
+  const { data: packages } = useAdminPackages();
+  const { data: destinations } = useAdminDestinations();
 
-  function handleSubmit(data: DepartureFormData) {
+  async function handleSubmit(data: DepartureFormData) {
     try {
-      createDeparture({
+      await createDeparture({
         ...data,
         id: generateId("dep"),
       });

@@ -10,10 +10,10 @@ import { DestinationForm, type DestinationFormData } from "../components/Destina
 export default function NewDestinationPage() {
   const router = useRouter();
 
-  function handleSubmit(data: DestinationFormData) {
+  async function handleSubmit(data: DestinationFormData) {
     const slug = data.name.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-");
     try {
-      createDestination({
+      await createDestination({
         ...data,
         id: generateId("dest"),
         slug,

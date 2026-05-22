@@ -1,20 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@urbandetox/ui";
 import { Plus, ArrowLeft, Tag } from "lucide-react";
-import { useAdminSeasonalTags } from "@/hooks/use-admin-data";
-import { getPackagesUsingTag, deleteSeasonalTag } from "@/lib/admin-data";
+import { useAdminSeasonalTags, useAdminPackages } from "@/hooks/use-admin-data";
+import { deleteSeasonalTag } from "@/lib/admin-data";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { SeasonalTagCard } from "./components/SeasonalTagCard";
 import { toast } from "sonner";
 import type { SeasonalTag } from "@urbandetox/utils";
 
 export default function SeasonalTagsPage() {
-  const tags = useAdminSeasonalTags();
+  const { data: tags } = useAdminSeasonalTags();
+  const { data: packages } = useAdminPackages();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingTag, setPendingTag] = useState<SeasonalTag | null>(null);
+
+  const getPackagesUsingTag = (tagName: string) => packages.filter((p) => p.seasonalTag === tagName).length;
 
   const totalPackages = tags.reduce((sum, t) => sum + getPackagesUsingTag(t.name), 0);
 
@@ -23,7 +26,7 @@ export default function SeasonalTagsPage() {
     setConfirmOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (!pendingTag) return;
     const count = getPackagesUsingTag(pendingTag.name);
     if (count > 0) {
@@ -33,7 +36,7 @@ export default function SeasonalTagsPage() {
       return;
     }
     try {
-      deleteSeasonalTag(pendingTag.id);
+      await deleteSeasonalTag(pendingTag.id);
       toast.success("Tag deleted successfully");
       setTimeout(() => window.location.reload(), 400);
     } catch {

@@ -1,70 +1,68 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import type { Destination, Package, Departure, SeasonalTag } from "@urbandetox/utils";
-import { destinations as initialDestinations } from "@/data/destinations";
-import { packages as initialPackages } from "@/data/packages";
-import { departures as initialDepartures } from "@/data/departures";
-import { initialSeasonalTags } from "@urbandetox/utils";
 import {
-  getDestinations,
-  getPackages,
-  getDepartures,
-  getDestinationBySlug,
-  getPackageBySlug,
-  getSeasonalTags,
-} from "@/lib/admin-data";
+  fetchDestinations,
+  fetchDestinationBySlug,
+  fetchPackages,
+  fetchPackageBySlug,
+  fetchDepartures,
+  fetchSeasonalTags,
+} from "@/lib/api";
 
 export function useAdminDestinations() {
-  const [data, setData] = useState<Destination[]>(initialDestinations);
-  useEffect(() => {
-    const t = setTimeout(() => setData(getDestinations()), 0);
-    return () => clearTimeout(t);
-  }, []);
-  return data;
+  return useApiFetch<Destination[]>(fetchDestinations, []);
 }
 
 export function useAdminDestination(slug: string) {
-  const [data, setData] = useState<Destination | undefined>(() => initialDestinations.find((d) => d.slug === slug));
-  useEffect(() => {
-    const t = setTimeout(() => setData(getDestinationBySlug(slug)), 0);
-    return () => clearTimeout(t);
-  }, [slug]);
-  return data;
+  return useApiFetch<Destination | undefined>(
+    () => fetchDestinationBySlug(slug),
+    undefined
+  );
 }
 
 export function useAdminPackages() {
-  const [data, setData] = useState<Package[]>(initialPackages);
-  useEffect(() => {
-    const t = setTimeout(() => setData(getPackages()), 0);
-    return () => clearTimeout(t);
-  }, []);
-  return data;
+  return useApiFetch<Package[]>(fetchPackages, []);
 }
 
 export function useAdminPackage(slug: string) {
-  const [data, setData] = useState<Package | undefined>(() => initialPackages.find((p) => p.slug === slug));
-  useEffect(() => {
-    const t = setTimeout(() => setData(getPackageBySlug(slug)), 0);
-    return () => clearTimeout(t);
-  }, [slug]);
-  return data;
+  return useApiFetch<Package | undefined>(
+    () => fetchPackageBySlug(slug),
+    undefined
+  );
 }
 
 export function useAdminDepartures() {
-  const [data, setData] = useState<Departure[]>(initialDepartures);
-  useEffect(() => {
-    const t = setTimeout(() => setData(getDepartures()), 0);
-    return () => clearTimeout(t);
-  }, []);
-  return data;
+  return useApiFetch<Departure[]>(fetchDepartures, []);
 }
 
 export function useAdminSeasonalTags() {
-  const [data, setData] = useState<SeasonalTag[]>(initialSeasonalTags);
+  return useApiFetch<SeasonalTag[]>(fetchSeasonalTags, []);
+}
+
+// ─── Generic fetch hook ──────────────────────────────
+import { useState, useEffect } from "react";
+
+function useApiFetch<T>(fetcher: () => Promise<T>, fallback: T) {
+  const [data, setData] = useState<T>(fallback);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    const t = setTimeout(() => setData(getSeasonalTags()), 0);
-    return () => clearTimeout(t);
+    let cancelled = false;
+    fetcher()
+      .then((result) => {
+        if (!cancelled) setData(result);
+      })
+      .catch((err) => {
+        console.error("Dashboard API fetch failed:", err);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
-  return data;
+
+  return { data, loading };
 }

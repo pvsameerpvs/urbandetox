@@ -16,7 +16,7 @@ const existingCategories = ["Destination Guides", "Travel Tips", "Packing Guides
 
 interface GuideFormProps {
   initial?: GuideArticle;
-  onSave: (guide: GuideArticle) => void;
+  onSave: (guide: GuideArticle) => void | Promise<void>;
 }
 
 export function GuideForm({ initial, onSave }: GuideFormProps) {
@@ -27,9 +27,10 @@ export function GuideForm({ initial, onSave }: GuideFormProps) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDestinations(getDestinations());
-      setAllPackages(getPackages());
+    const timer = setTimeout(async () => {
+      const [dests, pkgs] = await Promise.all([getDestinations(), getPackages()]);
+      setDestinations(dests);
+      setAllPackages(pkgs);
       setReady(true);
     }, 0);
     return () => clearTimeout(timer);
@@ -50,7 +51,7 @@ export function GuideForm({ initial, onSave }: GuideFormProps) {
     ? allPackages.filter((p) => p.destinationSlug === destinationSlug)
     : allPackages;
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim() || !slug.trim() || !category.trim() || !excerpt.trim() || !content.trim() || !image.trim()) {
       setError("Please fill in all required fields.");
@@ -69,7 +70,7 @@ export function GuideForm({ initial, onSave }: GuideFormProps) {
       featured,
       relatedPackageSlugs: relatedSlugs.split(",").map((s) => s.trim()).filter(Boolean),
     };
-    onSave(guide);
+    await onSave(guide);
     router.push("/guides");
   }
 
