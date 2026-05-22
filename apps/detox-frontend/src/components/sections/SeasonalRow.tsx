@@ -1,21 +1,20 @@
-
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { SeasonalPackageCard } from "./SeasonalPackageCard";
-import { fetchDestinationBySlug } from "@/lib/data";
-import type { Package } from "@urbandetox/utils";
+import type { Package, Destination } from "@urbandetox/utils";
 import type { LucideIcon } from "lucide-react";
 
 interface SeasonalRowProps {
   label: string;
   icon: LucideIcon;
   packages: Package[];
+  destMap: Map<string, Destination>;
 }
 
-export function SeasonalRow({ label, icon: Icon, packages }: SeasonalRowProps) {
+export function SeasonalRow({ label, icon: Icon, packages, destMap }: SeasonalRowProps) {
   if (packages.length === 0) return null;
 
-  const firstDest = fetchDestinationBySlug(packages[0].destinationSlug);
+  const firstDest = destMap.get(packages[0].destinationSlug);
 
   return (
     <div className="mb-12 sm:mb-14 last:mb-0">
@@ -36,7 +35,7 @@ export function SeasonalRow({ label, icon: Icon, packages }: SeasonalRowProps) {
       <div className="overflow-x-auto -mx-4 px-4 pb-2 scrollbar-hide">
         <div className="flex gap-4 sm:gap-5 snap-x snap-mandatory">
           {packages.map((pkg, index) => {
-            const dest = fetchDestinationBySlug(pkg.destinationSlug);
+            const dest = destMap.get(pkg.destinationSlug);
             if (!dest) return null;
             return <SeasonalPackageCard key={pkg.id} pkg={pkg} dest={dest} index={index} />;
           })}

@@ -3,9 +3,20 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 async function api<T>(path: string, options?: RequestInit): Promise<T> {
+  const { createClient } = await import("@/lib/supabase/client");
+  const supabase = createClient();
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...(token && { Authorization: `Bearer ${token}` }),
+    ...(options?.headers as Record<string, string>),
+  };
+
   const res = await fetch(`${API_BASE}${path}`, {
-    headers: { "Content-Type": "application/json" },
     ...options,
+    headers,
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: res.statusText }));

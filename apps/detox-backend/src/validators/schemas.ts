@@ -60,6 +60,7 @@ export const createBookingBody = z.object({
   departureCode: z.string().min(1).max(50),
   fullName: z.string().min(2).max(255),
   phone: z.string().min(5).max(50),
-  email: z.string().email().optional().or(z.literal("")),
+  email: z.string().optional(),
   travelers: z.number().int().min(1).max(50).optional(),
+  details: z.any().optional(),
 });

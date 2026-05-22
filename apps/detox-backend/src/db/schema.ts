@@ -118,16 +118,63 @@ export const seasonalTags = pgTable("seasonal_tags", {
   sortOrder: integer("sort_order").notNull(),
 });
 
+export const users = pgTable("users", {
+  id: uuid("id").primaryKey(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  fullName: varchar("full_name", { length: 255 }),
+  phone: varchar("phone", { length: 50 }),
+  dateOfBirth: varchar("date_of_birth", { length: 20 }),
+  gender: varchar("gender", { length: 50 }),
+  avatarUrl: text("avatar_url"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 export const bookings = pgTable("bookings", {
   id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => users.id),
   departureCode: varchar("departure_code", { length: 50 }).notNull(),
   fullName: varchar("full_name", { length: 255 }).notNull(),
   phone: varchar("phone", { length: 50 }).notNull(),
   email: varchar("email", { length: 255 }),
   travelers: integer("travelers").notNull().default(1),
+  status: varchar("status", { length: 50 }).notNull().default("confirmed"),
+  paymentStatus: varchar("payment_status", { length: 50 }).notNull().default("pending"),
+  details: jsonb("details").$type<{
+    travelers?: Array<{
+      id: string;
+      type: "primary" | "companion";
+      name: string;
+      phone: string;
+      email: string;
+      dateOfBirth: string;
+      gender: string;
+      foodPreference: string;
+      allergies: string;
+      medicalConditions: string;
+      bloodGroup: string;
+      photoUrl: string;
+      idUrl?: string;
+      idType?: string;
+      emergencyName: string;
+      emergencyPhone: string;
+      emergencyRelation: string;
+    }>;
+    common?: {
+      groupNote: string;
+      modeOfArrival: string;
+      needsTravelHelp: boolean;
+    };
+    onboardingComplete?: boolean;
+    paymentMethod?: "razorpay" | "cod";
+    bookedByName?: string;
+    bookedByEmail?: string;
+    bookedByPhone?: string;
+  }>().default({}),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+export type User = typeof users.$inferSelect;
 export type Destination = typeof destinations.$inferSelect;
 export type Package = typeof packages.$inferSelect;
 export type Departure = typeof departures.$inferSelect;

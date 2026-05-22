@@ -33,6 +33,10 @@ export async function fetchDestinationBySlug(
 }
 
 // ── Packages ──────────────────────────────────────
+export async function fetchPackages(): Promise<Package[]> {
+  return api<Package[]>("/api/packages");
+}
+
 export async function fetchPackagesByDestination(
   destinationSlug: string
 ): Promise<Package[]> {
@@ -119,6 +123,22 @@ export async function fetchTestimonials(limit = 4): Promise<Testimonial[]> {
 }
 
 // ── Bookings ──────────────────────────────────────
+export async function fetchMyBookings(): Promise<unknown[]> {
+  const { createClient } = await import("@/lib/supabase/client");
+  const supabase = createClient();
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+
+  const res = await fetch(`${API_BASE}/api/bookings/me`, {
+    headers: {
+      "Content-Type": "application/json",
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+  });
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  return res.json();
+}
+
 export async function createBooking(payload: {
   departureCode: string;
   fullName: string;

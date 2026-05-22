@@ -16,12 +16,14 @@
     "db:seed": "tsx src/db/seed.ts"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.106.1",
     "@urbandetox/utils": "workspace:*",
     "cors": "^2.8.6",
     "dotenv": "^16.6.1",
     "drizzle-orm": "^0.45.2",
     "express": "^4.22.1",
     "express-async-errors": "^3.1.1",
+    "pg": "^8.21.0",
     "postgres": "^3.4.9",
     "zod": "^4.4.3"
   },
@@ -29,6 +31,7 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/node": "^22.0.0",
+    "@types/pg": "^8.20.0",
     "@urbandetox/eslint-config": "workspace:*",
     "@urbandetox/typescript-config": "workspace:*",
     "drizzle-kit": "^0.31.10",

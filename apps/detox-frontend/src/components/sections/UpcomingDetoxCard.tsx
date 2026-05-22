@@ -2,26 +2,22 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { fetchPackageBySlug, fetchDestinationBySlug } from "@/lib/data";
 import { formatPrice, formatDateRange } from "@urbandetox/utils";
 import { cn } from "@urbandetox/utils";
+import type { Departure, Package, Destination } from "@urbandetox/utils";
 import { Calendar, ArrowRight, MapPin, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { itemVariants } from "@/lib/animations";
 import { Button, Badge, Card, CardContent } from "@urbandetox/ui";
 import { StatusBadge } from "@/components/StatusBadge";
-import type { Departure } from "@urbandetox/utils";
 
 interface UpcomingDetoxCardProps {
   dep: Departure;
+  pkg: Package;
+  dest: Destination;
 }
 
-export function UpcomingDetoxCard({ dep }: UpcomingDetoxCardProps) {
-  const pkg = fetchPackageBySlug(dep.packageSlug);
-  const dest = fetchDestinationBySlug(dep.destinationSlug);
-
-  if (!pkg || !dest) return null;
-
+export function UpcomingDetoxCard({ dep, pkg, dest }: UpcomingDetoxCardProps) {
   const isFull = dep.status === "full";
 
   return (
@@ -32,7 +28,6 @@ export function UpcomingDetoxCard({ dep }: UpcomingDetoxCardProps) {
           "hover:shadow-xl transition-all duration-500"
         )}
       >
-        {/* Image */}
         <div className="relative h-[200px] sm:h-[220px] overflow-hidden">
           <Image
             src={pkg.coverImage}
@@ -42,11 +37,7 @@ export function UpcomingDetoxCard({ dep }: UpcomingDetoxCardProps) {
             className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
             priority
           />
-
-          {/* Gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-
-          {/* Top badges */}
           <div className="absolute top-3 left-3 right-3 flex items-start justify-between">
             <Badge className="bg-white/95 text-foreground shadow-sm font-medium text-xs backdrop-blur-sm">
               <MapPin className="mr-1 h-3 w-3" />
@@ -54,8 +45,6 @@ export function UpcomingDetoxCard({ dep }: UpcomingDetoxCardProps) {
             </Badge>
             <StatusBadge status={dep.status} seatsLeft={dep.seatsLeft} />
           </div>
-
-          {/* Bottom overlay text */}
           <div className="absolute bottom-3 left-3">
             <div className="flex items-center gap-2 text-white/90 text-xs font-medium">
               <Clock className="h-3.5 w-3.5" />
@@ -64,23 +53,17 @@ export function UpcomingDetoxCard({ dep }: UpcomingDetoxCardProps) {
           </div>
         </div>
 
-        {/* Content */}
         <CardContent className="p-5 sm:p-6">
-          {/* Date */}
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
             <Calendar className="h-4 w-4 text-brand" />
             <span className="font-medium text-foreground">
               {formatDateRange(dep.startDate, dep.endDate)}
             </span>
           </div>
-
-          {/* Title */}
           <h3 className="text-lg font-bold leading-snug mb-1.5">{pkg.title}</h3>
           <p className="text-sm text-muted-foreground leading-relaxed mb-4">
             {pkg.subtitle}
           </p>
-
-          {/* Price + CTA */}
           <div className="flex items-end justify-between">
             <div>
               <div className="flex items-baseline gap-2">
@@ -95,7 +78,6 @@ export function UpcomingDetoxCard({ dep }: UpcomingDetoxCardProps) {
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">per person</p>
             </div>
-
             <Button
               size="sm"
               className={cn(

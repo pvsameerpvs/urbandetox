@@ -1,5 +1,5 @@
-import { type BookingState } from "@urbandetox/utils";
 import { fetchBookings } from "@/lib/api";
+import type { BookingState } from "@urbandetox/utils";
 
 export interface BookingWithMeta extends BookingState {
   id: string;
@@ -15,8 +15,54 @@ export interface BookingWithMeta extends BookingState {
   price?: number;
 }
 
+function toBookingState(raw: unknown): BookingState {
+  const r = raw as Record<string, unknown>;
+  const details = (r.details as Record<string, unknown>) || {};
+
+  const travelers = Array.isArray(details.travelers)
+    ? details.travelers
+    : r.fullName
+    ? [
+        {
+          id: "t-1",
+          type: "primary" as const,
+          name: String(r.fullName || ""),
+          phone: String(r.phone || ""),
+          email: String(r.email || ""),
+          dateOfBirth: "",
+          gender: "",
+          foodPreference: "",
+          allergies: "",
+          medicalConditions: "",
+          bloodGroup: "",
+          photoUrl: "",
+          emergencyName: "",
+          emergencyPhone: "",
+          emergencyRelation: "",
+        },
+      ]
+    : [];
+
+  return {
+    departureCode: String(r.departureCode || ""),
+    travelers,
+    common: {
+      groupNote: String((details.common as Record<string, string>)?.groupNote || ""),
+      modeOfArrival: String((details.common as Record<string, string>)?.modeOfArrival || ""),
+      needsTravelHelp: Boolean((details.common as Record<string, boolean>)?.needsTravelHelp),
+    },
+    onboardingComplete: Boolean(details.onboardingComplete),
+    paymentStatus: (r.paymentStatus as BookingState["paymentStatus"]) || "pending",
+    paymentMethod: (details.paymentMethod as BookingState["paymentMethod"]) || undefined,
+    bookedByName: String(details.bookedByName || r.fullName || ""),
+    bookedByEmail: String(details.bookedByEmail || r.email || ""),
+    bookedByPhone: String(details.bookedByPhone || r.phone || ""),
+  };
+}
+
 export async function getAllBookings(): Promise<BookingState[]> {
-  return fetchBookings<BookingState>();
+  const raw = await fetchBookings<Record<string, unknown>>();
+  return raw.map(toBookingState);
 }
 
 export async function getBooking(departureCode: string): Promise<BookingState | null> {

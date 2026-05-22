@@ -2,21 +2,21 @@
 
 import Link from "next/link";
 import Image from "next/image";
-;
-import { fetchFeaturedGuides } from "@/lib/data";
 import { ArrowRight, BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@urbandetox/utils";
+import type { GuideArticle } from "@urbandetox/utils";
 import { containerVariants, itemVariants } from "@/lib/animations";
 import { Card, CardContent } from "@urbandetox/ui"
 
-export function GuideHighlightsSection() {
-  const guides = fetchFeaturedGuides(4);
+interface GuideHighlightsSectionProps {
+  guides: GuideArticle[];
+}
 
+export function GuideHighlightsSection({ guides }: GuideHighlightsSectionProps) {
   return (
     <section className="py-24 sm:py-32 bg-secondary/[0.02]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 mb-16 sm:mb-20">
           <div>
             <div className="flex items-center gap-3 mb-5">
@@ -89,7 +89,6 @@ export function GuideHighlightsSection() {
           ))}
         </motion.div>
 
-        {/* Mobile view-all */}
         <div className="mt-10 sm:hidden text-center">
           <Link
             href="/guide"

@@ -1,21 +1,21 @@
 "use client";
 
 import Image from "next/image";
-;
-import { fetchTestimonials } from "@/lib/data";
 import { Star, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@urbandetox/utils";
+import type { Testimonial } from "@urbandetox/utils";
 import { containerVariants, itemVariants } from "@/lib/animations";
 import { Card, CardContent } from "@urbandetox/ui"
 
-export function TestimonialsSection() {
-  const testimonials = fetchTestimonials(4);
+interface TestimonialsSectionProps {
+  testimonials: Testimonial[];
+}
 
+export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
   return (
     <section className="py-24 sm:py-32 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 mb-16 sm:mb-20">
           <div>
             <div className="flex items-center gap-3 mb-5">

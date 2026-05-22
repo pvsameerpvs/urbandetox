@@ -8,13 +8,16 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { motion } from "framer-motion";
 import { MapPin, CalendarDays, Clock, ChevronDown, Search, X } from "lucide-react";
 import { DESTINATIONS, DURATIONS } from "@urbandetox/utils";
-import { fetchUpcomingDepartures } from "@/lib/data";
+import type { Departure } from "@urbandetox/utils";
 import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@urbandetox/ui";
 import { HeroCalendarDay } from "./HeroCalendarDay";
 
-export function HeroSearchBar() {
+interface HeroSearchBarProps {
+  departures: Departure[];
+}
+
+export function HeroSearchBar({ departures }: HeroSearchBarProps) {
   const router = useRouter();
-  const departures = fetchUpcomingDepartures(50);
 
   const [destination, setDestination] = useState("all");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);

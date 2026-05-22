@@ -14,7 +14,6 @@ import { getAllBookings, type BookingWithMeta } from "@/lib/bookings";
 import { useAdminDepartures, useAdminPackages, useAdminDestinations } from "@/hooks/use-admin-data";
 import { useBookingNotifications } from "@/components/layout/BookingNotificationContext";
 import { BookingTable } from "./components/BookingTable";
-import { seedDemoBookings } from "./lib/seedDemoBookings";
 
 export default function BookingsPage() {
   const [bookings, setBookings] = useState<BookingWithMeta[]>([]);
@@ -25,7 +24,6 @@ export default function BookingsPage() {
 
   useEffect(() => {
     clearUnread();
-    seedDemoBookings();
     const t = setTimeout(async () => {
       const raw = await getAllBookings();
       const enriched = raw.map((b) => {

@@ -1,64 +1,48 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
-;
-;
 import { ArrowRight, User, Settings } from "lucide-react";
 import { TripStatsBar } from "./components/TripStatsBar";
 import { TripCard } from "./components/TripCard";
+import type { Trip } from "./components/TripCard";
 import { EmptyState } from "./components/EmptyState";
 import { PastTripsSection } from "./components/PastTripsSection";
 import { useUserProfile } from "@/lib/user-profile";
-import type { Trip } from "./components/TripCard";
+import { fetchMyBookings } from "@/lib/api";
 import { Button, Avatar, AvatarFallback } from "@urbandetox/ui"
 
-const mockTrips: Trip[] = [
-  {
-    id: "trip-1",
-    packageTitle: "Kodai 2-Day Weekend Detox",
-    destination: "Kodaikanal",
-    startDate: "2025-08-15",
-    endDate: "2025-08-16",
-    status: "upcoming",
-    onboardingStatus: "completed",
-    paymentStatus: "paid",
-    image: "https://images.unsplash.com/photo-1567359781514-3b964e2b04d6?q=80&w=800&auto=format&fit=crop",
-    bookingCode: "KOD2-AUG15",
-    travelers: 2,
-  },
-  {
-    id: "trip-2",
-    packageTitle: "North Kerala River Retreat",
-    destination: "North Kerala",
-    startDate: "2025-09-12",
-    endDate: "2025-09-14",
-    status: "upcoming",
-    onboardingStatus: "pending",
-    paymentStatus: "paid",
-    image: "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?q=80&w=800&auto=format&fit=crop",
-    bookingCode: "NKL-SEP12",
-    travelers: 1,
-  },
-  {
-    id: "trip-3",
-    packageTitle: "Kodai 2-Day Weekend Detox",
-    destination: "Kodaikanal",
-    startDate: "2025-04-18",
-    endDate: "2025-04-19",
-    status: "completed",
-    onboardingStatus: "completed",
-    paymentStatus: "paid",
-    image: "https://images.unsplash.com/photo-1595658658481-51fc2c627e23?q=80&w=800&auto=format&fit=crop",
-    bookingCode: "KOD2-APR18",
-    travelers: 3,
-  },
-];
-
 export default function MyDetoxPage() {
-  const { profile } = useUserProfile();
-  const upcoming = mockTrips.filter((t) => t.status === "upcoming");
-  const hasTrips = mockTrips.length > 0;
-  const initials = profile.personal.fullName.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
+  const { profile, authUser, isLoggedIn } = useUserProfile();
+  const [trips, setTrips] = useState<Trip[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    let mounted = true;
+    fetchMyBookings()
+      .then((data) => { if (mounted) setTrips((data as Trip[]) || []); })
+      .catch(() => { if (mounted) setTrips([]); })
+      .finally(() => { if (mounted) setLoading(false); });
+    return () => { mounted = false; };
+  }, [isLoggedIn]);
+
+  const upcoming = trips.filter((t) => t.status === "upcoming");
+  const hasTrips = trips.length > 0;
+
+  const displayName = authUser?.fullName || profile.personal.fullName || "User";
+  const email = authUser?.email || profile.personal.email || "";
+  const initials = displayName.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
+
+  if (!isLoggedIn) {
+    return (
+      <main className="min-h-screen bg-white">
+        <div className="py-20 text-center text-muted-foreground text-sm">
+          Please log in to view your trips.
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-white">
@@ -76,15 +60,14 @@ export default function MyDetoxPage() {
               <p className="mt-2 text-base text-white/60 max-w-lg">Track your upcoming trips, complete onboarding, and relive past memories.</p>
             </div>
 
-            {/* Profile Dropdown Card */}
             <div className="rounded-2xl bg-white/10 backdrop-blur-md border border-white/10 p-3 sm:p-4 w-full sm:w-auto sm:min-w-[260px]">
               <div className="flex items-center gap-3 mb-3">
                 <Avatar className="h-10 w-10">
                   <AvatarFallback className="bg-brand text-brand-foreground text-sm font-bold">{initials}</AvatarFallback>
                 </Avatar>
                 <div className="min-w-0">
-                  <p className="text-sm font-bold text-white truncate">{profile.personal.fullName}</p>
-                  <p className="text-xs text-white/60 truncate">{profile.personal.email}</p>
+                  <p className="text-sm font-bold text-white truncate">{displayName}</p>
+                  <p className="text-xs text-white/60 truncate">{email}</p>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
@@ -103,9 +86,11 @@ export default function MyDetoxPage() {
       </div>
 
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 -mt-6 sm:-mt-8 relative z-10 pb-16">
-        {hasTrips ? (
+        {loading ? (
+          <div className="py-20 text-center text-muted-foreground text-sm">Loading your trips...</div>
+        ) : hasTrips ? (
           <div className="space-y-10">
-            <TripStatsBar trips={mockTrips} />
+            <TripStatsBar trips={trips} />
             {upcoming.length > 0 && (
               <div className="space-y-4">
                 <h2 className="text-lg font-bold">Upcoming Trips</h2>
@@ -114,7 +99,7 @@ export default function MyDetoxPage() {
                 ))}
               </div>
             )}
-            <PastTripsSection trips={mockTrips} />
+            <PastTripsSection trips={trips} />
             <div className="rounded-2xl bg-secondary/[0.03] border border-border/40 p-6 sm:p-8 text-center">
               <h3 className="text-lg font-bold mb-2">Ready for another reset?</h3>
               <p className="text-sm text-muted-foreground mb-4">Browse upcoming detoxes and find your next date.</p>

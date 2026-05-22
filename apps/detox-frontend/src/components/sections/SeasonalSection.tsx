@@ -1,34 +1,28 @@
-import { fetchFeaturedPackages } from "@/lib/data";
 import { SeasonalRow } from "./SeasonalRow";
 import type { LucideIcon } from "lucide-react";
 import * as Icons from "lucide-react";
-import { initialSeasonalTags } from "@urbandetox/utils";
+import type { Package, Destination } from "@urbandetox/utils";
 
 function getIconComponent(name: string): LucideIcon {
   return (Icons as unknown as Record<string, LucideIcon>)[name] || Icons.Sun;
 }
 
-export function SeasonalSection() {
-  const featured = fetchFeaturedPackages();
+interface SeasonalGroup {
+  tag: string;
+  label: string;
+  iconName: string;
+  packages: Package[];
+}
 
-  const tags = Array.from(new Set(featured.map((p) => p.seasonalTag).filter((t): t is string => !!t)));
+interface SeasonalSectionProps {
+  groups: SeasonalGroup[];
+  destMap: Map<string, Destination>;
+}
 
-  const grouped = tags
-    .map((tag) => {
-      const meta = initialSeasonalTags.find((t) => t.name === tag);
-      return {
-        tag,
-        label: meta?.label || tag,
-        icon: meta ? getIconComponent(meta.iconName) : Icons.Sun,
-        packages: featured.filter((p) => p.seasonalTag === tag),
-      };
-    })
-    .filter((g) => g.packages.length > 0);
-
+export function SeasonalSection({ groups, destMap }: SeasonalSectionProps) {
   return (
     <section className="py-20 sm:py-28 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-16 mb-12 sm:mb-16">
           <div>
             <div className="flex items-center gap-3 mb-4">
@@ -46,9 +40,14 @@ export function SeasonalSection() {
           </div>
         </div>
 
-        {/* Rows */}
-        {grouped.map(({ tag, label, icon, packages }) => (
-          <SeasonalRow key={tag} label={label} icon={icon} packages={packages} />
+        {groups.map(({ tag, label, iconName, packages }) => (
+          <SeasonalRow
+            key={tag}
+            label={label}
+            icon={getIconComponent(iconName)}
+            packages={packages}
+            destMap={destMap}
+          />
         ))}
       </div>
     </section>

@@ -2,11 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-;
 import { motion } from "framer-motion";
 import { MapPin, ArrowRight, Compass, Images } from "lucide-react";
-import { fetchDestinations, fetchPackagesByDestination } from "@/lib/data";
 import { cn } from "@urbandetox/utils";
+import type { Destination } from "@urbandetox/utils";
 import { Badge } from "@urbandetox/ui"
 
 const destMeta: Record<string, { label: string; featured?: boolean }> = {
@@ -16,14 +15,20 @@ const destMeta: Record<string, { label: string; featured?: boolean }> = {
   kashmir: { label: "Premium" },
 };
 
+interface BestDestinationsSectionProps {
+  destinations: Destination[];
+  packageCounts: Map<string, number>;
+}
+
 function DestinationCard({
   destination,
   index,
+  count,
 }: {
-  destination: ReturnType<typeof fetchDestinations>[number];
+  destination: Destination;
   index: number;
+  count: number;
 }) {
-  const count = fetchPackagesByDestination(destination.slug).length;
   const meta = destMeta[destination.slug] || {};
 
   return (
@@ -99,9 +104,7 @@ function DestinationCard({
   );
 }
 
-export function BestDestinationsSection() {
-  const destinations = fetchDestinations();
-
+export function BestDestinationsSection({ destinations, packageCounts }: BestDestinationsSectionProps) {
   return (
     <section className="py-24 sm:py-32 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -131,7 +134,12 @@ export function BestDestinationsSection() {
 
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           {destinations.map((dest, i) => (
-            <DestinationCard key={dest.id} destination={dest} index={i} />
+            <DestinationCard
+              key={dest.id}
+              destination={dest}
+              index={i}
+              count={packageCounts.get(dest.slug) || 0}
+            />
           ))}
         </div>
 

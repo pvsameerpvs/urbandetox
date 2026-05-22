@@ -5,8 +5,13 @@ import { getHeroImage, getHeroText } from "@/lib/hero";
 import { HeroBackground } from "./HeroBackground";
 import { HeroTextContent } from "./HeroTextContent";
 import { HeroSearchBar } from "./HeroSearchBar";
+import type { Departure } from "@urbandetox/utils";
 
-export function HeroSection() {
+interface HeroSectionProps {
+  departures: Departure[];
+}
+
+export function HeroSection({ departures }: HeroSectionProps) {
   const [heroImage, setHeroImage] = useState<string>("");
   const [heroText, setHeroText] = useState(getHeroText());
 
@@ -22,7 +27,7 @@ export function HeroSection() {
     <section className="relative h-screen flex flex-col overflow-hidden">
       <HeroBackground heroImage={heroImage} />
       <HeroTextContent heroText={heroText} />
-      <HeroSearchBar />
+      <HeroSearchBar departures={departures} />
     </section>
   );
 }
