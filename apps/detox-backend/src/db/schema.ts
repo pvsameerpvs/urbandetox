@@ -118,6 +118,8 @@ export const seasonalTags = pgTable("seasonal_tags", {
   sortOrder: integer("sort_order").notNull(),
 });
 
+export const userRoleEnum = pgEnum("user_role", ["admin", "authenticated"]);
+
 export const users = pgTable("users", {
   id: uuid("id").primaryKey(),
   email: varchar("email", { length: 255 }).notNull().unique(),
@@ -126,6 +128,7 @@ export const users = pgTable("users", {
   dateOfBirth: varchar("date_of_birth", { length: 20 }),
   gender: varchar("gender", { length: 50 }),
   avatarUrl: text("avatar_url"),
+  role: userRoleEnum("role").notNull().default("authenticated"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

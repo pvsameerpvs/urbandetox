@@ -9,6 +9,7 @@ import bookingRoutes from "./bookings";
 import healthRoutes from "./health";
 import seasonalTagRoutes from "./seasonal-tags";
 import authRoutes from "./auth";
+import userRoutes from "./users";
 
 const router = express.Router();
 
@@ -22,5 +23,6 @@ router.use("/api/testimonials", testimonialRoutes);
 router.use("/api/bookings", bookingRoutes);
 router.use("/api/seasonal-tags", seasonalTagRoutes);
 router.use("/api/auth", authRoutes);
+router.use("/api/users", userRoutes);
 
 export default router;

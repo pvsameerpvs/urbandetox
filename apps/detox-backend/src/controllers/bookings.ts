@@ -55,26 +55,38 @@ export const BookingController = {
 
   async create(req: Request, res: Response) {
     const { departureCode, fullName, phone, email, travelers, details } = req.body;
-    const [dep] = await db
-      .select()
-      .from(departures)
-      .where(eq(departures.code, departureCode));
-    if (!dep) {
-      res.status(404).json({ error: "Departure not found" });
-      return;
+
+    try {
+      const booking = await BookingService.create({
+        userId: req.user?.id,
+        departureCode,
+        fullName,
+        phone,
+        email,
+        travelers: travelers ?? 1,
+        details,
+      });
+      res.status(201).json(booking);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Booking failed";
+
+      if (message.includes("Departure not found")) {
+        res.status(404).json({ error: message });
+        return;
+      }
+      if (
+        message.includes("full") ||
+        message.includes("closed") ||
+        message.includes("seats left")
+      ) {
+        res.status(409).json({ error: message });
+        return;
+      }
+
+      res.status(500).json({ error: message });
     }
-    const booking = await BookingService.create({
-      userId: req.user?.id,
-      departureCode,
-      fullName,
-      phone,
-      email,
-      travelers: travelers ?? 1,
-      details,
-    });
-    res.status(201).json(booking);
   },
-}
+};
 
 function computeTripStatus(startDate: string | null) {
   if (!startDate) return "upcoming" as const;

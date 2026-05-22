@@ -150,3 +150,58 @@ export async function fetchBookings<T = unknown>(): Promise<T[]> {
 export async function createBooking<T = unknown>(data: T): Promise<T> {
   return api("/api/bookings", { method: "POST", body: JSON.stringify(data) });
 }
+
+// ─── Users (Admin-only) ────────────────────────────
+export interface PaginatedUsersResponse {
+  data: Array<{
+    id: string;
+    email: string;
+    fullName: string | null;
+    phone: string | null;
+    dateOfBirth: string | null;
+    gender: string | null;
+    avatarUrl: string | null;
+    role: string;
+    createdAt: string;
+    updatedAt: string;
+    bookingsCount: number;
+  }>;
+  meta: {
+    page: number;
+    pageSize: number;
+    totalCount: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+}
+
+export async function fetchUsers(params?: {
+  search?: string;
+  role?: string;
+  sortBy?: string;
+  sortOrder?: string;
+  page?: number;
+  pageSize?: number;
+}): Promise<PaginatedUsersResponse> {
+  const qs = new URLSearchParams();
+  if (params?.search) qs.set("search", params.search);
+  if (params?.role) qs.set("role", params.role);
+  if (params?.sortBy) qs.set("sortBy", params.sortBy);
+  if (params?.sortOrder) qs.set("sortOrder", params.sortOrder);
+  if (params?.page) qs.set("page", String(params.page));
+  if (params?.pageSize) qs.set("pageSize", String(params.pageSize));
+  const query = qs.toString();
+  return api(`/api/users${query ? `?${query}` : ""}`);
+}
+
+export async function fetchUserById(id: string) {
+  return api(`/api/users/${id}`);
+}
+
+export async function updateUserRole(id: string, role: string) {
+  return api(`/api/users/${id}/role`, {
+    method: "PUT",
+    body: JSON.stringify({ role }),
+  });
+}

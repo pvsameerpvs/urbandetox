@@ -1,48 +1,152 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { Card, CardContent, Badge } from "@urbandetox/ui";
 import {
   Users,
   UserCheck,
-  UserX,
-  FileCheck,
+  ShieldCheck,
   ArrowRight,
-  Search,
 } from "lucide-react";
-import { getAllUsers, seedDemoUsers, type UserProfile } from "@/lib/users";
+import { fetchUsers, type PaginatedUsersResponse } from "@/lib/api";
+import { DataTable } from "@/components/ui/DataTable";
+import { SearchInput } from "@/components/ui/SearchInput";
+import { Pagination } from "@/components/ui/Pagination";
+import { toast } from "sonner";
+
+interface DashboardUser {
+  id: string;
+  email: string;
+  fullName: string | null;
+  phone: string | null;
+  gender: string | null;
+  avatarUrl: string | null;
+  role: string;
+  createdAt: string;
+  bookingsCount: number;
+}
 
 export default function UsersPage() {
-  const [users, setUsers] = useState<UserProfile[]>([]);
+  const [response, setResponse] = useState<PaginatedUsersResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [sortBy, setSortBy] = useState<string>("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
+  const loadUsers = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const data = await fetchUsers({
+        search: search || undefined,
+        page,
+        pageSize: 25,
+        sortBy,
+        sortOrder,
+      });
+      setResponse(data);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to load users";
+      toast.error(message);
+      setResponse(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [search, page, sortBy, sortOrder]);
 
   useEffect(() => {
-    seedDemoUsers();
-    const t = setTimeout(() => {
-      setUsers(getAllUsers());
-    }, 0);
-    return () => clearTimeout(t);
-  }, []);
+    loadUsers();
+  }, [loadUsers]);
 
-  const filtered = useMemo(() => {
-    if (!search) return users;
-    const q = search.toLowerCase();
-    return users.filter(
-      (u) =>
-        u.fullName.toLowerCase().includes(q) ||
-        u.email.toLowerCase().includes(q) ||
-        u.phone.includes(q)
-    );
-  }, [users, search]);
+  const handleSort = (column: string) => {
+    if (sortBy === column) {
+      setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortBy(column);
+      setSortOrder("asc");
+    }
+    setPage(1);
+  };
 
-  const stats = useMemo(() => {
-    const total = users.length;
-    const active = users.filter((u) => u.isLoggedIn).length;
-    const offline = total - active;
-    const totalDocs = users.reduce((sum, u) => sum + u.documentsUploaded, 0);
-    return { total, active, offline, totalDocs };
-  }, [users]);
+  const users = response?.data ?? [];
+  const meta = response?.meta;
+
+  const stats = {
+    total: meta?.totalCount ?? 0,
+    admins: users.filter((u) => u.role === "admin").length,
+    totalBookings: users.reduce((sum, u) => sum + (u.bookingsCount ?? 0), 0),
+  };
+
+  const columns = useMemo(
+    () => [
+      {
+        key: "user",
+        header: "User",
+        cell: (u: DashboardUser) => (
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 rounded-full bg-brand/10 flex items-center justify-center shrink-0">
+              <span className="text-[10px] font-bold text-brand">
+                {u.fullName?.charAt(0) || u.email.charAt(0)}
+              </span>
+            </div>
+            <div>
+              <p className="font-medium text-xs">{u.fullName || "—"}</p>
+              <p className="text-[10px] text-muted-foreground">{u.email}</p>
+            </div>
+          </div>
+        ),
+      },
+      {
+        key: "phone",
+        header: "Contact",
+        cell: (u: DashboardUser) => (
+          <div>
+            <p className="text-xs">{u.phone || "—"}</p>
+            <p className="text-[10px] text-muted-foreground">{u.gender || "—"}</p>
+          </div>
+        ),
+      },
+      {
+        key: "role",
+        header: "Role",
+        cell: (u: DashboardUser) => <RoleBadge role={u.role} />,
+      },
+      {
+        key: "bookingsCount",
+        header: "Bookings",
+        sortable: true,
+        align: "center" as const,
+        cell: (u: DashboardUser) => (
+          <span className="text-xs font-medium">{u.bookingsCount}</span>
+        ),
+      },
+      {
+        key: "createdAt",
+        header: "Joined",
+        sortable: true,
+        cell: (u: DashboardUser) => (
+          <span className="text-[10px] text-muted-foreground">
+            {new Date(u.createdAt).toLocaleDateString()}
+          </span>
+        ),
+      },
+      {
+        key: "action",
+        header: "",
+        align: "right" as const,
+        cell: (u: DashboardUser) => (
+          <Link
+            href={`/users/${u.id}`}
+            className="inline-flex items-center gap-1 text-[10px] font-semibold text-brand hover:text-brand/80 transition-colors"
+          >
+            View <ArrowRight className="h-3 w-3" />
+          </Link>
+        ),
+      },
+    ],
+    []
+  );
 
   return (
     <div className="space-y-6">
@@ -50,147 +154,117 @@ export default function UsersPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Users</h1>
-          <p className="text-sm text-muted-foreground mt-1">Manage registered customers and their profiles.</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Manage registered customers and their profiles.
+          </p>
         </div>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search users..."
-            className="h-10 w-full sm:w-64 pl-9 pr-4 rounded-xl border border-input bg-white text-sm outline-none focus:border-brand/50 transition-colors"
-          />
-        </div>
+        <SearchInput
+          value={search}
+          onChange={(v) => {
+            setSearch(v);
+            setPage(1);
+          }}
+          placeholder="Search users..."
+          className="w-full sm:w-64"
+        />
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <Card className="border border-border/40 bg-white rounded-2xl">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-brand/10 flex items-center justify-center">
-              <Users className="h-5 w-5 text-brand" />
-            </div>
-            <div>
-              <p className="text-xl font-bold leading-none">{stats.total}</p>
-              <p className="text-xs text-muted-foreground mt-1">Total Users</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border border-border/40 bg-white rounded-2xl">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-emerald-100 flex items-center justify-center">
-              <UserCheck className="h-5 w-5 text-emerald-700" />
-            </div>
-            <div>
-              <p className="text-xl font-bold leading-none">{stats.active}</p>
-              <p className="text-xs text-muted-foreground mt-1">Active Now</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border border-border/40 bg-white rounded-2xl">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center">
-              <UserX className="h-5 w-5 text-slate-600" />
-            </div>
-            <div>
-              <p className="text-xl font-bold leading-none">{stats.offline}</p>
-              <p className="text-xs text-muted-foreground mt-1">Offline</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border border-border/40 bg-white rounded-2xl">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-blue-100 flex items-center justify-center">
-              <FileCheck className="h-5 w-5 text-blue-700" />
-            </div>
-            <div>
-              <p className="text-xl font-bold leading-none">{stats.totalDocs}</p>
-              <p className="text-xs text-muted-foreground mt-1">Documents</p>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        <StatCard
+          icon={Users}
+          label="Total Users"
+          value={stats.total}
+          color="brand"
+        />
+        <StatCard
+          icon={ShieldCheck}
+          label="Admins"
+          value={stats.admins}
+          color="emerald"
+        />
+        <StatCard
+          icon={UserCheck}
+          label="Total Bookings"
+          value={stats.totalBookings}
+          color="amber"
+        />
       </div>
 
       {/* Table */}
-      {filtered.length === 0 ? (
-        <Card className="border border-border/40 rounded-2xl bg-white">
-          <CardContent className="p-12 text-center">
-            <div className="h-12 w-12 rounded-xl bg-secondary/50 flex items-center justify-center mx-auto mb-4">
-              <Users className="h-6 w-6 text-muted-foreground" />
-            </div>
-            <h3 className="text-base font-bold">No users found</h3>
-            <p className="text-sm text-muted-foreground mt-1">Try adjusting your search.</p>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card className="border border-border/40 rounded-2xl bg-white overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border/40 bg-secondary/[0.03]">
-                  <th className="text-left px-4 py-3 font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">User</th>
-                  <th className="text-left px-4 py-3 font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">Contact</th>
-                  <th className="text-left px-4 py-3 font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">Health</th>
-                  <th className="text-left px-4 py-3 font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">Status</th>
-                  <th className="text-left px-4 py-3 font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">Activity</th>
-                  <th className="text-right px-4 py-3 font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((u) => (
-                  <tr key={u.id} className="border-b border-border/20 hover:bg-brand/[0.02] transition-colors">
-                    <td className="px-4 py-3.5">
-                      <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-full bg-brand/10 flex items-center justify-center shrink-0">
-                          <span className="text-[10px] font-bold text-brand">{u.fullName.charAt(0)}</span>
-                        </div>
-                        <div>
-                          <p className="font-medium text-xs">{u.fullName}</p>
-                          <p className="text-[10px] text-muted-foreground">{u.gender} · {u.bloodGroup}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <p className="text-xs">{u.email}</p>
-                      <p className="text-[10px] text-muted-foreground">{u.phone}</p>
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <p className="text-xs">{u.foodPreference}</p>
-                      {u.allergies !== "None" && (
-                        <p className="text-[10px] text-amber-600">Allergies: {u.allergies}</p>
-                      )}
-                    </td>
-                    <td className="px-4 py-3.5">
-                      {u.isLoggedIn ? (
-                        <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 text-[10px]">
-                          <UserCheck className="h-3 w-3 mr-1" /> Active
-                        </Badge>
-                      ) : (
-                        <Badge className="bg-slate-100 text-slate-600 hover:bg-slate-100 text-[10px]">
-                          <UserX className="h-3 w-3 mr-1" /> Offline
-                        </Badge>
-                      )}
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <p className="text-xs font-medium">{u.bookingsCount} bookings</p>
-                      <p className="text-[10px] text-muted-foreground">{u.documentsUploaded} docs</p>
-                    </td>
-                    <td className="px-4 py-3.5 text-right">
-                      <Link
-                        href={`/users/${u.id}`}
-                        className="inline-flex items-center gap-1 text-[10px] font-semibold text-brand hover:text-brand/80 transition-colors"
-                      >
-                        View <ArrowRight className="h-3 w-3" />
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
-      )}
+      <DataTable
+        columns={columns}
+        data={users}
+        keyExtractor={(u) => u.id}
+        isLoading={isLoading}
+        sortColumn={sortBy}
+        sortDirection={sortBy ? sortOrder : null}
+        onSort={handleSort}
+        emptyState={{
+          icon: <Users className="h-6 w-6 text-muted-foreground" />,
+          title: "No users found",
+          subtitle: search ? "Try adjusting your search." : "Users will appear here once they sign up.",
+        }}
+        footer={
+          meta ? (
+            <Pagination
+              page={meta.page}
+              totalPages={meta.totalPages}
+              hasNextPage={meta.hasNextPage}
+              hasPrevPage={meta.hasPrevPage}
+              onPageChange={setPage}
+            />
+          ) : null
+        }
+      />
     </div>
+  );
+}
+
+function RoleBadge({ role }: { role: string }) {
+  if (role === "admin") {
+    return (
+      <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 text-[10px]">
+        <ShieldCheck className="h-3 w-3 mr-1" /> Admin
+      </Badge>
+    );
+  }
+  return (
+    <Badge className="bg-slate-100 text-slate-600 hover:bg-slate-100 text-[10px]">
+      User
+    </Badge>
+  );
+}
+
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  color,
+}: {
+  icon: React.ElementType;
+  label: string;
+  value: number;
+  color: "brand" | "emerald" | "amber";
+}) {
+  const colorMap = {
+    brand: "bg-brand/10 text-brand",
+    emerald: "bg-emerald-100 text-emerald-700",
+    blue: "bg-blue-100 text-blue-700",
+    amber: "bg-amber-100 text-amber-700",
+  };
+
+  return (
+    <Card className="border border-border/40 bg-white rounded-2xl">
+      <CardContent className="p-4 flex items-center gap-3">
+        <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${colorMap[color]}`}>
+          <Icon className="h-5 w-5" />
+        </div>
+        <div>
+          <p className="text-xl font-bold leading-none">{value}</p>
+          <p className="text-xs text-muted-foreground mt-1">{label}</p>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
