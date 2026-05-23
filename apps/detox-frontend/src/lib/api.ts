@@ -154,3 +154,16 @@ export async function createBooking(payload: {
   if (!res.ok) throw new Error(`Booking failed: ${res.status}`);
   return res.json();
 }
+
+// ── Site Settings ────────────────────────────────────
+export async function fetchSiteSettings(): Promise<import("@urbandetox/utils").SiteSettings> {
+  const res = await fetch(`${API_BASE}/api/settings`, {
+    cache: "no-store",
+    headers: { Accept: "application/json" },
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: res.statusText }));
+    throw new Error(err.error || `Settings error: ${res.status}`);
+  }
+  return res.json() as Promise<import("@urbandetox/utils").SiteSettings>;
+}

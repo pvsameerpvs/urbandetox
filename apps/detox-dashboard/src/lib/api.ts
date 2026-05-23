@@ -205,3 +205,17 @@ export async function updateUserRole(id: string, role: string) {
     body: JSON.stringify({ role }),
   });
 }
+
+// ─── Site Settings ───────────────────────────────────
+export async function fetchSiteSettings() {
+  return api<import("@urbandetox/utils").SiteSettings>("/api/settings");
+}
+
+export async function updateSiteSettings(
+  data: Partial<import("@urbandetox/utils").SiteSettings>
+) {
+  return api<import("@urbandetox/utils").SiteSettings>("/api/settings", {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+}

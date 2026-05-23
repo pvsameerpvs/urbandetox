@@ -11,3 +11,4 @@ export * from "./packages";
 export * from "./departures";
 export * from "./faqs";
 export * from "./testimonials";
+export * from "./settings";

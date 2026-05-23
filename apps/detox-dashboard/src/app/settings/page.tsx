@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@urbandetox/ui";
-import { Tag, Palette, Bell, Shield, Database } from "lucide-react";
+import { Tag, Palette, Bell, Shield, Database, Globe } from "lucide-react";
 import Link from "next/link";
 
 const settingsSections = [
@@ -8,6 +8,12 @@ const settingsSections = [
     description: "Manage tags for categorizing packages",
     href: "/seasonal-tags",
     icon: Tag,
+  },
+  {
+    title: "Site Configuration",
+    description: "Footer visibility and social media links",
+    href: "/settings/site",
+    icon: Globe,
   },
   {
     title: "Appearance",
@@ -44,7 +50,9 @@ export default function SettingsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
-        <p className="text-sm text-muted-foreground mt-1">Configure your admin panel preferences and manage system settings.</p>
+        <p className="text-sm text-muted-foreground mt-1">
+          Configure your admin panel preferences and manage system settings.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -57,8 +65,8 @@ export default function SettingsPage() {
               href={section.href}
               className={
                 section.disabled
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:border-brand/40 hover:bg-brand/[0.02] transition-colors"
+                  ? "opacity-50 cursor-not-allowed rounded-2xl"
+                  : "hover:border-brand/40 hover:bg-brand/[0.02] transition-colors rounded-2xl"
               }
             >
               <Card className="border border-border/40 shadow-sm bg-white rounded-2xl h-full">
@@ -68,7 +76,9 @@ export default function SettingsPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-sm">{section.title}</h3>
-                    <p className="text-xs text-muted-foreground mt-1">{section.description}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {section.description}
+                    </p>
                   </div>
                 </CardContent>
               </Card>

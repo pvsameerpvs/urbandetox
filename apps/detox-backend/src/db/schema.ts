@@ -177,6 +177,13 @@ export const bookings = pgTable("bookings", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+export const siteSettings = pgTable("site_settings", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  key: varchar("key", { length: 50 }).notNull().unique(),
+  config: jsonb("config").notNull(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 export type User = typeof users.$inferSelect;
 export type Destination = typeof destinations.$inferSelect;
 export type Package = typeof packages.$inferSelect;
@@ -186,3 +193,4 @@ export type FaqItem = typeof faqs.$inferSelect;
 export type Testimonial = typeof testimonials.$inferSelect;
 export type SeasonalTag = typeof seasonalTags.$inferSelect;
 export type BookingRecord = typeof bookings.$inferSelect;
+export type SiteSettingsRecord = typeof siteSettings.$inferSelect;
