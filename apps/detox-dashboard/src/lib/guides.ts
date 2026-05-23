@@ -14,17 +14,17 @@ export async function getAdminGuideById(id: string): Promise<GuideArticle | unde
   }
 }
 
-export async function createGuide(guide: GuideArticle): Promise<void> {
+export async function createGuide(_guide: GuideArticle): Promise<void> {
   // await apiCreateGuide(guide);
   throw new Error("Not implemented: createGuide via API");
 }
 
-export async function updateGuide(id: string, updates: Partial<GuideArticle>): Promise<void> {
+export async function updateGuide(_id: string, _updates: Partial<GuideArticle>): Promise<void> {
   // await apiUpdateGuide(id, updates);
   throw new Error("Not implemented: updateGuide via API");
 }
 
-export async function deleteGuide(id: string): Promise<void> {
+export async function deleteGuide(_id: string): Promise<void> {
   // await apiDeleteGuide(id);
   throw new Error("Not implemented: deleteGuide via API");
 }

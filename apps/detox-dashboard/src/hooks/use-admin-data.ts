@@ -62,6 +62,7 @@ function useApiFetch<T>(fetcher: () => Promise<T>, fallback: T) {
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return { data, loading };

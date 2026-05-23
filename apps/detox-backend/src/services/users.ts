@@ -1,4 +1,4 @@
-import { eq, sql, count, ilike, or, and, desc, asc, inArray } from "drizzle-orm";
+import { eq, count, ilike, or, and, desc, asc, inArray } from "drizzle-orm";
 import { db } from "@/db";
 import { users, bookings } from "@/db/schema";
 

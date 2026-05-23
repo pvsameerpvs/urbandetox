@@ -10,7 +10,6 @@ import {
   Phone,
   Mail,
   Calendar,
-  Droplets,
   ShieldCheck,
   Package,
   Clock,

@@ -12,6 +12,14 @@ export const nextJsConfig = defineConfig([
     "next-env.d.ts",
     "dist/**",
   ]),
+  {
+    rules: {
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { varsIgnorePattern: "^_", argsIgnorePattern: "^_" },
+      ],
+    },
+  },
 ]);
 
 export default nextJsConfig;

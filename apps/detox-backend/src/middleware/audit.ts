@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import { ENV } from "@/config/env";
 
 export interface AuditLogEntry {
   timestamp: string;

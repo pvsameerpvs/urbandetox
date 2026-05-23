@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { db } from "./index";
 import * as schema from "./schema";
 
@@ -13,7 +14,7 @@ import {
 
 /** Strip client-side string IDs so Postgres generates proper UUIDs. */
 function stripId<T extends { id?: unknown }>(items: T[]): Omit<T, "id">[] {
-  return items.map(({ id: _id, ...rest }) => rest as Omit<T, "id">);
+  return items.map(({ id: _unused, ...rest }) => rest as Omit<T, "id">);
 }
 
 async function seed() {

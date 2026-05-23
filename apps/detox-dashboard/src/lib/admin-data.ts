@@ -58,7 +58,7 @@ export async function getPackageBySlug(slug: string): Promise<Package | undefine
   }
 }
 
-export function getPackagesByDestination(destinationSlug: string): Promise<Package[]> {
+export function getPackagesByDestination(_destinationSlug: string): Promise<Package[]> {
   return fetchPackages<Package>();
 }
 

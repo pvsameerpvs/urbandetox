@@ -226,6 +226,7 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
     let cancelled = false;
 
     // Hydrate from localStorage
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setProfile(loadFromStorage());
 
     // Check existing session

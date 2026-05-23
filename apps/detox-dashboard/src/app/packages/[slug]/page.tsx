@@ -14,6 +14,7 @@ import { PackageStats } from "./components/PackageStats";
 import { PackageDepartures } from "./components/PackageDepartures";
 import { PackageBookings } from "./components/PackageBookings";
 import type { Destination } from "@urbandetox/utils";
+import type { BookingWithMeta } from "@/lib/bookings";
 
 export default function PackageDetailPage() {
   const params = useParams();
@@ -22,7 +23,7 @@ export default function PackageDetailPage() {
   const { data: allDepartures } = useAdminDepartures();
 
   const [dest, setDest] = useState<Destination | undefined>(undefined);
-  const [relevantBookings, setRelevantBookings] = useState<any[]>([]);
+  const [relevantBookings, setRelevantBookings] = useState<BookingWithMeta[]>([]);
   const [totalSeats, setTotalSeats] = useState(0);
   const [seatsBooked, setSeatsBooked] = useState(0);
   const [totalRevenue, setTotalRevenue] = useState(0);
@@ -43,7 +44,7 @@ export default function PackageDetailPage() {
       const bookingsRaw = await getAllBookings();
       const bookingCodes = departures.map((d) => d.code);
 
-      const relevant: any[] = [];
+      const relevant: BookingWithMeta[] = [];
       let revenue = 0;
 
       for (const b of bookingsRaw.filter((b) => bookingCodes.includes(b.departureCode))) {

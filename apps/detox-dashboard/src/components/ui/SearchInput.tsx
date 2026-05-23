@@ -23,6 +23,7 @@ export function SearchInput({
 
   // Sync external value changes
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLocalValue(value);
   }, [value]);
 
