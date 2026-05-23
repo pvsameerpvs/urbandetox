@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Red_Hat_Display, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { Toaster } from "sonner";
@@ -7,6 +8,20 @@ import { Toaster } from "sonner";
 const redHatDisplay = Red_Hat_Display({
   subsets: ["latin"],
   variable: "--font-sans",
+  display: "swap",
+});
+
+const superbusyHeading = localFont({
+  src: "../../public/SuperbusyActivity-Regular.woff",
+  weight: "400",
+  variable: "--font-heading",
+  display: "swap",
+});
+
+const superbusyCta = localFont({
+  src: "../../public/Superbusy Activity Text.woff",
+  weight: "400",
+  variable: "--font-cta",
   display: "swap",
 });
 
@@ -20,7 +35,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${redHatDisplay.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
+      <body className={`${redHatDisplay.variable} ${superbusyHeading.variable} ${superbusyCta.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
         <AdminShell>{children}</AdminShell>
         <Toaster position="top-right" richColors closeButton />
       </body>
