@@ -46,6 +46,37 @@ export const SettingsController = {
         typeof payload.whatsappNumber === "string"
           ? payload.whatsappNumber.trim()
           : existing.whatsappNumber,
+      heroImages: Array.isArray(payload.heroImages)
+        ? payload.heroImages
+        : existing.heroImages,
+      activeHeroIndex:
+        typeof payload.activeHeroIndex === "number"
+          ? payload.activeHeroIndex
+          : existing.activeHeroIndex,
+      heroBadge:
+        typeof payload.heroBadge === "string"
+          ? payload.heroBadge.trim()
+          : existing.heroBadge,
+      heroHeadline1:
+        typeof payload.heroHeadline1 === "string"
+          ? payload.heroHeadline1.trim()
+          : existing.heroHeadline1,
+      heroHeadline2:
+        typeof payload.heroHeadline2 === "string"
+          ? payload.heroHeadline2.trim()
+          : existing.heroHeadline2,
+      heroSubheadline:
+        typeof payload.heroSubheadline === "string"
+          ? payload.heroSubheadline.trim()
+          : existing.heroSubheadline,
+      heroCtaPrimary:
+        typeof payload.heroCtaPrimary === "string"
+          ? payload.heroCtaPrimary.trim()
+          : existing.heroCtaPrimary,
+      heroCtaSecondary:
+        typeof payload.heroCtaSecondary === "string"
+          ? payload.heroCtaSecondary.trim()
+          : existing.heroCtaSecondary,
     };
 
     await db

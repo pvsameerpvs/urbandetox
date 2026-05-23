@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getHeroImage, getHeroText } from "@/lib/hero";
+import { fetchSiteSettings } from "@/lib/api";
+import { getHeroImage, getHeroText, type HeroText } from "@/lib/hero";
 import { HeroBackground } from "./HeroBackground";
 import { HeroTextContent } from "./HeroTextContent";
 import { HeroSearchBar } from "./HeroSearchBar";
@@ -13,14 +14,25 @@ interface HeroSectionProps {
 
 export function HeroSection({ departures }: HeroSectionProps) {
   const [heroImage, setHeroImage] = useState<string>("");
-  const [heroText, setHeroText] = useState(getHeroText());
+  const [heroText, setHeroText] = useState<HeroText>(getHeroText());
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setHeroImage(getHeroImage());
-      setHeroText(getHeroText());
-    }, 0);
-    return () => clearTimeout(timer);
+    fetchSiteSettings()
+      .then((settings) => {
+        setHeroImage(settings.heroImages[settings.activeHeroIndex] || "");
+        setHeroText({
+          badge: settings.heroBadge,
+          headline1: settings.heroHeadline1,
+          headline2: settings.heroHeadline2,
+          subheadline: settings.heroSubheadline,
+          ctaPrimary: settings.heroCtaPrimary,
+          ctaSecondary: settings.heroCtaSecondary,
+        });
+      })
+      .catch(() => {
+        setHeroImage(getHeroImage());
+        setHeroText(getHeroText());
+      });
   }, []);
 
   return (

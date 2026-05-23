@@ -4,18 +4,56 @@ import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { v4 as uuidv4 } from "uuid";
 import path from "path";
 
-const ALLOWED_FOLDERS = [
+/**
+ * ── R2 Folder Structure ───────────────────────────────────────────────
+ *
+ * These root prefixes define the logical organization of the urbandetox bucket.
+ * You may upload to a root directly (e.g. "destinations") or to a subpath
+ * (e.g. "destinations/covers", "packages/itinerary").
+ *
+ * Recommended structure:
+ *   destinations/covers       → Destination hero / listing images
+ *   destinations/gallery        → Destination detail galleries
+ *   packages/covers           → Package hero / card images
+ *   packages/gallery          → Package detail galleries
+ *   packages/itinerary        → Day-by-day itinerary photos
+ *   guides/covers             → Guide article featured images
+ *   marketing/heroes          → Homepage hero backgrounds
+ *   marketing/banners         → Promo banners
+ *   marketing/seasonal        → Seasonal campaign images
+ *   testimonials/avatars      → Customer testimonial photos
+ *   users/avatars             → Registered user profile pictures
+ *   bookings/id-docs          → Traveler ID uploads (Aadhaar, Passport, DL)
+ *   bookings/photos           → Traveler passport-size photos
+ *   cms/general               → Uncategorized admin uploads
+ *   temp/                     → Temporary / pre-processing uploads
+ *
+ * Legacy roots (backward compatible):
+ *   avatars  → maps to users/avatars
+ *   heroes   → maps to marketing/heroes
+ *   gallery  → maps to cms/gallery
+ *   general  → maps to cms/general
+ * ──────────────────────────────────────────────────────────────────────
+ */
+const ALLOWED_ROOT_FOLDERS = [
+  // Organized domain roots
   "destinations",
   "packages",
-  "gallery",
+  "guides",
+  "marketing",
+  "testimonials",
+  "users",
+  "bookings",
+  "cms",
+  "temp",
+  // Legacy roots (kept for backward compatibility)
   "avatars",
   "heroes",
-  "guides",
-  "testimonials",
+  "gallery",
   "general",
 ] as const;
 
-export type UploadFolder = (typeof ALLOWED_FOLDERS)[number];
+export type RootFolder = (typeof ALLOWED_ROOT_FOLDERS)[number];
 
 const ALLOWED_MIME_TYPES = [
   "image/jpeg",
@@ -31,8 +69,14 @@ export interface UploadResult {
   key: string;
 }
 
-export function isValidFolder(folder: string): folder is UploadFolder {
-  return ALLOWED_FOLDERS.includes(folder as UploadFolder);
+/**
+ * Validate that a folder path starts with one of the allowed roots.
+ * Accepts both root names ("destinations") and subpaths ("destinations/covers").
+ */
+export function isValidFolder(folder: string): boolean {
+  return ALLOWED_ROOT_FOLDERS.some(
+    (root) => folder === root || folder.startsWith(`${root}/`)
+  );
 }
 
 export function validateFile(file: Express.Multer.File): void {
@@ -42,12 +86,18 @@ export function validateFile(file: Express.Multer.File): void {
     );
   }
   if (file.size > MAX_FILE_SIZE) {
-    throw new Error(`File too large. Max size is ${MAX_FILE_SIZE / 1024 / 1024}MB.`);
+    throw new Error(
+      `File too large. Max size is ${MAX_FILE_SIZE / 1024 / 1024}MB.`
+    );
   }
 }
 
+/**
+ * Generate a unique R2 object key under the requested folder/subpath.
+ * Example: "packages/itinerary/uuid.webp"
+ */
 export function generateKey(
-  folder: UploadFolder,
+  folder: string,
   originalName: string
 ): string {
   const ext = path.extname(originalName) || ".jpg";
@@ -57,9 +107,15 @@ export function generateKey(
 
 export async function uploadToR2(
   file: Express.Multer.File,
-  folder: UploadFolder = "general"
+  folder: string = "general"
 ): Promise<UploadResult> {
   validateFile(file);
+
+  if (!isValidFolder(folder)) {
+    throw new Error(
+      `Invalid upload folder "${folder}". Allowed roots: ${ALLOWED_ROOT_FOLDERS.join(", ")}`
+    );
+  }
 
   const key = generateKey(folder, file.originalname);
   const bucket = ENV.R2_BUCKET_NAME;

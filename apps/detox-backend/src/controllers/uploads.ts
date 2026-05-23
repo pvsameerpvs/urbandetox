@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { uploadToR2, isValidFolder, type UploadFolder } from "@/services/upload";
+import { uploadToR2, isValidFolder } from "@/services/upload";
 import { MAX_FILE_SIZE_MB } from "@/services/constants";
 
 export const UploadController = {
@@ -10,7 +10,7 @@ export const UploadController = {
     }
 
     const folderParam = req.query.folder as string | undefined;
-    let folder: UploadFolder = "general";
+    let folder = "general";
     if (folderParam && isValidFolder(folderParam)) {
       folder = folderParam;
     }

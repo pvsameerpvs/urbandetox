@@ -1,15 +1,16 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { Button } from "@urbandetox/ui";
 import { Badge } from "@urbandetox/ui";
 import { Input } from "@urbandetox/ui";
 import { Textarea } from "@urbandetox/ui";
 import { Card, CardContent } from "@urbandetox/ui";
+import { fetchSiteSettings, updateSiteSettings } from "@/lib/api";
 import { getHeroImages, setHeroImages, getActiveHeroIndex, setActiveHeroIndex, getHeroText, setHeroText, DEFAULT_TEXT, type HeroText } from "@/lib/hero";
 import { toast } from "sonner";
-import { RotateCcw, Eye, Check, ImageIcon, Type, AlignLeft, MousePointerClick } from "lucide-react";
+import { RotateCcw, Eye, Check, ImageIcon, Type, AlignLeft, MousePointerClick, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { HeroSlot } from "@/components/shared/HeroSlot";
 
@@ -19,6 +20,29 @@ export default function HeroImagePage() {
   const [images, setImages] = useState<string[]>(getHeroImages);
   const [activeIndex, setActiveIndex] = useState<number>(getActiveHeroIndex);
   const [text, setText] = useState<HeroText>(getHeroText);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchSiteSettings()
+      .then((settings) => {
+        setImages(settings.heroImages);
+        setActiveIndex(settings.activeHeroIndex);
+        setText({
+          badge: settings.heroBadge,
+          headline1: settings.heroHeadline1,
+          headline2: settings.heroHeadline2,
+          subheadline: settings.heroSubheadline,
+          ctaPrimary: settings.heroCtaPrimary,
+          ctaSecondary: settings.heroCtaSecondary,
+        });
+      })
+      .catch(() => {
+        setImages(getHeroImages());
+        setActiveIndex(getActiveHeroIndex());
+        setText(getHeroText());
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   const currentImage = images[activeIndex] || DEFAULT_HERO;
 
@@ -49,20 +73,52 @@ export default function HeroImagePage() {
     }
   }, [images]);
 
-  const handleSave = () => {
-    setHeroImages(images);
-    setActiveHeroIndex(activeIndex);
-    setHeroText(text);
-    toast.success("Hero saved. Image and text are now live on the homepage.");
+  const handleSave = async () => {
+    try {
+      await updateSiteSettings({
+        heroImages: images,
+        activeHeroIndex: activeIndex,
+        heroBadge: text.badge,
+        heroHeadline1: text.headline1,
+        heroHeadline2: text.headline2,
+        heroSubheadline: text.subheadline,
+        heroCtaPrimary: text.ctaPrimary,
+        heroCtaSecondary: text.ctaSecondary,
+      });
+      setHeroImages(images);
+      setActiveHeroIndex(activeIndex);
+      setHeroText(text);
+      toast.success("Hero saved. Now live on the homepage.");
+    } catch {
+      setHeroImages(images);
+      setActiveHeroIndex(activeIndex);
+      setHeroText(text);
+      toast.error("Server unreachable. Saved locally — will sync when reconnected.");
+    }
   };
 
-  const handleReset = () => {
-    setImages([DEFAULT_HERO, "", "", "", ""]);
+  const handleReset = async () => {
+    const defaults = {
+      heroImages: [DEFAULT_HERO, "", "", "", ""],
+      activeHeroIndex: 0,
+      heroBadge: DEFAULT_TEXT.badge,
+      heroHeadline1: DEFAULT_TEXT.headline1,
+      heroHeadline2: DEFAULT_TEXT.headline2,
+      heroSubheadline: DEFAULT_TEXT.subheadline,
+      heroCtaPrimary: DEFAULT_TEXT.ctaPrimary,
+      heroCtaSecondary: DEFAULT_TEXT.ctaSecondary,
+    };
+    setImages(defaults.heroImages);
     setActiveIndex(0);
     setText(DEFAULT_TEXT);
-    setHeroImages([DEFAULT_HERO, "", "", "", ""]);
+    setHeroImages(defaults.heroImages);
     setActiveHeroIndex(0);
     setHeroText(DEFAULT_TEXT);
+    try {
+      await updateSiteSettings(defaults);
+    } catch {
+      /* persisted locally above */
+    }
     toast.success("Reset to default image and text.");
   };
 
@@ -72,6 +128,14 @@ export default function HeroImagePage() {
 
   const filledCount = images.filter((img) => img && !img.startsWith("placeholder")).length;
   const isDefault = JSON.stringify(text) === JSON.stringify(DEFAULT_TEXT);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto space-y-8">

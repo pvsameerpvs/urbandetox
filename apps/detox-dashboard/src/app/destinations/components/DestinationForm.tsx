@@ -111,7 +111,7 @@ export function DestinationForm({ mode, initialData, slugValue, onSubmit, submit
               <FormItem>
                 <FormLabel>Cover Image</FormLabel>
                 <FormControl>
-                  <ImageUpload value={field.value} onChange={field.onChange} label="Cover Image" folder="destinations" />
+                  <ImageUpload value={field.value} onChange={field.onChange} label="Cover Image" folder="destinations/covers" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -129,7 +129,7 @@ export function DestinationForm({ mode, initialData, slugValue, onSubmit, submit
                     items={field.value}
                     onAdd={(v) => field.onChange([...field.value, v])}
                     onRemove={(i) => field.onChange(field.value.filter((_, j) => j !== i))}
-                    folder="destinations"
+                    folder="destinations/gallery"
                   />
                 </FormControl>
                 <FormMessage />
