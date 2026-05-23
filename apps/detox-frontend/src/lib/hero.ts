@@ -3,7 +3,7 @@
 const STORAGE_KEY = "urbandetox-hero-images";
 const ACTIVE_KEY = "urbandetox-hero-active";
 const TEXT_KEY = "urbandetox-hero-text";
-const DEFAULT_HERO = "https://images.unsplash.com/photo-1501555088652-021faa106b9b?q=80&w=2000&auto=format&fit=crop";
+const DEFAULT_HERO = "";
 
 export interface HeroText {
   badge: string;
@@ -15,12 +15,12 @@ export interface HeroText {
 }
 
 export const DEFAULT_TEXT: HeroText = {
-  badge: "Curated Offbeat Escapes",
-  headline1: "Disconnect from routine.",
-  headline2: "Step into your next detox.",
-  subheadline: "Small-group escapes to the Western Ghats, Kerala, and beyond. Local stays, guided stillness, and real reset.",
-  ctaPrimary: "Explore Detox",
-  ctaSecondary: "View Upcoming",
+  badge: "",
+  headline1: "",
+  headline2: "",
+  subheadline: "",
+  ctaPrimary: "",
+  ctaSecondary: "",
 };
 
 export function getHeroImages(): string[] {
