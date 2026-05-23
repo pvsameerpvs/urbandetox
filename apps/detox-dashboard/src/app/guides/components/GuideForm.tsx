@@ -16,7 +16,7 @@ const existingCategories = ["Destination Guides", "Travel Tips", "Packing Guides
 
 interface GuideFormProps {
   initial?: GuideArticle;
-  onSave: (guide: GuideArticle) => void | Promise<void>;
+  onSave: (guide: GuideArticle | Omit<GuideArticle, "id">) => void | Promise<void>;
 }
 
 export function GuideForm({ initial, onSave }: GuideFormProps) {
@@ -58,8 +58,8 @@ export function GuideForm({ initial, onSave }: GuideFormProps) {
       return;
     }
     const cleanSlug = slug.trim().toLowerCase().replace(/\s+/g, "-");
-    const guide: GuideArticle = {
-      id: initial?.id ?? `guide-${Date.now()}`,
+    const guide = {
+      ...(initial?.id ? { id: initial.id } : {}),
       slug: cleanSlug,
       title: title.trim(),
       category: category.trim(),

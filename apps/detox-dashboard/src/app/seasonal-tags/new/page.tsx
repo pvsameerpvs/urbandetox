@@ -14,7 +14,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { createSeasonalTag } from "@/lib/admin-data";
-import { generateId } from "@/lib/id";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { FormActions } from "@/components/forms/FormActions";
 import { IconPicker } from "@/components/shared/IconPicker";
@@ -46,7 +45,6 @@ export default function NewSeasonalTagPage() {
     const slug = data.name.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-");
     try {
       await createSeasonalTag({
-        id: generateId("st"),
         name: data.name,
         slug,
         iconName: data.iconName,

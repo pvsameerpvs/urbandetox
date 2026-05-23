@@ -32,7 +32,7 @@ export async function getDestinationBySlug(slug: string): Promise<Destination | 
   }
 }
 
-export async function createDestination(dest: Destination): Promise<void> {
+export async function createDestination(dest: Omit<Destination, "id">): Promise<void> {
   await apiCreateDestination(dest);
 }
 
@@ -62,7 +62,7 @@ export function getPackagesByDestination(_destinationSlug: string): Promise<Pack
   return fetchPackages<Package>();
 }
 
-export async function createPackage(pkg: Package): Promise<void> {
+export async function createPackage(pkg: Omit<Package, "id">): Promise<void> {
   await apiCreatePackage(pkg);
 }
 
@@ -88,7 +88,7 @@ export async function getDepartureByCode(code: string): Promise<Departure | unde
   }
 }
 
-export async function createDeparture(dep: Departure): Promise<void> {
+export async function createDeparture(dep: Omit<Departure, "id">): Promise<void> {
   await apiCreateDeparture(dep);
 }
 
@@ -105,7 +105,7 @@ export async function getSeasonalTags(): Promise<SeasonalTag[]> {
   return fetchSeasonalTags<SeasonalTag>();
 }
 
-export async function createSeasonalTag(tag: SeasonalTag): Promise<void> {
+export async function createSeasonalTag(tag: Omit<SeasonalTag, "id">): Promise<void> {
   await apiCreateSeasonalTag(tag);
 }
 

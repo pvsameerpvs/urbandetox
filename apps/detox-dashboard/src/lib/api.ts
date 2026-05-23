@@ -151,6 +151,40 @@ export async function createBooking<T = unknown>(data: T): Promise<T> {
   return api("/api/bookings", { method: "POST", body: JSON.stringify(data) });
 }
 
+// ─── FAQs ──────────────────────────────────────────
+export async function fetchFaqs<T = unknown>(): Promise<T[]> {
+  return api("/api/faqs");
+}
+
+export async function createFaq<T = unknown>(data: T): Promise<T> {
+  return api("/api/faqs", { method: "POST", body: JSON.stringify(data) });
+}
+
+export async function updateFaq<T = unknown>(id: string, data: Partial<T>): Promise<T> {
+  return api(`/api/faqs/${id}`, { method: "PUT", body: JSON.stringify(data) });
+}
+
+export async function deleteFaq(id: string): Promise<void> {
+  await api(`/api/faqs/${id}`, { method: "DELETE" });
+}
+
+// ─── Testimonials ──────────────────────────────────
+export async function fetchTestimonials<T = unknown>(): Promise<T[]> {
+  return api("/api/testimonials");
+}
+
+export async function createTestimonial<T = unknown>(data: T): Promise<T> {
+  return api("/api/testimonials", { method: "POST", body: JSON.stringify(data) });
+}
+
+export async function updateTestimonial<T = unknown>(id: string, data: Partial<T>): Promise<T> {
+  return api(`/api/testimonials/${id}`, { method: "PUT", body: JSON.stringify(data) });
+}
+
+export async function deleteTestimonial(id: string): Promise<void> {
+  await api(`/api/testimonials/${id}`, { method: "DELETE" });
+}
+
 // ─── Users (Admin-only) ────────────────────────────
 export interface PaginatedUsersResponse {
   data: Array<{

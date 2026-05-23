@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, Button } from "@urbandetox/ui";
 import { createPackage } from "@/lib/admin-data";
 import { useAdminDestinations } from "@/hooks/use-admin-data";
-import { generateId } from "@/lib/id";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -27,7 +26,6 @@ export default function NewPackagePage() {
     try {
       await createPackage({
       ...data,
-      id: generateId("pkg"),
       slug,
       durationLabel,
       guideLed: true,

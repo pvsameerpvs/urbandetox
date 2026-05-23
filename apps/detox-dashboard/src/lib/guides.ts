@@ -1,4 +1,9 @@
-import { fetchGuides } from "@/lib/api";
+import {
+  fetchGuides,
+  createGuide as apiCreateGuide,
+  updateGuide as apiUpdateGuide,
+  deleteGuide as apiDeleteGuide,
+} from "@/lib/api";
 import type { GuideArticle } from "@urbandetox/utils";
 
 export async function getAdminGuides(): Promise<GuideArticle[]> {
@@ -14,17 +19,14 @@ export async function getAdminGuideById(id: string): Promise<GuideArticle | unde
   }
 }
 
-export async function createGuide(_guide: GuideArticle): Promise<void> {
-  // await apiCreateGuide(guide);
-  throw new Error("Not implemented: createGuide via API");
+export async function createGuide(guide: Omit<GuideArticle, "id">): Promise<void> {
+  await apiCreateGuide(guide);
 }
 
-export async function updateGuide(_id: string, _updates: Partial<GuideArticle>): Promise<void> {
-  // await apiUpdateGuide(id, updates);
-  throw new Error("Not implemented: updateGuide via API");
+export async function updateGuide(id: string, updates: Partial<GuideArticle>): Promise<void> {
+  await apiUpdateGuide(id, updates);
 }
 
-export async function deleteGuide(_id: string): Promise<void> {
-  // await apiDeleteGuide(id);
-  throw new Error("Not implemented: deleteGuide via API");
+export async function deleteGuide(id: string): Promise<void> {
+  await apiDeleteGuide(id);
 }
