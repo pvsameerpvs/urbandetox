@@ -6,9 +6,12 @@ import {
   useState,
   useCallback,
   useEffect,
-  useMemo,
 } from "react";
-import { createClient } from "@/lib/supabase/client";
+import {
+  SUPABASE_ENV_ERROR,
+  createClient,
+  isSupabaseConfigured,
+} from "@/lib/supabase/client";
 
 /* ─── Types ──────────────────────────────────── */
 
@@ -103,6 +106,7 @@ function saveToStorage(profile: UserProfile) {
 }
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+type SupabaseBrowserClient = ReturnType<typeof createClient>;
 
 async function fetchWithAuth(path: string, options?: RequestInit) {
   const supabase = createClient();
@@ -162,9 +166,7 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  // Memoize Supabase client so it is stable across renders
-  const supabase = useMemo(() => createClient(), []);
+  const [supabase, setSupabase] = useState<SupabaseBrowserClient | null>(null);
 
   // Stable callback — uses functional setProfile so it needs no deps
   const syncProfileFromAuth = useCallback(
@@ -229,8 +231,29 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setProfile(loadFromStorage());
 
+    if (!isSupabaseConfigured()) {
+      console.warn(SUPABASE_ENV_ERROR);
+      setIsHydrated(true);
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    let client: SupabaseBrowserClient;
+    try {
+      client = createClient();
+    } catch (error) {
+      console.error("[Auth] Failed to initialize Supabase client:", error);
+      setIsHydrated(true);
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    setSupabase(client);
+
     // Check existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    client.auth.getSession().then(({ data: { session } }) => {
       if (cancelled) return;
       if (session?.user) {
         const user: AuthUser = {
@@ -246,7 +269,7 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
     });
 
     // Listen to auth changes
-    const { data: listener } = supabase.auth.onAuthStateChange(
+    const { data: listener } = client.auth.onAuthStateChange(
       (_event, session) => {
         if (cancelled) return;
         if (session?.user) {
@@ -269,7 +292,7 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
       cancelled = true;
       listener.subscription.unsubscribe();
     };
-  }, [supabase, syncProfileFromAuth]);
+  }, [syncProfileFromAuth]);
 
   // Persist profile to localStorage whenever it changes (after hydration)
   useEffect(() => {
@@ -278,6 +301,8 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
 
   const login = useCallback(
     async (email: string, password: string) => {
+      if (!supabase) throw new Error(SUPABASE_ENV_ERROR);
+
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -289,6 +314,8 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
 
   const signup = useCallback(
     async (email: string, password: string, fullName: string, phone: string) => {
+      if (!supabase) throw new Error(SUPABASE_ENV_ERROR);
+
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -308,6 +335,8 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
   );
 
   const loginWithGoogle = useCallback(async () => {
+    if (!supabase) throw new Error(SUPABASE_ENV_ERROR);
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
@@ -318,7 +347,9 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
   }, [supabase]);
 
   const logout = useCallback(async () => {
-    await supabase.auth.signOut();
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
     setAuthUser(null);
     setIsLoggedIn(false);
   }, [supabase]);
