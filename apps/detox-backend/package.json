@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "pnpm --filter @urbandetox/utils build && tsc",
-    "start": "node dist/index.js",
+    "start": "tsx src/index.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src/",
     "db:generate": "drizzle-kit generate",
@@ -29,6 +29,7 @@
     "postgres": "^3.4.9",
     "resend": "^6.12.3",
     "uuid": "^14.0.0",
+    "tsx": "^4.19.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -41,7 +42,6 @@
     "@urbandetox/typescript-config": "workspace:*",
     "drizzle-kit": "^0.31.10",
     "eslint": "^9.0.0",
-    "tsx": "^4.19.0",
     "typescript": "^5.8.0"
   }
 }

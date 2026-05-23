@@ -45,6 +45,7 @@ yarn-error.log*
 # ─────────────────────────────────────────
 .env
 .env.*
+apps/detox-backend/.env.test
 !.env.example
 !.env.template
 
