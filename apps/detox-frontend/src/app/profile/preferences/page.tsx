@@ -94,12 +94,12 @@ export default function PreferencesPage() {
                 <label className="text-sm font-semibold">Blood Group</label>
                 <div className="relative">
                   <Droplets className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
-                  <Select value={profile.health.bloodGroup} onValueChange={(v) => updateHealth({ bloodGroup: v ?? "" })}>
+                  <Select value={profile.health.bloodGroup || "not-sure"} onValueChange={(v) => updateHealth({ bloodGroup: v === "not-sure" ? "" : v })}>
                     <SelectTrigger className="h-12 pl-11 rounded-xl bg-secondary/40 border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20 w-[140px]">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Not sure</SelectItem>
+                      <SelectItem value="not-sure">Not sure</SelectItem>
                       {bloodOptions.map((bg) => (
                         <SelectItem key={bg} value={bg}>{bg}</SelectItem>
                       ))}
