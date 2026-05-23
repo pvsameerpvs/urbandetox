@@ -64,3 +64,11 @@ export const createBookingBody = z.object({
   travelers: z.number().int().min(1).max(50).optional(),
   details: z.any().optional(),
 });
+
+// ─── Contact ──────────────────────────────────────
+export const contactFormBody = z.object({
+  name: z.string().min(2).max(255),
+  email: z.string().email(),
+  subject: z.string().min(1).max(255),
+  message: z.string().min(5).max(5000),
+});

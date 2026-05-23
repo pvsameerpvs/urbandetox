@@ -12,6 +12,7 @@ import authRoutes from "./auth";
 import userRoutes from "./users";
 import settingsRoutes from "./settings";
 import uploadRoutes from "./uploads";
+import contactRoutes from "./contact";
 
 const router = express.Router();
 
@@ -28,5 +29,6 @@ router.use("/api/auth", authRoutes);
 router.use("/api/users", userRoutes);
 router.use("/api/settings", settingsRoutes);
 router.use("/api/uploads", uploadRoutes);
+router.use("/api/contact", contactRoutes);
 
 export default router;

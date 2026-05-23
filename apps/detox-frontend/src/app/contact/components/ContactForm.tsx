@@ -2,20 +2,28 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-;
-;
-;
-;
-import { Clock, CheckCircle2, Send } from "lucide-react";
+import { Clock, CheckCircle2, Send, Loader2 } from "lucide-react";
 import { Button, Input, Label, Textarea } from "@urbandetox/ui"
+import { submitContact } from "@/lib/api";
 
 export function ContactForm() {
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSent(true);
+    setSending(true);
+    setError(null);
+    try {
+      await submitContact(formData);
+      setSent(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    } finally {
+      setSending(false);
+    }
   };
 
   if (sent) {
@@ -26,7 +34,7 @@ export function ContactForm() {
         </div>
         <h3 className="text-2xl font-bold mb-3">Message Sent!</h3>
         <p className="text-muted-foreground max-w-sm mb-6">Thank you for reaching out. We will get back to you within 24 hours.</p>
-        <Button variant="outline" onClick={() => { setSent(false); setFormData({ name: "", email: "", subject: "", message: "" }); }} className="rounded-full h-11 px-6">
+        <Button variant="outline" onClick={() => { setSent(false); setError(null); setFormData({ name: "", email: "", subject: "", message: "" }); }} className="rounded-full h-11 px-6">
           Send Another Message
         </Button>
       </motion.div>
@@ -53,9 +61,13 @@ export function ContactForm() {
         <Label htmlFor="message" className="text-sm font-semibold">Message</Label>
         <Textarea id="message" placeholder="Tell us what is on your mind..." rows={5} required value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} className="rounded-xl bg-secondary/40 border-0 text-sm resize-none focus-visible:ring-2 focus-visible:ring-brand/20" />
       </div>
+      {error && (
+        <p className="text-sm text-red-600">{error}</p>
+      )}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 pt-2">
-        <Button type="submit" size="lg" className="rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-12 px-8 text-sm font-semibold shadow-lg shadow-brand/10">
-          <Send className="mr-2 h-4 w-4" /> Send Message
+        <Button type="submit" size="lg" disabled={sending} className="rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-12 px-8 text-sm font-semibold shadow-lg shadow-brand/10">
+          {sending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+          {sending ? "Sending..." : "Send Message"}
         </Button>
         <span className="text-xs text-muted-foreground inline-flex items-center gap-1.5">
           <Clock className="h-3.5 w-3.5" /> We reply within 24 hours

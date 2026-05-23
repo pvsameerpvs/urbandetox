@@ -155,6 +155,22 @@ export async function createBooking(payload: {
   return res.json();
 }
 
+// ── Contact ────────────────────────────────────────
+export async function submitContact(payload: {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}): Promise<{ success: boolean; message: string }> {
+  const res = await fetch(`${API_BASE}/api/contact`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error(`Contact failed: ${res.status}`);
+  return res.json();
+}
+
 // ── Site Settings ────────────────────────────────────
 export async function fetchSiteSettings(): Promise<import("@urbandetox/utils").SiteSettings> {
   const res = await fetch(`${API_BASE}/api/settings`, {
