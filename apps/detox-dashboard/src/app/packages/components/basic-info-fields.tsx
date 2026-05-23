@@ -154,7 +154,7 @@ export function BasicInfoFields({ control, destinations }: BasicInfoFieldsProps)
         render={({ field, fieldState }) => (
           <div className="space-y-2">
             <label className="text-sm font-medium">Cover Image</label>
-            <ImageUpload value={field.value} onChange={field.onChange} label="Cover Image" />
+            <ImageUpload value={field.value} onChange={field.onChange} label="Cover Image" folder="packages" />
             {fieldState.error && <p className="text-xs text-red-500">{fieldState.error.message}</p>}
           </div>
         )}

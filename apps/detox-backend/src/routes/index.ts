@@ -11,6 +11,7 @@ import seasonalTagRoutes from "./seasonal-tags";
 import authRoutes from "./auth";
 import userRoutes from "./users";
 import settingsRoutes from "./settings";
+import uploadRoutes from "./uploads";
 
 const router = express.Router();
 
@@ -26,5 +27,6 @@ router.use("/api/seasonal-tags", seasonalTagRoutes);
 router.use("/api/auth", authRoutes);
 router.use("/api/users", userRoutes);
 router.use("/api/settings", settingsRoutes);
+router.use("/api/uploads", uploadRoutes);
 
 export default router;

@@ -3,30 +3,38 @@
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { Button } from "@urbandetox/ui";
-import { Upload, X, ImageIcon } from "lucide-react";
+import { Upload, X, ImageIcon, Loader2 } from "lucide-react";
+import { uploadImage } from "@/lib/api";
 
 interface ImageUploadProps {
   value: string;
   onChange: (value: string) => void;
   maxSizeMB?: number;
   label?: string;
+  folder?: string;
 }
 
-export function ImageUpload({ value, onChange, maxSizeMB = 5 }: ImageUploadProps) {
+export function ImageUpload({ value, onChange, maxSizeMB = 5, folder = "general" }: ImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
-  function handleFile(file: File) {
+  async function handleFile(file: File) {
     setError(null);
     if (file.size > maxSizeMB * 1024 * 1024) {
       setError(`Image too large. Max ${maxSizeMB}MB.`);
       return;
     }
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      onChange(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+
+    setIsUploading(true);
+    try {
+      const result = await uploadImage(file, folder);
+      onChange(result.url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setIsUploading(false);
+    }
   }
 
   const hasImage = value && (value.startsWith("http") || value.startsWith("data:image"));
@@ -48,8 +56,10 @@ export function ImageUpload({ value, onChange, maxSizeMB = 5 }: ImageUploadProps
                 size="sm"
                 className="h-8 rounded-lg bg-black/60 text-white hover:bg-black/80 backdrop-blur-sm border-0 text-xs"
                 onClick={() => inputRef.current?.click()}
+                disabled={isUploading}
               >
-                <Upload className="h-3 w-3 mr-1" /> Change
+                {isUploading ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <Upload className="h-3 w-3 mr-1" />}
+                {isUploading ? "Uploading" : "Change"}
               </Button>
               <Button
                 type="button"
@@ -57,6 +67,7 @@ export function ImageUpload({ value, onChange, maxSizeMB = 5 }: ImageUploadProps
                 size="sm"
                 className="h-8 rounded-lg bg-black/60 text-white hover:bg-red-600 backdrop-blur-sm border-0 text-xs"
                 onClick={() => onChange("")}
+                disabled={isUploading}
               >
                 <X className="h-3 w-3" />
               </Button>
@@ -66,13 +77,20 @@ export function ImageUpload({ value, onChange, maxSizeMB = 5 }: ImageUploadProps
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
-            className="w-full aspect-[16/9] flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-brand transition-colors"
+            disabled={isUploading}
+            className="w-full aspect-[16/9] flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-brand transition-colors disabled:opacity-50"
           >
-            <div className="h-12 w-12 rounded-xl bg-secondary/50 flex items-center justify-center">
-              <ImageIcon className="h-6 w-6" />
-            </div>
+            {isUploading ? (
+              <Loader2 className="h-8 w-8 animate-spin text-brand" />
+            ) : (
+              <div className="h-12 w-12 rounded-xl bg-secondary/50 flex items-center justify-center">
+                <ImageIcon className="h-6 w-6" />
+              </div>
+            )}
             <div className="text-center">
-              <p className="text-sm font-medium">Click to upload cover image</p>
+              <p className="text-sm font-medium">
+                {isUploading ? "Uploading to cloud..." : "Click to upload cover image"}
+              </p>
               <p className="text-xs text-muted-foreground mt-0.5">PNG, JPG, WEBP up to {maxSizeMB}MB</p>
             </div>
           </button>
@@ -84,6 +102,7 @@ export function ImageUpload({ value, onChange, maxSizeMB = 5 }: ImageUploadProps
         type="file"
         accept="image/*"
         className="hidden"
+        disabled={isUploading}
         onChange={(e) => {
           const file = e.target.files?.[0];
           if (file) handleFile(file);

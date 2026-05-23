@@ -122,7 +122,7 @@ export default function EditPackagePage() {
         <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
           <CardContent className="p-6">
             <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Gallery Images</h3>
-            <GalleryUpload items={f.gallery} onAdd={(v) => f.appendArrayItem("gallery", v)} onRemove={(i) => f.removeArrayItem("gallery", i)} />
+            <GalleryUpload items={f.gallery} onAdd={(v) => f.appendArrayItem("gallery", v)} onRemove={(i) => f.removeArrayItem("gallery", i)} folder="packages" />
           </CardContent>
         </Card>
 

@@ -3,30 +3,38 @@
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { Button } from "@urbandetox/ui";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Loader2 } from "lucide-react";
+import { uploadImage } from "@/lib/api";
 
 interface GalleryUploadProps {
   items: string[];
   onAdd: (value: string) => void;
   onRemove: (index: number) => void;
   maxSizeMB?: number;
+  folder?: string;
 }
 
-export function GalleryUpload({ items, onAdd, onRemove, maxSizeMB = 5 }: GalleryUploadProps) {
+export function GalleryUpload({ items, onAdd, onRemove, maxSizeMB = 5, folder = "gallery" }: GalleryUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
-  const handleFile = (file: File) => {
+  const handleFile = async (file: File) => {
     setError(null);
     if (file.size > maxSizeMB * 1024 * 1024) {
       setError(`Image too large. Max ${maxSizeMB}MB.`);
       return;
     }
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      onAdd(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+
+    setIsUploading(true);
+    try {
+      const result = await uploadImage(file, folder);
+      onAdd(result.url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const visibleItems = items.filter(Boolean);
@@ -58,8 +66,9 @@ export function GalleryUpload({ items, onAdd, onRemove, maxSizeMB = 5 }: Gallery
         </div>
       )}
       <div className="flex items-center gap-3">
-        <Button type="button" variant="outline" size="sm" className="rounded-lg h-9 text-xs" onClick={() => inputRef.current?.click()}>
-          <Plus className="h-3.5 w-3.5 mr-1" /> Add Image
+        <Button type="button" variant="outline" size="sm" className="rounded-lg h-9 text-xs" onClick={() => inputRef.current?.click()} disabled={isUploading}>
+          {isUploading ? <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" /> : <Plus className="h-3.5 w-3.5 mr-1" />}
+          {isUploading ? "Uploading..." : "Add Image"}
         </Button>
         {visibleItems.length === 0 && <p className="text-xs text-muted-foreground">No images yet</p>}
       </div>
@@ -68,6 +77,7 @@ export function GalleryUpload({ items, onAdd, onRemove, maxSizeMB = 5 }: Gallery
         type="file"
         accept="image/*"
         className="hidden"
+        disabled={isUploading}
         onChange={(e) => {
           const file = e.target.files?.[0];
           if (file) handleFile(file);

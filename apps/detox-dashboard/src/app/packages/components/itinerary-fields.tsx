@@ -37,7 +37,7 @@ export function ItineraryFields({
               <Input value={day.meals ?? ""} onChange={(e) => onUpdateDay(di, "meals", e.target.value)} placeholder="Meals" className="h-10 rounded-xl" />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="flex flex-col gap-1.5"><p className="text-xs text-muted-foreground">Day image</p><ImageUploadInline value={day.image} onChange={(v) => onUpdateDay(di, "image", v)} /></div>
+              <div className="flex flex-col gap-1.5"><p className="text-xs text-muted-foreground">Day image</p><ImageUploadInline value={day.image} onChange={(v) => onUpdateDay(di, "image", v)} folder="packages" /></div>
               <Input value={day.travelNotes ?? ""} onChange={(e) => onUpdateDay(di, "travelNotes", e.target.value)} placeholder="Travel notes (optional)" className="h-10 rounded-xl" />
             </div>
             <div className="space-y-2">

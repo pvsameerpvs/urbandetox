@@ -240,6 +240,38 @@ export async function updateUserRole(id: string, role: string) {
   });
 }
 
+// ─── Image Upload ────────────────────────────────────
+export interface UploadResult {
+  url: string;
+  key: string;
+}
+
+export async function uploadImage(file: File, folder?: string): Promise<UploadResult> {
+  const { createClient } = await import("@/lib/supabase/client");
+  const supabase = createClient();
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const query = folder ? `?folder=${encodeURIComponent(folder)}` : "";
+  const res = await fetch(`${API_BASE}/api/uploads${query}`, {
+    method: "POST",
+    headers: {
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: res.statusText }));
+    throw new Error(err.error || `Upload error: ${res.status}`);
+  }
+
+  return res.json() as Promise<UploadResult>;
+}
+
 // ─── Site Settings ───────────────────────────────────
 export async function fetchSiteSettings() {
   return api<import("@urbandetox/utils").SiteSettings>("/api/settings");

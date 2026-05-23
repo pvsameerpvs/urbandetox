@@ -61,7 +61,7 @@ export function HeroSlot({
         </div>
       ) : (
         <div className="aspect-[16/10] p-3">
-          <ImageUpload value="" onChange={onUpload} />
+          <ImageUpload value="" onChange={onUpload} folder="heroes" />
         </div>
       )}
 

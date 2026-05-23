@@ -136,7 +136,7 @@ export function GuideForm({ initial, onSave }: GuideFormProps) {
           <div>
             <Label>Cover Image</Label>
             <div className="mt-1.5">
-              <ImageUpload value={image} onChange={setImage} />
+              <ImageUpload value={image} onChange={setImage} folder="guides" />
             </div>
           </div>
           <div>
