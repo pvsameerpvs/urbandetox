@@ -180,7 +180,7 @@ export default function HeroImagePage() {
               </h1>
               <p className="mt-3 text-sm text-white text-balance max-w-md mx-auto text-center">{text.subheadline}</p>
               <div className="mt-4 flex items-center gap-3">
-                <span className="rounded-full bg-white text-black px-5 py-2 text-xs font-bold uppercase">{text.ctaPrimary}</span>
+                <span className="rounded-full bg-white text-black px-5 py-2 text-xs font-bold ">{text.ctaPrimary}</span>
                 <span className="rounded-full border border-white/30 text-white px-5 py-2 text-xs">{text.ctaSecondary}</span>
               </div>
             </div>

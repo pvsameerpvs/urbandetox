@@ -40,7 +40,7 @@ export function HeroTextContent({ heroText }: HeroTextContentProps) {
         <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
           <Button
             size="lg"
-            className="bg-white text-black hover:bg-white/90 font-bold px-7 h-11 text-sm shadow-lg shadow-white/10 uppercase tracking-wide"
+            className="bg-white text-black hover:bg-white/90 font-bold px-7 h-11 text-sm shadow-lg shadow-white/10 tracking-wide"
             asChild
           >
             <Link href="/detox">

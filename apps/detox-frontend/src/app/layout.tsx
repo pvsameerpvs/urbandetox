@@ -1,14 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
+import { redHatDisplay, superbusyHeading, superbusyCta } from "@/lib/fonts";
 import "./globals.css";
 import { Navbar } from "@/components/layout/navbar";
 import { ConditionalFooter } from "@/components/layout/ConditionalFooter";
 import { ClientProviders } from "@/components/providers";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -29,7 +25,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${redHatDisplay.variable} ${superbusyHeading.variable} ${superbusyCta.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ClientProviders>
