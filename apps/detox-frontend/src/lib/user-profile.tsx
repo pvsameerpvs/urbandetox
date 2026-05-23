@@ -133,6 +133,7 @@ interface UserProfileContextType {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, fullName: string, phone: string) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   updatePersonal: (data: Partial<PersonalInfo>) => void;
   updateHealth: (data: Partial<HealthInfo>) => void;
@@ -305,6 +306,16 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
     [supabase]
   );
 
+  const loginWithGoogle = useCallback(async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+    if (error) throw error;
+  }, [supabase]);
+
   const logout = useCallback(async () => {
     await supabase.auth.signOut();
     setAuthUser(null);
@@ -383,6 +394,7 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
         isLoading,
         login,
         signup,
+        loginWithGoogle,
         logout,
         updatePersonal,
         updateHealth,

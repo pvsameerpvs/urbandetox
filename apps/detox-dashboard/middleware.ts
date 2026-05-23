@@ -1,16 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
-/**
- * Dashboard admin guard.
- *
- * Requires the user to have role = "admin" in either:
- *   - user.app_metadata.role  (recommended — set via Supabase Auth hooks / Edge Functions)
- *   - user.user_metadata.role
- *
- * To assign admin role in Supabase:
- *   supabase.auth.admin.updateUserById(userId, { app_metadata: { role: "admin" } })
- */
 function isAdmin(user: { app_metadata?: Record<string, unknown>; user_metadata?: Record<string, unknown> }) {
   return (
     user.app_metadata?.role === "admin" ||
@@ -20,9 +10,7 @@ function isAdmin(user: { app_metadata?: Record<string, unknown>; user_metadata?:
 
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
+    request: { headers: request.headers },
   });
 
   const supabase = createServerClient(
@@ -54,7 +42,7 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-  // Redirect unauthenticated users to dashboard login
+  // Redirect unauthenticated users to login
   if (!user) {
     return NextResponse.redirect(new URL("/login", request.url));
   }

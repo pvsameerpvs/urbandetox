@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import { supabaseAdmin } from "@/lib/supabase";
-import { ENV } from "@/config/env";
 
 export type UserRole = "admin" | "authenticated";
 
@@ -18,20 +17,8 @@ declare global {
   }
 }
 
-/** Environment-based admin whitelist for instant provisioning */
-const ADMIN_WHITELIST = new Set(
-  (ENV.ADMIN_USER_IDS || "").split(",").map((id) => id.trim()).filter(Boolean)
-);
-
-/**
- * Resolves the user's effective role.
- * Priority: env whitelist > Supabase app_metadata.role > default "authenticated"
- */
-function resolveRole(userId: string, appMetadata: Record<string, unknown> | undefined): UserRole {
-  if (ADMIN_WHITELIST.has(userId)) return "admin";
-  const metaRole = appMetadata?.role;
-  if (metaRole === "admin") return metaRole as UserRole;
-  return "authenticated";
+function resolveRole(appMetadata: Record<string, unknown> | undefined): UserRole {
+  return appMetadata?.role === "admin" ? "admin" : "authenticated";
 }
 
 export async function authMiddleware(
@@ -56,7 +43,7 @@ export async function authMiddleware(
   req.user = {
     id: data.user.id,
     email: data.user.email || "",
-    role: resolveRole(data.user.id, data.user.app_metadata),
+    role: resolveRole(data.user.app_metadata),
   };
 
   next();

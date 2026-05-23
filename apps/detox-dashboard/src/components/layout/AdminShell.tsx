@@ -25,18 +25,18 @@ async function fetchMe(token: string): Promise<{ role?: string } | null> {
 }
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
-  const [authState, setAuthState] = useState<"loading" | "authenticated" | "unauthenticated" | "unauthorized">("loading");
   const pathname = usePathname();
+  const isPublicPath = PUBLIC_PATHS.includes(pathname);
+
+  const [authState, setAuthState] = useState<
+    "loading" | "authenticated" | "unauthenticated" | "unauthorized"
+  >(isPublicPath ? "authenticated" : "loading");
+
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const isPublicPath = PUBLIC_PATHS.includes(pathname);
-
   useEffect(() => {
-    if (isPublicPath) {
-      setAuthState("authenticated");
-      return;
-    }
+    if (isPublicPath) return; // already initialized as authenticated
 
     let mounted = true;
     async function checkAuth() {
@@ -49,7 +49,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        // Try to get canonical role from backend (includes env whitelist + DB role)
+        // Try to get canonical role from backend
         const session = await supabase.auth.getSession();
         const token = session.data.session?.access_token;
         let effectiveRole: string | undefined;

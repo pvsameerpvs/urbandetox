@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { Button, Input, Label } from "@urbandetox/ui";
 import { ArrowRight, Mail, Lock, ShieldCheck } from "lucide-react";
@@ -89,13 +88,6 @@ export default function DashboardLoginPage() {
             {loading ? "Signing in..." : "Sign In"} <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </form>
-
-        <p className="mt-6 text-center text-xs text-muted-foreground">
-          Need an account?{" "}
-          <Link href="/" className="text-brand hover:underline font-medium">
-            Create one on the main site
-          </Link>
-        </p>
       </div>
     </main>
   );
