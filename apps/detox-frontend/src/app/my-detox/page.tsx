@@ -10,7 +10,7 @@ import { EmptyState } from "./components/EmptyState";
 import { PastTripsSection } from "./components/PastTripsSection";
 import { useUserProfile } from "@/lib/user-profile";
 import { fetchMyBookings } from "@/lib/api";
-import { Button, Avatar, AvatarFallback } from "@urbandetox/ui"
+import { Button, Avatar, AvatarImage, AvatarFallback } from "@urbandetox/ui"
 
 export default function MyDetoxPage() {
   const { profile, authUser, isLoggedIn } = useUserProfile();
@@ -62,7 +62,8 @@ export default function MyDetoxPage() {
 
             <div className="rounded-2xl bg-white/10 backdrop-blur-md border border-white/10 p-3 sm:p-4 w-full sm:w-auto sm:min-w-[260px]">
               <div className="flex items-center gap-3 mb-3">
-                <Avatar className="h-10 w-10">
+                <Avatar className="h-10 w-10 border border-white/20 shadow-sm">
+                  {authUser?.avatarUrl ? <AvatarImage src={authUser.avatarUrl} alt={displayName} /> : null}
                   <AvatarFallback className="bg-brand text-brand-foreground text-sm font-bold">{initials}</AvatarFallback>
                 </Avatar>
                 <div className="min-w-0">

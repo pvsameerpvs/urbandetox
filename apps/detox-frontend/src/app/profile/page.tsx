@@ -15,10 +15,10 @@ import {
 import { motion } from "framer-motion";
 import { useUserProfile } from "@/lib/user-profile";
 import { quickLinks, recentBookings } from "./data";
-import { Card, CardContent, Badge, Avatar, AvatarFallback, Button } from "@urbandetox/ui"
+import { Card, CardContent, Badge, Avatar, AvatarImage, AvatarFallback, Button } from "@urbandetox/ui"
 
 export default function ProfileDashboard() {
-  const { profile } = useUserProfile();
+  const { profile, authUser } = useUserProfile();
   const initials = profile.personal.fullName.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
 
   return (
@@ -41,7 +41,8 @@ export default function ProfileDashboard() {
         </div>
         <CardContent className="relative px-6 sm:px-8 pb-6 sm:pb-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4 -mt-12 sm:-mt-14">
-            <Avatar className="h-20 w-20 sm:h-24 sm:w-24 ring-4 ring-white shadow-lg">
+            <Avatar className="h-20 w-20 sm:h-24 sm:w-24 ring-4 ring-white shadow-lg overflow-hidden">
+              {authUser?.avatarUrl ? <AvatarImage src={authUser.avatarUrl} alt={profile.personal.fullName} /> : null}
               <AvatarFallback className="bg-brand text-brand-foreground text-xl sm:text-2xl font-bold">{initials}</AvatarFallback>
             </Avatar>
             <div className="flex-1 pt-2 sm:pt-0 sm:pb-1">

@@ -10,7 +10,7 @@ import { Menu, X, Compass, BookOpen, Info, Phone, LogIn, MapPin, ArrowRight, Use
 ;
 import { cn } from "@urbandetox/utils";
 import { useUserProfile } from "@/lib/user-profile";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle, Button, Avatar, AvatarFallback } from "@urbandetox/ui"
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, Button, Avatar, AvatarImage, AvatarFallback } from "@urbandetox/ui"
 
 const navLinks = [
   { href: "/detox", label: "Explore Detox", icon: Compass, desc: "Browse all retreats" },
@@ -25,7 +25,7 @@ interface MobileMenuProps {
 
 export function MobileMenu({ isLightMode }: MobileMenuProps) {
   const [open, setOpen] = useState(false);
-  const { profile, isLoggedIn, logout, isHydrated } = useUserProfile();
+  const { profile, authUser, isLoggedIn, logout, isHydrated } = useUserProfile();
   const router = useRouter();
   const initials = profile.personal.fullName.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
 
@@ -66,7 +66,8 @@ export function MobileMenu({ isLightMode }: MobileMenuProps) {
         {isHydrated && isLoggedIn && (
           <div className="px-5 py-4 border-b border-border/30 bg-secondary/20">
             <div className="flex items-center gap-3 mb-3">
-              <Avatar className="h-10 w-10">
+              <Avatar className="h-10 w-10 border border-border/40 shadow-sm">
+                {authUser?.avatarUrl ? <AvatarImage src={authUser.avatarUrl} alt={profile.personal.fullName} /> : null}
                 <AvatarFallback className="bg-brand text-brand-foreground text-sm font-bold">{initials}</AvatarFallback>
               </Avatar>
               <div className="min-w-0">

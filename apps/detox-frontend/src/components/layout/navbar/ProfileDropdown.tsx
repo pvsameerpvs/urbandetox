@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { useUserProfile } from "@/lib/user-profile";
 import { User, MapPin, Settings, LogOut, ChevronDown, Compass } from "lucide-react";
-import { Avatar, AvatarFallback, Button, Separator } from "@urbandetox/ui"
+import { Avatar, AvatarImage, AvatarFallback, Button, Separator } from "@urbandetox/ui"
 
 export function ProfileDropdown() {
   const { authUser, logout, profile } = useUserProfile();
@@ -29,7 +29,8 @@ export function ProfileDropdown() {
     <Popover>
       <PopoverTrigger asChild>
         <button className="flex items-center gap-2 rounded-full pl-1 pr-3 py-1 hover:bg-secondary/80 transition-colors">
-          <Avatar className="h-8 w-8">
+          <Avatar className="h-8 w-8 border border-border/40 shadow-sm">
+            {authUser?.avatarUrl ? <AvatarImage src={authUser.avatarUrl} alt={displayName} /> : null}
             <AvatarFallback className="bg-brand text-brand-foreground text-xs font-bold">{initials}</AvatarFallback>
           </Avatar>
           <span className="hidden xl:block text-sm font-semibold max-w-[100px] truncate">{displayName}</span>
@@ -39,7 +40,8 @@ export function ProfileDropdown() {
       <PopoverContent align="end" className="w-64 p-0">
         <div className="p-4">
           <div className="flex items-center gap-3">
-            <Avatar className="h-10 w-10">
+            <Avatar className="h-10 w-10 border border-border/40 shadow-sm">
+              {authUser?.avatarUrl ? <AvatarImage src={authUser.avatarUrl} alt={displayName} /> : null}
               <AvatarFallback className="bg-brand text-brand-foreground text-sm font-bold">{initials}</AvatarFallback>
             </Avatar>
             <div className="min-w-0">

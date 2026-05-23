@@ -11,7 +11,7 @@ import { SaveButton } from "../components/SaveButton";
 import { useUserProfile } from "@/lib/user-profile";
 import { cn } from "@urbandetox/utils";
 import { User, Phone, Mail, CalendarDays, Camera } from "lucide-react";
-import { Card, CardContent, Button, Avatar, AvatarFallback } from "@urbandetox/ui"
+import { Card, CardContent, Button, Avatar, AvatarImage, AvatarFallback } from "@urbandetox/ui"
 
 const genderOptions = [
   { value: "male", label: "Male" },
@@ -21,7 +21,7 @@ const genderOptions = [
 ];
 
 export default function PersonalDetailsPage() {
-  const { profile, updatePersonal } = useUserProfile();
+  const { profile, updatePersonal, authUser } = useUserProfile();
   const [saved, setSaved] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -38,7 +38,8 @@ export default function PersonalDetailsPage() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="flex items-center gap-5">
-              <Avatar className="h-16 w-16 sm:h-20 sm:w-20 ring-2 ring-brand/10">
+              <Avatar className="h-16 w-16 sm:h-20 sm:w-20 ring-2 ring-brand/10 shadow-sm">
+                {authUser?.avatarUrl ? <AvatarImage src={authUser.avatarUrl} alt={profile.personal.fullName} /> : null}
                 <AvatarFallback className="bg-brand text-brand-foreground text-lg font-bold">
                   {profile.personal.fullName.split(" ").map((n) => n[0]).join("").toUpperCase()}
                 </AvatarFallback>
