@@ -65,15 +65,17 @@ export default async function Home() {
   return (
     <>
       <HeroSection departures={departures} />
+      <UpcomingDetoxSection departures={enrichedDepartures.slice(0, 6)} />
+      <WhySection />
+      <TestimonialsSection testimonials={testimonials} />
+
       <BestDestinationsSection
         destinations={destinations}
         packageCounts={destPackageCount}
       />
-      <UpcomingDetoxSection departures={enrichedDepartures.slice(0, 6)} />
-      <WhySection />
+     
       <SeasonalSection groups={seasonalGroups} destMap={destMap} />
       <GuideHighlightsSection guides={guides} />
-      <TestimonialsSection testimonials={testimonials} />
       <CorporateUniversitySection />
       <FinalCTASection />
     </>

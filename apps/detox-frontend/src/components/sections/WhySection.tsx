@@ -11,30 +11,30 @@ const reasons = [
   {
     num: "01",
     icon: Compass,
-    title: "Offbeat curated escapes",
+    title: "Offbeat Places, Not Tourist Traps",
     description:
-      "We skip the tourist traps. Every destination is chosen for quiet, beauty, and real disconnection.",
+      "We avoid crowded tourist spots and take you to quieter forests, beaches, backwaters, and local trails.",
   },
   {
     num: "02",
     icon: Users,
-    title: "Small-group energy",
+    title: "Small Groups Only",
     description:
-      "Groups of 6 to 12 people. Intimate enough to make friends, small enough to stay personal.",
+      "Each trip is limited to a small group, so the experience feels personal, safe, and easy to connect.",
   },
   {
     num: "03",
     icon: ShieldCheck,
-    title: "No planning stress",
+    title: "Everything Is Planned",
     description:
-      "We handle stays, local transport, meals, and activities. You just show up and breathe.",
+      "Stay, food, local travel, activities, and trip flow are handled. You just show up.",
   },
   {
     num: "04",
     icon: Sparkles,
-    title: "Real reset from routine",
+    title: "Built for a Real Reset",
     description:
-      "Guided silence, nature walks, and intentional downtime. Not a tour. A reset.",
+      "No rushed sightseeing. No pressure. Just slow days, fresh air, good food, and space for your mind to rest.",
   },
 ];
 
@@ -95,12 +95,12 @@ export function WhySection() {
             <div className="flex items-center gap-3 mb-5">
               <div className="h-px w-10 bg-brand" />
               <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
-                Why Us
+                Why People Choose 
               </span>
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1]">
-              Why{" "}
-              <span className="text-brand">Urban Detox</span>
+             Urban
+              <span className="text-brand"> Detox</span>
             </h2>
           </div>
           <div className="lg:flex lg:items-end">

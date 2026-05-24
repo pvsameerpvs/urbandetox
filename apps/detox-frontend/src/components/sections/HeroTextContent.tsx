@@ -29,7 +29,7 @@ const badgeVariants = {
 
 export function HeroTextContent({ heroText }: HeroTextContentProps) {
   return (
-    <div className="relative flex-1 flex flex-col items-center justify-center px-4 pt-24 sm:pt-28 pb-4">
+    <div className="relative flex-1 flex flex-col items-center justify-end px-4 pt-24 sm:pt-28 pb-4">
       <motion.div
         variants={containerVariants}
         initial="hidden"

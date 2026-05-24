@@ -38,7 +38,7 @@ export function HeroSection({ departures }: HeroSectionProps) {
   }, []);
 
   return (
-    <section className="relative h-screen flex flex-col overflow-hidden">
+    <section className="relative z-10 mb-72 flex h-screen min-h-[760px] flex-col overflow-visible lg:mb-64">
       <HeroBackground heroImage={heroImage} />
       {loaded && heroText ? <HeroTextContent heroText={heroText} /> : <HeroSkeleton />}
       <HeroSearchBar departures={departures} />
@@ -48,7 +48,7 @@ export function HeroSection({ departures }: HeroSectionProps) {
 
 function HeroSkeleton() {
   return (
-    <div className="relative flex-1 flex flex-col items-center justify-center px-4 pt-24 sm:pt-28 pb-4">
+    <div className="relative flex-1 flex flex-col items-center justify-end px-4 pt-24 sm:pt-28 pb-4">
       <div className="text-center max-w-3xl mx-auto space-y-5">
         <div className="inline-flex h-9 w-32 animate-pulse rounded-full bg-white/15" />
         <div className="mx-auto h-10 w-3/4 animate-pulse rounded-lg bg-white/10" />
