@@ -3,6 +3,34 @@
 @import "shadcn/tailwind.css";
 @import "@urbandetox/tailwind-config/theme.css";
 
+:root {
+  --trip-1: #e8f0eb;
+  --trip-2: #d8e7e0;
+  --trip-3: #c8ddd3;
+  --trip-4: #b8d3c6;
+  --trip-5: #a8c9b9;
+  --trip-6: #e0f2e9;
+  --trip-7: #d0ece2;
+  --trip-8: #c0e6db;
+  --trip-9: #f5f1e8;
+  --trip-10: #f0ece0;
+  --trip-11: #ebe7d8;
+  --trip-12: #e6e2d3;
+  --trip-13: #eef5d8;
+  --trip-14: #e5edc9;
+  --trip-15: #dce5ba;
+  --trip-16: #e4e8d7;
+  --trip-17: #d8dcc9;
+  --trip-18: #ccd0bb;
+  --trip-19: #f3efe6;
+  --trip-20: #ede8dc;
+  --trip-21: #e7e2d2;
+  --trip-22: #dff0ea;
+  --trip-23: #d5ebe3;
+  --trip-24: #effbd2;
+  --trip-brand: #f3f0ea;
+}
+
 /* Hide scrollbar for Chrome, Safari and Opera */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;

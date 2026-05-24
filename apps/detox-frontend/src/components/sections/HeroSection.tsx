@@ -6,13 +6,14 @@ import { getHeroImage, getHeroText, type HeroText } from "@/lib/hero";
 import { HeroBackground } from "./HeroBackground";
 import { HeroTextContent } from "./HeroTextContent";
 import { HeroSearchBar } from "./HeroSearchBar";
-import type { Departure } from "@urbandetox/utils";
+import type { Departure, Package, Destination } from "@urbandetox/utils";
 
 interface HeroSectionProps {
-  departures: Departure[];
+  departures: Array<Departure & { pkg: Package; dest: Destination }>;
+  availableDurations: number[];
 }
 
-export function HeroSection({ departures }: HeroSectionProps) {
+export function HeroSection({ departures, availableDurations }: HeroSectionProps) {
   const [heroImage, setHeroImage] = useState<string>("");
   const [heroText, setHeroText] = useState<HeroText | null>(null);
   const [loaded, setLoaded] = useState(false);
@@ -41,7 +42,7 @@ export function HeroSection({ departures }: HeroSectionProps) {
     <section className="relative z-10 mb-72 flex h-screen min-h-[760px] flex-col overflow-visible lg:mb-64">
       <HeroBackground heroImage={heroImage} />
       {loaded && heroText ? <HeroTextContent heroText={heroText} /> : <HeroSkeleton />}
-      <HeroSearchBar departures={departures} />
+      <HeroSearchBar departures={departures} availableDurations={availableDurations} />
     </section>
   );
 }

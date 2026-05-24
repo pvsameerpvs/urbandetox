@@ -12,8 +12,9 @@ export const DepartureController = {
     }
     if (upcoming === "true") {
       const l = limit && typeof limit === "string" ? parseInt(limit, 10) : 6;
+      const today = new Date().toISOString().split("T")[0];
       result = result
-        .filter((d) => d.status !== "closed")
+        .filter((d) => d.startDate >= today && d.status !== "closed")
         .sort((a, b) => a.startDate.localeCompare(b.startDate))
         .slice(0, l);
     }

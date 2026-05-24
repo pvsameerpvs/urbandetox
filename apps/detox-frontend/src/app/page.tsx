@@ -28,17 +28,15 @@ export default async function Home() {
     fetchTestimonials(4),
   ]);
 
-  const featuredPackages = packages.filter((p) => p.featured);
-
-  const destMap = new Map<string, Destination>();
-  destinations.forEach((d) => destMap.set(d.slug, d));
-
-  const pkgMap = new Map<string, Package>();
-  packages.forEach((p) => pkgMap.set(p.slug, p));
+  const destMap = new Map(destinations.map((d) => [d.slug, d]));
+  const pkgMap = new Map(packages.map((p) => [p.slug, p]));
 
   const destPackageCount = new Map<string, number>();
   packages.forEach((p) => {
-    destPackageCount.set(p.destinationSlug, (destPackageCount.get(p.destinationSlug) || 0) + 1);
+    destPackageCount.set(
+      p.destinationSlug,
+      (destPackageCount.get(p.destinationSlug) || 0) + 1
+    );
   });
 
   const enrichedDepartures = departures
@@ -48,7 +46,13 @@ export default async function Home() {
       if (!pkg || !dest) return null;
       return { ...dep, pkg, dest };
     })
-    .filter(Boolean) as Array<Departure & { pkg: Package; dest: Destination }>;
+    .filter((d): d is NonNullable<typeof d> => d !== null);
+
+  const availableDurations = Array.from(
+    new Set(enrichedDepartures.map((d) => d.pkg.duration))
+  ).sort((a, b) => a - b);
+
+  const featuredPackages = packages.filter((p) => p.featured);
 
   const seasonalGroups = Array.from(
     new Set(featuredPackages.map((p) => p.seasonalTag).filter((t): t is string => !!t))
@@ -64,8 +68,11 @@ export default async function Home() {
 
   return (
     <>
-      <HeroSection departures={departures} />
-      <UpcomingDetoxSection departures={enrichedDepartures.slice(0, 6)} />
+      <HeroSection
+        departures={enrichedDepartures}
+        availableDurations={availableDurations}
+      />
+      <UpcomingDetoxSection departures={enrichedDepartures} />
       <WhySection />
       <TestimonialsSection testimonials={testimonials} />
 
@@ -73,7 +80,7 @@ export default async function Home() {
         destinations={destinations}
         packageCounts={destPackageCount}
       />
-     
+
       <SeasonalSection groups={seasonalGroups} destMap={destMap} />
       <GuideHighlightsSection guides={guides} />
       <CorporateUniversitySection />

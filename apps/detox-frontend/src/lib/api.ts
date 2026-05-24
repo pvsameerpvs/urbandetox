@@ -75,7 +75,11 @@ export async function fetchDepartureByCode(
 }
 
 export async function fetchUpcomingDepartures(limit = 6): Promise<Departure[]> {
-  return api<Departure[]>(`/api/departures?upcoming=true&limit=${limit}`);
+  const res = await fetch(`${API_BASE}/api/departures?upcoming=true&limit=${limit}`, {
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error(`API error: ${res.status} ${res.statusText}`);
+  return res.json() as Promise<Departure[]>;
 }
 
 // ── Guides ──────────────────────────────────────────
