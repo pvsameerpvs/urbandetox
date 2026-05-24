@@ -7,6 +7,7 @@ import { useAdminPackage, useAdminDestinations } from "@/hooks/use-admin-data";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
+import { useMemo } from "react";
 import { usePackageForm, type PackageFormData } from "@/app/packages/components/use-package-form";
 import { BasicInfoFields } from "@/app/packages/components/basic-info-fields";
 import { HighlightsFields } from "@/app/packages/components/highlights-fields";
@@ -21,7 +22,8 @@ export default function EditPackagePage() {
   const slug = String(params.slug);
   const { data: pkg } = useAdminPackage(slug);
   const { data: destinations } = useAdminDestinations();
-  const f = usePackageForm(pkg?.destinationSlug || "", {
+
+  const initialData = useMemo(() => ({
     title: pkg?.title,
     subtitle: pkg?.subtitle,
     destinationSlug: pkg?.destinationSlug,
@@ -37,7 +39,9 @@ export default function EditPackagePage() {
     notIncluded: pkg?.notIncluded,
     gallery: pkg?.gallery,
     faqs: pkg?.faqs,
-  });
+  }), [pkg]);
+
+  const f = usePackageForm(pkg?.destinationSlug || "", initialData);
 
   if (!pkg) {
     return (

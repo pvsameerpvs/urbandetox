@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAdminSeasonalTags } from "@/hooks/use-admin-data";
 import { initialSeasonalTags } from "@urbandetox/utils";
+import { useEffect, useMemo } from "react";
 
 const itineraryDaySchema = z.object({
   day: z.number(),
@@ -57,7 +58,7 @@ export function usePackageForm(initialDestinationSlug: string, initialData?: Ini
   const { data: tags } = useAdminSeasonalTags();
   const firstTag = tags[0]?.name || initialSeasonalTags[0]?.name || "";
 
-  const defaultValues: PackageFormData = {
+  const defaultValues = useMemo<PackageFormData>(() => ({
     title: initialData?.title || "",
     subtitle: initialData?.subtitle || "",
     destinationSlug: initialData?.destinationSlug || initialDestinationSlug,
@@ -84,12 +85,19 @@ export function usePackageForm(initialDestinationSlug: string, initialData?: Ini
           travelNotes: d.travelNotes || "",
         }))
       : [{ day: 1, title: "", description: "", activities: [""], stay: "", meals: "", image: "", travelNotes: "" }],
-  };
+  }), [initialData, initialDestinationSlug, firstTag]);
 
   const form = useForm<PackageFormData>({
     resolver: zodResolver(packageSchema),
     defaultValues,
   });
+
+  // Reset form when initialData changes (edit mode data load)
+  useEffect(() => {
+    if (initialData?.title) {
+      form.reset(defaultValues);
+    }
+  }, [initialData, form, defaultValues]);
 
   /* eslint-disable react-hooks/incompatible-library */
   const highlights = form.watch("highlights");
