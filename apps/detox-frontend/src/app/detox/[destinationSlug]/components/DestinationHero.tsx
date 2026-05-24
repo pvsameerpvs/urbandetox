@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { MapPin, ArrowLeft, Compass, Download } from "lucide-react";
+import { MapPin, ArrowLeft, Compass } from "lucide-react";
 import type { Destination } from "@urbandetox/utils";
 
 interface DestinationHeroProps {
@@ -47,19 +47,6 @@ export function DestinationHero({ destination, packageCount }: DestinationHeroPr
             <span>·</span>
             <span>{packageCount} detox{packageCount > 1 ? "es" : ""}</span>
           </div>
-          {destination.itineraryPdf && (
-            <div className="mt-5">
-              <a
-                href={destination.itineraryPdf}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-brand text-sidebar-dark font-semibold text-sm px-5 py-2.5 rounded-xl hover:bg-brand/90 transition-colors"
-              >
-                <Download className="h-4 w-4" />
-                Download Itinerary
-              </a>
-            </div>
-          )}
         </motion.div>
       </div>
     </div>

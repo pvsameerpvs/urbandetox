@@ -71,7 +71,7 @@ export function PackageDetailClient({ pkg, dest, departures, guides, selectedDep
             <OverviewSection description={dest.description} durationLabel={pkg.durationLabel} subtitle={pkg.subtitle} />
             <HighlightsSection highlights={pkg.highlights} />
             <GallerySection images={pkg.gallery || []} />
-            <ItinerarySection itinerary={pkg.itinerary} />
+            <ItinerarySection itinerary={pkg.itinerary} itineraryPdf={pkg.itineraryPdf} />
             <InclusionsSection included={pkg.included || []} notIncluded={pkg.notIncluded || []} />
             <DeparturesSection departures={upcomingDepartures} selectedCode={selectedDepartureCode} />
             <RelatedGuidesSection guides={guides} />

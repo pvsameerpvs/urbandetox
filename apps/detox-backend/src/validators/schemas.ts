@@ -18,7 +18,6 @@ export const createDestinationBody = z.object({
   gallery: z.array(z.string()).optional(),
   meetingPoint: z.string().min(1).max(255),
   vibe: z.string().min(1).max(255),
-  itineraryPdf: z.string().optional(),
   seoTitle: z.string().optional(),
   seoDescription: z.string().optional(),
 });
@@ -26,6 +25,30 @@ export const createDestinationBody = z.object({
 export const updateDestinationBody = createDestinationBody.partial().omit({ slug: true });
 
 // ─── Packages ────────────────────────────────────
+export const createPackageBody = z.object({
+  slug: slugSchema,
+  destinationSlug: slugSchema,
+  title: z.string().min(1).max(255),
+  subtitle: z.string().min(1).max(255),
+  duration: z.number().int().min(1),
+  durationLabel: z.string().min(1).max(100),
+  highlights: z.array(z.string()),
+  itinerary: z.array(z.any()),
+  included: z.array(z.string()).optional(),
+  notIncluded: z.array(z.string()).optional(),
+  gallery: z.array(z.string()).optional(),
+  faqs: z.array(z.object({ question: z.string(), answer: z.string() })).optional(),
+  coverImage: z.string().min(1),
+  startingPrice: z.number().min(0),
+  groupSize: z.string().min(1).max(50),
+  style: z.string().min(1).max(100),
+  guideLed: z.boolean().optional(),
+  featured: z.boolean().optional(),
+  seasonalTag: z.string().optional(),
+  itineraryPdf: z.string().optional(),
+});
+
+export const updatePackageBody = createPackageBody.partial().omit({ slug: true });
 export const packageSlugParam = z.object({
   slug: slugSchema,
 });

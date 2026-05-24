@@ -2,30 +2,41 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-;
-import { MapPin, ChevronRight } from "lucide-react";
+import { ChevronRight, Download } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@urbandetox/ui"
 
 interface ItineraryDay {
   day: number;
   title: string;
   description: string;
-  meals?: string;
   activities: string[];
-  stay?: string;
   image?: string;
 }
 
 interface ItinerarySectionProps {
   itinerary: ItineraryDay[];
+  itineraryPdf?: string;
 }
 
-export function ItinerarySection({ itinerary }: ItinerarySectionProps) {
+export function ItinerarySection({ itinerary, itineraryPdf }: ItinerarySectionProps) {
   return (
     <motion.section initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-      <div className="flex items-center gap-3 mb-5">
-        <span className="h-px w-8 bg-brand/60" />
-        <span className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">Plan</span>
+      <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center gap-3">
+          <span className="h-px w-8 bg-brand/60" />
+          <span className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">Plan</span>
+        </div>
+        {itineraryPdf && (
+          <a
+            href={itineraryPdf}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 bg-brand text-brand-foreground font-semibold text-xs px-4 py-2 rounded-xl hover:bg-brand/90 transition-colors"
+          >
+            <Download className="h-3.5 w-3.5" />
+            Download PDF
+          </a>
+        )}
       </div>
       <h2 className="text-2xl sm:text-3xl font-bold mb-6">Day-by-Day <span className="text-brand">Itinerary</span></h2>
 
@@ -39,7 +50,7 @@ export function ItinerarySection({ itinerary }: ItinerarySectionProps) {
                 </span>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm sm:text-base font-bold truncate">{day.title}</p>
-                  <p className="text-xs text-muted-foreground">Day {day.day}{day.meals ? ` · ${day.meals}` : ""}</p>
+                  <p className="text-xs text-muted-foreground">Day {day.day}</p>
                 </div>
               </div>
             </AccordionTrigger>
@@ -58,11 +69,7 @@ export function ItinerarySection({ itinerary }: ItinerarySectionProps) {
                     </li>
                   ))}
                 </ul>
-                {day.stay && (
-                  <div className="inline-flex items-center gap-1.5 rounded-lg bg-secondary/50 px-3 py-2 text-xs text-muted-foreground">
-                    <MapPin className="h-3.5 w-3.5" /> Stay: {day.stay}
-                  </div>
-                )}
+
               </div>
             </AccordionContent>
           </AccordionItem>

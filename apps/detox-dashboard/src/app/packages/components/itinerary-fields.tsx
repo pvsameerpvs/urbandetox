@@ -32,13 +32,9 @@ export function ItineraryFields({
             </div>
             <Input value={day.title} onChange={(e) => onUpdateDay(di, "title", e.target.value)} placeholder="Day title" className="h-10 rounded-xl" />
             <Textarea value={day.description} onChange={(e) => onUpdateDay(di, "description", e.target.value)} placeholder="Description" className="rounded-xl min-h-[60px]" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Input value={day.stay ?? ""} onChange={(e) => onUpdateDay(di, "stay", e.target.value)} placeholder="Stay accommodation" className="h-10 rounded-xl" />
-              <Input value={day.meals ?? ""} onChange={(e) => onUpdateDay(di, "meals", e.target.value)} placeholder="Meals" className="h-10 rounded-xl" />
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="flex flex-col gap-1.5"><p className="text-xs text-muted-foreground">Day image</p><ImageUploadInline value={day.image} onChange={(v) => onUpdateDay(di, "image", v)} folder="packages/itinerary" /></div>
-              <Input value={day.travelNotes ?? ""} onChange={(e) => onUpdateDay(di, "travelNotes", e.target.value)} placeholder="Travel notes (optional)" className="h-10 rounded-xl" />
+            <div className="flex flex-col gap-1.5">
+              <p className="text-xs text-muted-foreground">Day image</p>
+              <ImageUploadInline value={day.image} onChange={(v) => onUpdateDay(di, "image", v)} folder="packages/itinerary" />
             </div>
             <div className="space-y-2">
               <p className="text-xs font-medium text-muted-foreground">Activities</p>

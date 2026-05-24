@@ -28,7 +28,6 @@ export const destinations = pgTable("destinations", {
   gallery: jsonb("gallery").$type<string[]>().default([]),
   meetingPoint: varchar("meeting_point", { length: 255 }).notNull(),
   vibe: varchar("vibe", { length: 255 }).notNull(),
-  itineraryPdf: text("itinerary_pdf"),
   seoTitle: text("seo_title"),
   seoDescription: text("seo_description"),
 });
@@ -48,9 +47,6 @@ export const packages = pgTable("packages", {
       title: string;
       description: string;
       activities: string[];
-      stay?: string;
-      meals?: string;
-      travelNotes?: string;
       image?: string;
     }>
   >(),
@@ -65,6 +61,7 @@ export const packages = pgTable("packages", {
   guideLed: boolean("guide_led").notNull().default(false),
   featured: boolean("featured").notNull().default(false),
   seasonalTag: varchar("seasonal_tag", { length: 100 }),
+  itineraryPdf: text("itinerary_pdf"),
 });
 
 export const departures = pgTable("departures", {

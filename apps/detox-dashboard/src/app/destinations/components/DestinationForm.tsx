@@ -6,7 +6,6 @@ import { z } from "zod";
 import { Input, Textarea } from "@urbandetox/ui";
 import { ImageUpload } from "@/components/shared/ImageUpload";
 import { GalleryUpload } from "@/components/shared/GalleryUpload";
-import { PdfUpload } from "@/components/shared/PdfUpload";
 import {
   FormField,
   FormItem,
@@ -26,7 +25,6 @@ const schema = z.object({
   meetingPoint: z.string().min(1, "Meeting point is required"),
   vibe: z.string().min(1, "Vibe is required"),
   gallery: z.array(z.string()),
-  itineraryPdf: z.string().optional(),
   seoTitle: z.string().optional(),
   seoDescription: z.string().optional(),
 });
@@ -61,7 +59,6 @@ export function DestinationForm({ mode, initialData, slugValue, onSubmit, submit
       meetingPoint: initialData?.meetingPoint || "",
       vibe: initialData?.vibe || "",
       gallery: initialData?.gallery || [],
-      itineraryPdf: initialData?.itineraryPdf || "",
       seoTitle: initialData?.seoTitle || "",
       seoDescription: initialData?.seoDescription || "",
     },
@@ -183,20 +180,6 @@ export function DestinationForm({ mode, initialData, slugValue, onSubmit, submit
               )}
             />
           </div>
-
-          <FormField
-            control={form.control}
-            name="itineraryPdf"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Itinerary PDF</FormLabel>
-                <FormControl>
-                  <PdfUpload value={field.value || ""} onChange={field.onChange} folder="destinations/itinerary" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <FormField

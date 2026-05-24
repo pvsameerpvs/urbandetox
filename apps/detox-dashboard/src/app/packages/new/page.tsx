@@ -14,6 +14,7 @@ import { ArrayInput } from "@/app/packages/components/array-input";
 import { GalleryUpload } from "@/components/shared/GalleryUpload";
 import { FaqsFields } from "@/app/packages/components/faqs-fields";
 import { ItineraryFields } from "@/app/packages/components/itinerary-fields";
+import { PdfUpload } from "@/components/shared/PdfUpload";
 
 export default function NewPackagePage() {
   const router = useRouter();
@@ -36,6 +37,7 @@ export default function NewPackagePage() {
       gallery: data.gallery.filter(Boolean),
       faqs: data.faqs.filter((q) => q.question && q.answer),
       itinerary: data.itinerary.map((d) => ({ ...d, activities: d.activities.filter(Boolean) })),
+      itineraryPdf: data.itineraryPdf || undefined,
     });
     toast.success("Package created successfully");
       router.push("/packages");
@@ -106,6 +108,13 @@ export default function NewPackagePage() {
           <CardContent className="p-6">
             <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">FAQs</h3>
             <FaqsFields faqs={f.faqs} onUpdate={f.updateFaq} onAdd={f.appendFaq} onRemove={f.removeFaq} />
+          </CardContent>
+        </Card>
+
+        <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
+          <CardContent className="p-6">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Itinerary PDF</h3>
+            <PdfUpload value={f.form.watch("itineraryPdf") || ""} onChange={(v) => f.form.setValue("itineraryPdf", v, { shouldValidate: true })} folder="packages/itinerary" />
           </CardContent>
         </Card>
 

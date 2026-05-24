@@ -10,10 +10,7 @@ const itineraryDaySchema = z.object({
   title: z.string().min(1, "Day title is required"),
   description: z.string().min(1, "Description is required"),
   activities: z.array(z.string()),
-  stay: z.string(),
-  meals: z.string(),
   image: z.string(),
-  travelNotes: z.string(),
 });
 
 export const packageSchema = z.object({
@@ -32,6 +29,7 @@ export const packageSchema = z.object({
   gallery: z.array(z.string()),
   faqs: z.array(z.object({ question: z.string(), answer: z.string() })),
   itinerary: z.array(itineraryDaySchema).min(1, "At least one day is required"),
+  itineraryPdf: z.string().optional(),
 });
 
 export type PackageFormData = z.infer<typeof packageSchema>;
@@ -51,7 +49,8 @@ interface InitialData {
   notIncluded?: string[];
   gallery?: string[];
   faqs?: { question: string; answer: string }[];
-  itinerary?: { day: number; title: string; description: string; activities: string[]; stay?: string; meals?: string; image?: string; travelNotes?: string }[];
+  itinerary?: { day: number; title: string; description: string; activities: string[]; image?: string }[];
+  itineraryPdf?: string;
 }
 
 export function usePackageForm(initialDestinationSlug: string, initialData?: InitialData) {
@@ -73,18 +72,16 @@ export function usePackageForm(initialDestinationSlug: string, initialData?: Ini
     notIncluded: initialData?.notIncluded?.length ? initialData.notIncluded : [""],
     gallery: initialData?.gallery || [],
     faqs: initialData?.faqs?.length ? initialData.faqs : [{ question: "", answer: "" }],
+    itineraryPdf: initialData?.itineraryPdf || "",
     itinerary: initialData?.itinerary?.length
       ? initialData.itinerary.map((d) => ({
           day: d.day,
           title: d.title,
           description: d.description,
           activities: d.activities || [""],
-          stay: d.stay || "",
-          meals: d.meals || "",
           image: d.image || "",
-          travelNotes: d.travelNotes || "",
         }))
-      : [{ day: 1, title: "", description: "", activities: [""], stay: "", meals: "", image: "", travelNotes: "" }],
+      : [{ day: 1, title: "", description: "", activities: [""], image: "" }],
   }), [initialData, initialDestinationSlug, firstTag]);
 
   const form = useForm<PackageFormData>({
@@ -159,7 +156,7 @@ export function usePackageForm(initialDestinationSlug: string, initialData?: Ini
   const addDay = () => {
     const arr = [...form.getValues("itinerary")];
     const nextDay = arr.length + 1;
-    form.setValue("itinerary", [...arr, { day: nextDay, title: "", description: "", activities: [""], stay: "", meals: "", image: "", travelNotes: "" }], { shouldValidate: true });
+    form.setValue("itinerary", [...arr, { day: nextDay, title: "", description: "", activities: [""], image: "" }], { shouldValidate: true });
   };
 
   const removeDay = (index: number) => {

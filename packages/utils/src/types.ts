@@ -8,7 +8,6 @@ export interface Destination {
   gallery: string[];
   meetingPoint: string;
   vibe: string;
-  itineraryPdf?: string;
   seoTitle?: string;
   seoDescription?: string;
 }
@@ -34,6 +33,7 @@ export interface Package {
   guideLed: boolean;
   featured: boolean;
   seasonalTag?: string;
+  itineraryPdf?: string;
 }
 
 export interface ItineraryDay {
@@ -41,9 +41,6 @@ export interface ItineraryDay {
   title: string;
   description: string;
   activities: string[];
-  stay?: string;
-  meals?: string;
-  travelNotes?: string;
   image?: string;
 }
 
