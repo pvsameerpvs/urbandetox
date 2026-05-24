@@ -1,10 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { format } from "date-fns";
-import { CalendarDays, ArrowRight } from "lucide-react";
+import { CalendarDays, Users, Banknote, Radio } from "lucide-react";
 import { cn, formatPrice } from "@urbandetox/utils";
-import { Button, Badge } from "@urbandetox/ui";
+import { Badge } from "@urbandetox/ui";
 
 interface DateInfoPanelProps {
   availableDates: Record<string, { status: string; seatsLeft: number; code: string; price: number; offerPrice?: number }>;
@@ -15,39 +14,57 @@ export function DateInfoPanel({ availableDates, selectedDate }: DateInfoPanelPro
   const selectedDeparture = selectedDate ? availableDates[format(selectedDate, "yyyy-MM-dd")] : null;
 
   return (
-    <div className="p-5 sm:p-6 md:col-span-2 bg-secondary/[0.03]">
-      {selectedDate && selectedDeparture ? (
-        <div className="space-y-4">
-          <div>
-            <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider mb-1">Selected Date</p>
-            <p className="text-2xl font-bold">{format(selectedDate, "EEE, MMM d")}</p>
-          </div>
-          <div className="h-px bg-border/40" />
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Status</span>
-              <Badge className={cn("border-0 text-xs font-medium", selectedDeparture.status === "open" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700")}>
+    <div className="p-5 sm:p-6 md:col-span-2 flex flex-col">
+      <div className="flex items-center gap-3 mb-5">
+        <div className="inline-flex items-center justify-center rounded-xl bg-brand/10 p-2">
+          <CalendarDays className="h-4 w-4 text-brand" />
+        </div>
+        <div>
+          <h3 className="text-sm font-bold">Trip Details</h3>
+          <p className="text-xs text-muted-foreground">
+            {selectedDeparture && selectedDate
+              ? format(selectedDate, "EEEE, MMMM d, yyyy")
+              : "Pick a date from the calendar"}
+          </p>
+        </div>
+      </div>
+
+      {selectedDeparture && selectedDate ? (
+        <div className="flex-1 space-y-3">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/40">
+            <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white shadow-sm shrink-0">
+              <Radio className="h-4 w-4 text-brand" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium">Status</p>
+              <Badge className={cn(
+                "border-0 text-xs font-medium mt-0.5",
+                selectedDeparture.status === "open" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
+              )}>
                 {selectedDeparture.status === "open" ? "Available" : "Filling Fast"}
               </Badge>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Seats Left</span>
-              <span className="text-sm font-bold">{selectedDeparture.seatsLeft}</span>
+          </div>
+
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/40">
+            <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white shadow-sm shrink-0">
+              <Users className="h-4 w-4 text-brand" />
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Price / person</span>
-              <span className="text-sm font-bold">{formatPrice(selectedDeparture.offerPrice ?? selectedDeparture.price)}</span>
+            <div className="flex-1 min-w-0">
+              <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium">Seats Left</p>
+              <p className="text-sm font-bold mt-0.5">{selectedDeparture.seatsLeft} spots remaining</p>
             </div>
           </div>
-          <div className="h-px bg-border/40" />
-          <Button className="w-full rounded-xl bg-[var(--button-lime)] text-[var(--button-lime-text)] hover:bg-[var(--button-lime-text)] hover:text-[var(--button-lime)] h-11 text-sm font-semibold shadow-sm" asChild>
-            <Link href={`/book/${selectedDeparture.code}`}>Book This Date <ArrowRight className="ml-2 h-4 w-4" /></Link>
-          </Button>
+
+         
         </div>
       ) : (
-        <div className="h-full flex flex-col items-center justify-center text-center py-10">
-          <CalendarDays className="h-10 w-10 text-muted-foreground/30 mb-3" />
-          <p className="text-sm text-muted-foreground">Select a date to see details</p>
+        <div className="flex-1 flex flex-col items-center justify-center text-center py-8">
+          <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-muted mb-4">
+            <CalendarDays className="h-6 w-6 text-muted-foreground/40" />
+          </div>
+          <p className="text-sm font-medium text-foreground mb-1">No date selected</p>
+          <p className="text-xs text-muted-foreground max-w-[200px]">Click a highlighted date on the calendar to view trip details</p>
         </div>
       )}
     </div>
