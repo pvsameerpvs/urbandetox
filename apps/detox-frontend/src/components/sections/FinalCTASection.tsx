@@ -2,11 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-;
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@urbandetox/utils";
-import { Button } from "@urbandetox/ui"
+import { Button } from "@urbandetox/ui";
 
 export function FinalCTASection() {
   return (
@@ -31,19 +30,14 @@ export function FinalCTASection() {
 
           <div className="relative z-10">
             {/* Editorial line accent */}
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <div className="h-px w-10 bg-white/40" />
-              <span className="text-xs font-bold uppercase tracking-[0.2em] text-white/70">
-                Begin Your Reset
-              </span>
-              <div className="h-px w-10 bg-white/40" />
-            </div>
+
 
             <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-5xl">
-              Ready for your next detox?
+              Need a break, <br></br>but don&apos;t know where to go?
             </h2>
+
             <p className="mx-auto mt-5 max-w-xl text-lg text-white/80">
-              Browse upcoming detoxes, pick your date, and step into something quieter.
+              Chat with us. We&apos;ll help you find the right offbeat detox without overthinking it.
             </p>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
               <Button
@@ -53,8 +47,9 @@ export function FinalCTASection() {
                 )}
                 asChild
               >
-                <Link href="/detox">
-                  Explore Upcoming Detox <ArrowRight className="ml-2 h-5 w-5" />
+                <Link href="https://wa.me/919886639393" target="_blank" rel="noopener noreferrer">
+                  <MessageCircle className="mr-2 h-5 w-5" />
+                  Chat on WhatsApp
                 </Link>
               </Button>
               <Button
@@ -63,7 +58,9 @@ export function FinalCTASection() {
                 className="border-white/30 text-white hover:bg-white/10 bg-transparent h-12 px-6"
                 asChild
               >
-                <Link href="/guide">Read Guides</Link>
+                <Link href="/guide">
+                  Read Guides <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
               </Button>
             </div>
           </div>
