@@ -119,7 +119,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
   return (
     <BookingNotificationProvider>
-      <div className="min-h-screen bg-secondary/[0.02]">
+      <div className="min-h-screen bg-secondary/[0.02] font-sans">
         {!isPublicPath && <AdminSidebar />}
 
         {mobileOpen && (

@@ -9,7 +9,7 @@ interface AdminTopbarProps {
 
 export function AdminTopbar({ onMenuClick }: AdminTopbarProps) {
   return (
-    <header className="sticky top-0 z-20 flex h-14 items-center gap-4 border-b border-border/40 bg-white/80 backdrop-blur-md px-4 sm:px-6">
+    <header className="sticky top-0 z-20 flex h-14 items-center gap-4 border-b border-border/40 bg-white/80 backdrop-blur-md px-4 sm:px-6 font-sans">
       <Button variant="ghost" size="icon" className="lg:hidden h-9 w-9" onClick={onMenuClick}>
         <Menu className="h-5 w-5" />
       </Button>

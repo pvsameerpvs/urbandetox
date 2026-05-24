@@ -33,7 +33,7 @@ export function AdminSidebar() {
   const { unreadCount } = useBookingNotifications();
 
   return (
-    <aside className="fixed top-0 left-0 z-30 h-screen w-[260px] bg-sidebar-dark border-r border-white/5 hidden lg:flex flex-col">
+    <aside className="fixed top-0 left-0 z-30 h-screen w-[260px] bg-sidebar-dark border-r border-white/5 hidden lg:flex flex-col font-sans">
       <div className="flex items-center gap-3 px-6 py-5 border-b border-white/5">
         <div className="h-8 w-8 rounded-lg bg-brand flex items-center justify-center">
           <span className="text-brand-foreground font-bold text-sm">UD</span>
