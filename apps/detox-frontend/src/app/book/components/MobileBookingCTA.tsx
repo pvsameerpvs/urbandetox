@@ -20,7 +20,7 @@ export function MobileBookingCTA({ total, label = "Continue", onClick, isProcess
           <p className="text-xl font-bold text-brand">{formatPrice(total)}</p>
         </div>
         <Button
-          className="rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-11 px-6 text-sm font-semibold shadow-lg shadow-brand/10"
+          className="rounded-xl bg-[var(--button-lime)] text-[var(--button-lime-text)] hover:bg-[var(--button-lime-text)] hover:text-[var(--button-lime)] h-11 px-6 text-sm font-semibold shadow-lg shadow-[var(--button-lime)]/10"
           onClick={onClick}
           disabled={disabled || isProcessing}
         >

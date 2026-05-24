@@ -25,7 +25,7 @@ export function CTASection() {
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight mb-6 max-w-2xl mx-auto">Your Next Detox is Waiting</h2>
             <p className="text-base sm:text-lg text-white/70 leading-relaxed max-w-xl mx-auto mb-8">Browse curated packages, pick your dates, and step into stillness. No crowds. No noise. Just you and the wild.</p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button size="lg" className="rounded-xl bg-white text-foreground hover:bg-white/90 h-12 px-8 text-sm font-semibold shadow-xl" asChild>
+              <Button size="lg" className="rounded-xl bg-[var(--button-lime)] text-[var(--button-lime-text)] hover:bg-[var(--button-lime-text)] hover:text-[var(--button-lime)] h-12 px-8 text-sm font-semibold shadow-xl" asChild>
                 <Link href="/detox">Explore Packages <ArrowRight className="ml-2 h-4 w-4" /></Link>
               </Button>
               <Button size="lg" variant="outline" className="rounded-xl border-white/30 text-white hover:bg-white/10 h-12 px-8 text-sm font-semibold backdrop-blur-sm" asChild>

@@ -36,7 +36,7 @@ export function GuideCTA() {
           Browse upcoming detoxes, pick your destination, and step into curated offbeat escapes designed for real disconnection.
         </p>
         <Button
-          className="rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-12 px-8 text-sm font-semibold shadow-lg shadow-brand/20"
+          className="rounded-xl bg-[var(--button-lime)] text-[var(--button-lime-text)] hover:bg-[var(--button-lime-text)] hover:text-[var(--button-lime)] h-12 px-8 text-sm font-semibold shadow-lg shadow-[var(--button-lime)]/20"
           asChild
         >
           <Link href="/detox">

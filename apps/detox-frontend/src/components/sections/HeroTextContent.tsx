@@ -52,7 +52,7 @@ export function HeroTextContent({ heroText }: HeroTextContentProps) {
         <motion.div variants={itemVariants} className="mt-6 flex flex-wrap items-center justify-center gap-3">
           <Button
             size="lg"
-            className="bg-white text-black hover:bg-white/90 font-bold px-7 h-11 text-sm shadow-lg shadow-white/10 tracking-wide"
+            className="bg-[var(--button-lime)] text-[var(--button-lime-text)] hover:bg-[var(--button-lime-text)] hover:text-[var(--button-lime)] font-bold px-7 h-11 text-sm shadow-lg shadow-[var(--button-lime)]/10 tracking-wide"
             asChild
           >
             <Link href="/detox">

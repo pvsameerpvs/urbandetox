@@ -43,7 +43,7 @@ export function FinalCTASection() {
               <Button
                 size="lg"
                 className={cn(
-                  "bg-white text-brand hover:bg-white/90 font-medium px-8 h-12 text-base shadow-lg shadow-black/10"
+                  "bg-[var(--button-lime)] text-[var(--button-lime-text)] hover:bg-[var(--button-lime-text)] hover:text-[var(--button-lime)] font-medium px-8 h-12 text-base shadow-lg shadow-[var(--button-lime)]/10"
                 )}
                 asChild
               >
