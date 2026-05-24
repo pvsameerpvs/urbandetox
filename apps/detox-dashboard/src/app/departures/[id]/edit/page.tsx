@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { updateDeparture } from "@/lib/admin-data";
 import { useAdminDepartures, useAdminPackages, useAdminDestinations } from "@/hooks/use-admin-data";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { DepartureForm, type DepartureFormData } from "../../components/DepartureForm";
+import { DepartureForm, type DepartureFormData } from "../../components/form";
 
 export default function EditDeparturePage() {
   const params = useParams();

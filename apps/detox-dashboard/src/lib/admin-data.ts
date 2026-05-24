@@ -88,7 +88,7 @@ export async function getDepartureByCode(code: string): Promise<Departure | unde
   }
 }
 
-export async function createDeparture(dep: Omit<Departure, "id">): Promise<void> {
+export async function createDeparture(dep: Omit<Departure, "id" | "code"> & { code?: string }): Promise<void> {
   await apiCreateDeparture(dep);
 }
 

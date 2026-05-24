@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
-import { Card, CardContent, Badge } from "@urbandetox/ui";
 import {
   Users,
   UserCheck,
@@ -13,6 +12,8 @@ import { fetchUsers, type PaginatedUsersResponse } from "@/lib/api";
 import { DataTable } from "@/components/ui/DataTable";
 import { SearchInput } from "@/components/ui/SearchInput";
 import { Pagination } from "@/components/ui/Pagination";
+import { SimpleStatCard } from "@/components/ui/SimpleStatCard";
+import { RoleBadge } from "@/components/ui/RoleBadge";
 import { toast } from "sonner";
 
 interface DashboardUser {
@@ -172,23 +173,23 @@ export default function UsersPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-        <StatCard
-          icon={Users}
-          label="Total Users"
+        <SimpleStatCard
           value={stats.total}
-          color="brand"
+          label="Total Users"
+          icon={<Users className="h-5 w-5 text-brand" />}
+          bgClass="bg-brand/10"
         />
-        <StatCard
-          icon={ShieldCheck}
-          label="Admins"
+        <SimpleStatCard
           value={stats.admins}
-          color="emerald"
+          label="Admins"
+          icon={<ShieldCheck className="h-5 w-5 text-emerald-700" />}
+          bgClass="bg-emerald-100"
         />
-        <StatCard
-          icon={UserCheck}
-          label="Total Bookings"
+        <SimpleStatCard
           value={stats.totalBookings}
-          color="amber"
+          label="Total Bookings"
+          icon={<UserCheck className="h-5 w-5 text-amber-700" />}
+          bgClass="bg-amber-100"
         />
       </div>
 
@@ -222,50 +223,4 @@ export default function UsersPage() {
   );
 }
 
-function RoleBadge({ role }: { role: string }) {
-  if (role === "admin") {
-    return (
-      <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 text-[10px]">
-        <ShieldCheck className="h-3 w-3 mr-1" /> Admin
-      </Badge>
-    );
-  }
-  return (
-    <Badge className="bg-slate-100 text-slate-600 hover:bg-slate-100 text-[10px]">
-      User
-    </Badge>
-  );
-}
 
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-  color,
-}: {
-  icon: React.ElementType;
-  label: string;
-  value: number;
-  color: "brand" | "emerald" | "amber";
-}) {
-  const colorMap = {
-    brand: "bg-brand/10 text-brand",
-    emerald: "bg-emerald-100 text-emerald-700",
-    blue: "bg-blue-100 text-blue-700",
-    amber: "bg-amber-100 text-amber-700",
-  };
-
-  return (
-    <Card className="border border-border/40 bg-white rounded-2xl">
-      <CardContent className="p-4 flex items-center gap-3">
-        <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${colorMap[color]}`}>
-          <Icon className="h-5 w-5" />
-        </div>
-        <div>
-          <p className="text-xl font-bold leading-none">{value}</p>
-          <p className="text-xs text-muted-foreground mt-1">{label}</p>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}

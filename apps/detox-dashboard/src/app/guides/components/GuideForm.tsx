@@ -11,8 +11,7 @@ import { FormSection } from "@/components/forms/FormSection";
 import { ImageUpload } from "@/components/shared/ImageUpload";
 import { getDestinations, getPackages } from "@/lib/admin-data";
 import type { GuideArticle, Destination, Package } from "@urbandetox/utils";
-
-const existingCategories = ["Destination Guides", "Travel Tips", "Packing Guides", "Group Travel", "Seasonal Detox"];
+import { GUIDE_CATEGORIES } from "@urbandetox/utils";
 
 interface GuideFormProps {
   initial?: GuideArticle;
@@ -95,7 +94,7 @@ export function GuideForm({ initial, onSave }: GuideFormProps) {
             <Label>Category</Label>
             <Input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="e.g. Destination Guides" className="mt-1.5" list="guide-cats" required />
             <datalist id="guide-cats">
-              {existingCategories.map((c) => <option key={c} value={c} />)}
+              {GUIDE_CATEGORIES.map((c) => <option key={c} value={c} />)}
             </datalist>
           </div>
           <div>

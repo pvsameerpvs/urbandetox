@@ -1,0 +1,1 @@
+ALTER TABLE "departures" ADD COLUMN IF NOT EXISTS "image" text;

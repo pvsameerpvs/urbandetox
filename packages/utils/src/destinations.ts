@@ -17,6 +17,7 @@ export const destinations: Destination[] = [
     ],
     meetingPoint: "Kodaikanal Bus Stand",
     vibe: "Slow, reflective, forest-led",
+    codePrefix: "KODAI",
   },
   {
     id: "dest-2",
@@ -34,6 +35,7 @@ export const destinations: Destination[] = [
     ],
     meetingPoint: "Kannur Railway Station",
     vibe: "Fluid, warm, riverside-led",
+    codePrefix: "NORTH",
   },
   {
     id: "dest-3",
@@ -51,6 +53,7 @@ export const destinations: Destination[] = [
     ],
     meetingPoint: "Gokarna Bus Stand",
     vibe: "Free, coastal, fire-led",
+    codePrefix: "GOKAR",
   },
   {
     id: "dest-4",
@@ -68,6 +71,7 @@ export const destinations: Destination[] = [
     ],
     meetingPoint: "Srinagar Airport",
     vibe: "Deep, alpine, lake-led",
+    codePrefix: "KASHM",
   },
 ];
 

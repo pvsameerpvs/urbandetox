@@ -22,6 +22,27 @@
       "when": 1779683200000,
       "tag": "0002_add_destination_seo",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1779602382277,
+      "tag": "0003_lumpy_romulus",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1779603017916,
+      "tag": "0004_panoramic_slapstick",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1779604838112,
+      "tag": "0005_unusual_human_cannonball",
+      "breakpoints": true
     }
   ]
 }

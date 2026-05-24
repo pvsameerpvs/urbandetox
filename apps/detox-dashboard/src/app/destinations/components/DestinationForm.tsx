@@ -27,6 +27,7 @@ const schema = z.object({
   gallery: z.array(z.string()),
   seoTitle: z.string().optional(),
   seoDescription: z.string().optional(),
+  codePrefix: z.string().min(2).max(10).optional(),
 });
 
 export type DestinationFormData = z.infer<typeof schema>;
@@ -61,6 +62,7 @@ export function DestinationForm({ mode, initialData, slugValue, onSubmit, submit
       gallery: initialData?.gallery || [],
       seoTitle: initialData?.seoTitle || "",
       seoDescription: initialData?.seoDescription || "",
+      codePrefix: initialData?.codePrefix || "",
     },
   });
 
@@ -184,6 +186,34 @@ export function DestinationForm({ mode, initialData, slugValue, onSubmit, submit
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <FormField
               control={form.control}
+              name="codePrefix"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Departure Code Prefix
+                    <span className="text-[10px] font-normal text-muted-foreground ml-2">
+                      e.g. KODAI, KASHM
+                    </span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={mode === "create" ? "e.g. KODAI" : undefined}
+                      className="h-11 rounded-xl"
+                      maxLength={10}
+                      {...field}
+                      onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                    />
+                  </FormControl>
+                  <p className="text-[11px] text-muted-foreground mt-1">
+                    Used to auto-generate departure codes. Must be unique across all destinations.
+                    If left blank, the first 5 letters of the destination name will be used.
+                  </p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="seoTitle"
               render={({ field }) => (
                 <FormItem>
@@ -195,20 +225,21 @@ export function DestinationForm({ mode, initialData, slugValue, onSubmit, submit
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="seoDescription"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>SEO Description</FormLabel>
-                  <FormControl>
-                    <Input placeholder={mode === "create" ? "e.g. A 5-day reset in the Kashmir valley..." : undefined} className="h-11 rounded-xl" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
           </div>
+
+          <FormField
+            control={form.control}
+            name="seoDescription"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>SEO Description</FormLabel>
+                <FormControl>
+                  <Input placeholder={mode === "create" ? "e.g. A 5-day reset in the Kashmir valley..." : undefined} className="h-11 rounded-xl" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <FormActions submitLabel={submitLabel} cancelHref={cancelHref} />
         </FormSection>

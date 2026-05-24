@@ -35,3 +35,11 @@ export const MONTHS = [
   { label: "November", value: "11" },
   { label: "December", value: "12" },
 ] as const;
+
+export const GUIDE_CATEGORIES = [
+  "Destination Guides",
+  "Travel Tips",
+  "Packing Guides",
+  "Group Travel",
+  "Seasonal Detox",
+] as const;

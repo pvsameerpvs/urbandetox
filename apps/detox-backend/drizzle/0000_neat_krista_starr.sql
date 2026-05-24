@@ -1,5 +1,9 @@
-CREATE TYPE "public"."departure_status" AS ENUM('open', 'filling', 'full', 'closed');--> statement-breakpoint
-CREATE TABLE "bookings" (
+DO $$ BEGIN
+    CREATE TYPE "public"."departure_status" AS ENUM('open', 'filling', 'full', 'closed');
+EXCEPTION WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "bookings" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" uuid,
 	"departure_code" varchar(50) NOT NULL,
@@ -13,7 +17,7 @@ CREATE TABLE "bookings" (
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "departures" (
+CREATE TABLE IF NOT EXISTS "departures" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"code" varchar(50) NOT NULL,
 	"package_slug" varchar(255) NOT NULL,
@@ -28,7 +32,7 @@ CREATE TABLE "departures" (
 	CONSTRAINT "departures_code_unique" UNIQUE("code")
 );
 --> statement-breakpoint
-CREATE TABLE "destinations" (
+CREATE TABLE IF NOT EXISTS "destinations" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"slug" varchar(255) NOT NULL,
 	"name" varchar(255) NOT NULL,
@@ -41,14 +45,14 @@ CREATE TABLE "destinations" (
 	CONSTRAINT "destinations_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
-CREATE TABLE "faqs" (
+CREATE TABLE IF NOT EXISTS "faqs" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"question" text NOT NULL,
 	"answer" text NOT NULL,
 	"category" varchar(100) NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "guides" (
+CREATE TABLE IF NOT EXISTS "guides" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"slug" varchar(255) NOT NULL,
 	"title" varchar(255) NOT NULL,
@@ -62,7 +66,7 @@ CREATE TABLE "guides" (
 	CONSTRAINT "guides_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
-CREATE TABLE "packages" (
+CREATE TABLE IF NOT EXISTS "packages" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"slug" varchar(255) NOT NULL,
 	"destination_slug" varchar(255) NOT NULL,
@@ -86,7 +90,7 @@ CREATE TABLE "packages" (
 	CONSTRAINT "packages_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
-CREATE TABLE "seasonal_tags" (
+CREATE TABLE IF NOT EXISTS "seasonal_tags" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" varchar(100) NOT NULL,
 	"slug" varchar(100) NOT NULL,
@@ -96,7 +100,7 @@ CREATE TABLE "seasonal_tags" (
 	CONSTRAINT "seasonal_tags_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
-CREATE TABLE "testimonials" (
+CREATE TABLE IF NOT EXISTS "testimonials" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" varchar(255) NOT NULL,
 	"location" varchar(255) NOT NULL,
@@ -107,7 +111,7 @@ CREATE TABLE "testimonials" (
 	"rating" integer NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "users" (
+CREATE TABLE IF NOT EXISTS "users" (
 	"id" uuid PRIMARY KEY NOT NULL,
 	"email" varchar(255) NOT NULL,
 	"full_name" varchar(255),
@@ -120,4 +124,7 @@ CREATE TABLE "users" (
 	CONSTRAINT "users_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint
-ALTER TABLE "bookings" ADD CONSTRAINT "bookings_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+DO $$ BEGIN
+    ALTER TABLE "bookings" ADD CONSTRAINT "bookings_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION WHEN duplicate_object THEN null;
+END $$;

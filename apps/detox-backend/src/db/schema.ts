@@ -18,6 +18,12 @@ export const departureStatusEnum = pgEnum("departure_status", [
   "closed",
 ]);
 
+export const tripStatusEnum = pgEnum("trip_status", [
+  "finished",
+  "canceled",
+  "postponed",
+]);
+
 export const destinations = pgTable("destinations", {
   id: uuid("id").primaryKey().defaultRandom(),
   slug: varchar("slug", { length: 255 }).notNull().unique(),
@@ -30,6 +36,7 @@ export const destinations = pgTable("destinations", {
   vibe: varchar("vibe", { length: 255 }).notNull(),
   seoTitle: text("seo_title"),
   seoDescription: text("seo_description"),
+  codePrefix: varchar("code_prefix", { length: 10 }),
 });
 
 export const packages = pgTable("packages", {
@@ -76,6 +83,8 @@ export const departures = pgTable("departures", {
   seatsTotal: integer("seats_total").notNull(),
   seatsLeft: integer("seats_left").notNull(),
   status: departureStatusEnum("status").notNull().default("open"),
+  tripStatus: tripStatusEnum("trip_status"),
+  image: text("image"),
 });
 
 export const guides = pgTable("guides", {

@@ -14,7 +14,7 @@ export function errorHandler(
   // Handle Multer file size / type errors cleanly
   if (err instanceof MulterError) {
     if (err.code === "LIMIT_FILE_SIZE") {
-      res.status(413).json({ error: "File too large. Max size is 5MB." });
+      res.status(413).json({ error: "File too large. Max size is 30MB." });
       return;
     }
     res.status(400).json({ error: err.message });

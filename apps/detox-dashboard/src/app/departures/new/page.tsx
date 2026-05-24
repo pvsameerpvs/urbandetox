@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { createDeparture } from "@/lib/admin-data";
 import { useAdminPackages, useAdminDestinations } from "@/hooks/use-admin-data";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { DepartureForm, type DepartureFormData } from "../components/DepartureForm";
+import { DepartureForm, type DepartureFormData } from "../components/form";
 
 export default function NewDeparturePage() {
   const router = useRouter();

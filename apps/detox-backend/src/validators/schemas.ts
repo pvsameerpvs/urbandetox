@@ -20,6 +20,7 @@ export const createDestinationBody = z.object({
   vibe: z.string().min(1).max(255),
   seoTitle: z.string().optional(),
   seoDescription: z.string().optional(),
+  codePrefix: z.string().min(2).max(10).optional(),
 });
 
 export const updateDestinationBody = createDestinationBody.partial().omit({ slug: true });

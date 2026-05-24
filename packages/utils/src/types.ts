@@ -10,6 +10,7 @@ export interface Destination {
   vibe: string;
   seoTitle?: string;
   seoDescription?: string;
+  codePrefix?: string;
 }
 
 export interface Package {
@@ -45,6 +46,7 @@ export interface ItineraryDay {
 }
 
 export type DepartureStatus = "open" | "filling" | "full" | "closed";
+export type TripStatus = "finished" | "canceled" | "postponed";
 
 export interface Departure {
   id: string;
@@ -58,6 +60,8 @@ export interface Departure {
   seatsTotal: number;
   seatsLeft: number;
   status: DepartureStatus;
+  tripStatus?: TripStatus;
+  image?: string;
 }
 
 export interface GuideArticle {

@@ -1,7 +1,33 @@
 import { Request, Response } from "express";
-import { eq } from "drizzle-orm";
+import { eq, like } from "drizzle-orm";
 import { db } from "@/db";
-import { departures } from "@/db/schema";
+import { departures, destinations } from "@/db/schema";
+
+async function generateDepartureCode(destinationSlug: string): Promise<string> {
+  const [dest] = await db
+    .select()
+    .from(destinations)
+    .where(eq(destinations.slug, destinationSlug));
+
+  const prefix = (dest?.codePrefix ?? dest?.name ?? destinationSlug)
+    .slice(0, 5)
+    .toUpperCase();
+
+  const existing = await db
+    .select()
+    .from(departures)
+    .where(like(departures.code, `${prefix}-%`));
+
+  let maxNum = 0;
+  for (const dep of existing) {
+    const match = dep.code.match(new RegExp(`^${prefix}-(\\d{3})$`));
+    if (match) {
+      maxNum = Math.max(maxNum, parseInt(match[1], 10));
+    }
+  }
+
+  return `${prefix}-${String(maxNum + 1).padStart(3, "0")}`;
+}
 
 export const DepartureController = {
   async list(req: Request, res: Response) {
@@ -35,7 +61,11 @@ export const DepartureController = {
   },
 
   async create(req: Request, res: Response) {
-    const [record] = await db.insert(departures).values(req.body).returning();
+    const body = req.body;
+    if (!body.code && body.destinationSlug) {
+      body.code = await generateDepartureCode(body.destinationSlug);
+    }
+    const [record] = await db.insert(departures).values(body).returning();
     res.status(201).json(record);
   },
 
