@@ -27,6 +27,21 @@ const badgeVariants = {
   visible: { opacity: 1, scale: 1, transition: { duration: 0.5 } },
 };
 
+function MobileBreak({ text }: { text: string }) {
+  const trimmed = text?.trim();
+  if (!trimmed || trimmed.length > 40) return <>{text}</>;
+  const words = trimmed.split(/\s+/);
+  if (words.length < 3) return <>{text}</>;
+  const mid = Math.ceil(words.length / 2);
+  return (
+    <>
+      {words.slice(0, mid).join(" ")}
+      <br className="sm:hidden" />
+      {words.slice(mid).join(" ")}
+    </>
+  );
+}
+
 export function HeroTextContent({ heroText }: HeroTextContentProps) {
   return (
     <div className="relative flex-1 flex flex-col items-center justify-end px-4 pt-24 sm:pt-28 pb-4">
@@ -34,15 +49,15 @@ export function HeroTextContent({ heroText }: HeroTextContentProps) {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="text-center text-white max-w-3xl mx-auto"
+        className="text-center text-white max-w-3xl mx-auto translate-y-5 sm:translate-y-6"
       >
         <motion.div variants={badgeVariants} className="inline-flex items-center gap-2 rounded-full bg-white/15 backdrop-blur-md px-4 py-2 mb-5 border border-white/20">
           <span className="text-sm font-semibold tracking-wide uppercase">{heroText.badge}</span>
         </motion.div>
 
         <motion.h1 variants={itemVariants} className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl text-balance leading-[1.15] text-white">
-          {heroText.headline1}
-          <span className="block mt-1.5 text-white">{heroText.headline2}</span>
+          <MobileBreak text={heroText.headline1} />
+          <span className="block mt-1.5 text-white"><MobileBreak text={heroText.headline2} /></span>
         </motion.h1>
 
         <motion.p variants={itemVariants} className="mt-4 text-base leading-7 text-white text-balance max-w-lg mx-auto">
@@ -52,7 +67,7 @@ export function HeroTextContent({ heroText }: HeroTextContentProps) {
         <motion.div variants={itemVariants} className="mt-6 flex flex-wrap items-center justify-center gap-3">
           <Button
             size="lg"
-            className="bg-[var(--button-lime)] text-[var(--button-lime-text)] hover:bg-[var(--button-lime-text)] hover:text-[var(--button-lime)] font-bold px-7 h-11 text-sm shadow-lg shadow-[var(--button-lime)]/10 tracking-wide"
+            className="bg-[var(--button-lime)] text-[var(--button-lime-text)] hover:bg-[var(--button-lime-text)] hover:text-[var(--button-lime)] font-bold px-5 sm:px-7 h-10 sm:h-11 text-xs sm:text-sm shadow-lg shadow-[var(--button-lime)]/10 tracking-wide"
             asChild
           >
             <Link href="/detox">
@@ -62,7 +77,7 @@ export function HeroTextContent({ heroText }: HeroTextContentProps) {
           <Button
             size="lg"
             variant="outline"
-            className="border-white/30 text-white hover:bg-white/10 hover:text-white bg-transparent h-11 px-5 text-sm"
+            className="border-white/30 text-white hover:bg-white/10 hover:text-white bg-transparent h-10 sm:h-11 px-4 sm:px-5 text-xs sm:text-sm"
             asChild
           >
             <Link href="/detox">{heroText.ctaSecondary}</Link>
