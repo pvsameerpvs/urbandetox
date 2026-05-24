@@ -71,7 +71,7 @@ export function PackageDetailClient({ pkg, dest, departures, guides, selectedDep
             <OverviewSection description={dest.description} durationLabel={pkg.durationLabel} subtitle={pkg.subtitle} />
             <HighlightsSection highlights={pkg.highlights} />
             <GallerySection images={pkg.gallery || []} />
-            <ItinerarySection itinerary={pkg.itinerary} itineraryPdf={pkg.itineraryPdf} />
+            <ItinerarySection itinerary={pkg.itinerary} />
             <InclusionsSection included={pkg.included || []} notIncluded={pkg.notIncluded || []} />
             <DeparturesSection departures={upcomingDepartures} selectedCode={selectedDepartureCode} />
             <RelatedGuidesSection guides={guides} />
@@ -82,6 +82,7 @@ export function PackageDetailClient({ pkg, dest, departures, guides, selectedDep
             startingPrice={pkg.startingPrice}
             nextDeparture={sidebarDeparture ? { startDate: sidebarDeparture.startDate, endDate: sidebarDeparture.endDate, seatsLeft: sidebarDeparture.seatsLeft, code: sidebarDeparture.code, price: sidebarDeparture.price, offerPrice: sidebarDeparture.offerPrice } : null}
             isSelected={!!selectedDep && selectedDep.status !== "full" && selectedDep.status !== "closed"}
+            itineraryPdf={pkg.itineraryPdf}
           />
         </div>
       </div>

@@ -3,15 +3,16 @@
 import Link from "next/link";
 import { Button, Card, CardContent, Separator } from "@urbandetox/ui";
 import { formatPrice, formatDateRange } from "@urbandetox/utils";
-import { Calendar, Users, ArrowRight, Phone, Shield, Heart, Check } from "lucide-react";
+import { Calendar, Users, ArrowRight, Phone, Shield, Heart, Check, Download } from "lucide-react";
 
 interface PackageSidebarProps {
   startingPrice: number;
   nextDeparture: { startDate: string; endDate: string; seatsLeft: number; code: string; price: number; offerPrice?: number } | null;
   isSelected?: boolean;
+  itineraryPdf?: string;
 }
 
-export function PackageSidebar({ startingPrice, nextDeparture, isSelected }: PackageSidebarProps) {
+export function PackageSidebar({ startingPrice, nextDeparture, isSelected, itineraryPdf }: PackageSidebarProps) {
   return (
     <aside className="hidden lg:block">
       <div className="sticky top-24 space-y-4">
@@ -56,6 +57,13 @@ export function PackageSidebar({ startingPrice, nextDeparture, isSelected }: Pac
                 <Phone className="mr-2 h-4 w-4" /> Ask on WhatsApp
               </a>
             </Button>
+            {itineraryPdf && (
+              <Button variant="ghost" className="w-full rounded-xl h-12 text-sm font-medium text-brand hover:text-brand hover:bg-brand/5" asChild>
+                <a href={itineraryPdf} target="_blank" rel="noopener noreferrer">
+                  <Download className="mr-2 h-4 w-4" /> Download Detail Itinerary
+                </a>
+              </Button>
+            )}
           </CardContent>
         </Card>
 

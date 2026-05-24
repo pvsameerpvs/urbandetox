@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ChevronRight, Download } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@urbandetox/ui"
 
 interface ItineraryDay {
@@ -15,28 +15,14 @@ interface ItineraryDay {
 
 interface ItinerarySectionProps {
   itinerary: ItineraryDay[];
-  itineraryPdf?: string;
 }
 
-export function ItinerarySection({ itinerary, itineraryPdf }: ItinerarySectionProps) {
+export function ItinerarySection({ itinerary }: ItinerarySectionProps) {
   return (
     <motion.section initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-      <div className="flex items-center justify-between mb-5">
-        <div className="flex items-center gap-3">
-          <span className="h-px w-8 bg-brand/60" />
-          <span className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">Plan</span>
-        </div>
-        {itineraryPdf && (
-          <a
-            href={itineraryPdf}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 bg-brand text-brand-foreground font-semibold text-xs px-4 py-2 rounded-xl hover:bg-brand/90 transition-colors"
-          >
-            <Download className="h-3.5 w-3.5" />
-            Download PDF
-          </a>
-        )}
+      <div className="flex items-center gap-3 mb-5">
+        <span className="h-px w-8 bg-brand/60" />
+        <span className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">Plan</span>
       </div>
       <h2 className="text-2xl sm:text-3xl font-bold mb-6">Day-by-Day <span className="text-brand">Itinerary</span></h2>
 
