@@ -42,7 +42,7 @@ export function PackageSidebar({ startingPrice, nextDeparture }: PackageSidebarP
               </div>
             )}
             <Separator />
-            <Button className="w-full rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-12 text-sm font-semibold shadow-lg shadow-brand/10" asChild>
+            <Button className="w-full rounded-xl bg-[var(--button-lime)] text-[var(--button-lime-text)] hover:bg-[var(--button-lime-text)] hover:text-[var(--button-lime)] h-12 text-sm font-semibold shadow-lg shadow-[var(--button-lime)]/10" asChild>
               <Link href={nextDeparture ? `/book/${nextDeparture.code}` : `/detox`}>
                 Book This Detox <ArrowRight className="ml-2 h-4 w-4" />
               </Link>

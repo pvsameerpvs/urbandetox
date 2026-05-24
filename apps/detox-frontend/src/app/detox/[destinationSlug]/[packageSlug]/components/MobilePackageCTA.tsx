@@ -19,7 +19,7 @@ export function MobilePackageCTA({ startingPrice, nextDepartureCode }: MobilePac
           <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider">Starting from</p>
           <p className="text-xl font-bold text-brand">{formatPrice(startingPrice)}</p>
         </div>
-        <Button className="rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-11 px-6 text-sm font-semibold shadow-lg shadow-brand/10" asChild>
+        <Button className="rounded-xl bg-[var(--button-lime)] text-[var(--button-lime-text)] hover:bg-[var(--button-lime-text)] hover:text-[var(--button-lime)] h-11 px-6 text-sm font-semibold shadow-lg shadow-[var(--button-lime)]/10" asChild>
           <Link href={nextDepartureCode ? `/book/${nextDepartureCode}` : `/detox`}>
             Book Now <ArrowRight className="ml-1.5 h-4 w-4" />
           </Link>

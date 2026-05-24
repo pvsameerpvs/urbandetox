@@ -66,7 +66,7 @@ export function DeparturesSection({ departures }: DeparturesSectionProps) {
                   </div>
                   <Button
                     size="sm"
-                    className="rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-10 px-5 text-xs font-semibold shrink-0"
+                    className="rounded-xl bg-[var(--button-lime)] text-[var(--button-lime-text)] hover:bg-[var(--button-lime-text)] hover:text-[var(--button-lime)] h-10 px-5 text-xs font-semibold shrink-0"
                     disabled={isFull}
                     asChild
                   >

@@ -40,7 +40,7 @@ export function DateInfoPanel({ availableDates, selectedDate }: DateInfoPanelPro
             </div>
           </div>
           <div className="h-px bg-border/40" />
-          <Button className="w-full rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-11 text-sm font-semibold shadow-sm" asChild>
+          <Button className="w-full rounded-xl bg-[var(--button-lime)] text-[var(--button-lime-text)] hover:bg-[var(--button-lime-text)] hover:text-[var(--button-lime)] h-11 text-sm font-semibold shadow-sm" asChild>
             <Link href={`/book/${selectedDeparture.code}`}>Book This Date <ArrowRight className="ml-2 h-4 w-4" /></Link>
           </Button>
         </div>

@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { formatPrice, formatDateRange } from "@urbandetox/utils";
+import { formatPrice } from "@urbandetox/utils";
 import { cn } from "@urbandetox/utils";
 import type { Departure, Package, Destination } from "@urbandetox/utils";
-import { Calendar, ArrowRight, MapPin, Clock } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { itemVariants } from "@/lib/animations";
-import { Button, Badge, Card, CardContent } from "@urbandetox/ui";
-import { StatusBadge } from "@/components/StatusBadge";
+import { Button, Card, CardContent } from "@urbandetox/ui";
 
 interface UpcomingDetoxCardProps {
   dep: Departure;
@@ -17,18 +16,33 @@ interface UpcomingDetoxCardProps {
   dest: Destination;
 }
 
+function formatCardDateRange(start: string, end: string): string {
+  const s = new Date(start);
+  const e = new Date(end);
+  const sDay = s.getDate();
+  const eDay = e.getDate();
+  const sMonth = s.toLocaleDateString("en-IN", { month: "short" }).toUpperCase();
+  const eMonth = e.toLocaleDateString("en-IN", { month: "short" }).toUpperCase();
+
+  if (sMonth === eMonth) {
+    return `${sDay} - ${eDay} ${eMonth}`;
+  }
+  return `${sDay} ${sMonth} - ${eDay} ${eMonth}`;
+}
+
 export function UpcomingDetoxCard({ dep, pkg, dest }: UpcomingDetoxCardProps) {
   const isFull = dep.status === "full";
+  const seatsPercent = Math.max(0, Math.min(100, (dep.seatsLeft / dep.seatsTotal) * 100));
 
   return (
-    <motion.div variants={itemVariants}>
+    <motion.div variants={itemVariants} className="h-full">
       <Card
         className={cn(
-          "group overflow-hidden border-0 shadow-lg shadow-black/[0.03] bg-white !gap-0 !py-0",
+          "group overflow-hidden border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl !gap-0 !py-0 h-full",
           "hover:shadow-xl transition-all duration-500"
         )}
       >
-        <div className="relative h-[200px] sm:h-[220px] overflow-hidden">
+        <div className="relative h-[200px] sm:h-[220px] overflow-hidden rounded-t-2xl shrink-0">
           <Image
             src={pkg.coverImage}
             alt={pkg.title}
@@ -37,35 +51,36 @@ export function UpcomingDetoxCard({ dep, pkg, dest }: UpcomingDetoxCardProps) {
             className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-          <div className="absolute top-3 left-3 right-3 flex items-start justify-between">
-            <Badge className="bg-white/95 text-foreground shadow-sm font-medium text-xs backdrop-blur-sm">
-              <MapPin className="mr-1 h-3 w-3" />
-              {dest.name}
-            </Badge>
-            <StatusBadge status={dep.status} seatsLeft={dep.seatsLeft} />
-          </div>
-          <div className="absolute bottom-3 left-3">
-            <div className="flex items-center gap-2 text-white/90 text-xs font-medium">
-              <Clock className="h-3.5 w-3.5" />
-              <span>{pkg.durationLabel}</span>
-            </div>
-          </div>
         </div>
 
-        <CardContent className="p-5 sm:p-6">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
-            <Calendar className="h-4 w-4 text-brand" />
-            <span className="font-medium text-foreground">
-              {formatDateRange(dep.startDate, dep.endDate)}
-            </span>
+        <CardContent className="p-5 sm:p-6 flex-1 flex flex-col">
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-muted-foreground tracking-wide mb-2">
+              {formatCardDateRange(dep.startDate, dep.endDate)}
+            </p>
+
+            <h3 className="text-lg font-bold leading-snug mb-1.5">{pkg.title}</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+              {pkg.subtitle}
+            </p>
+
+            <div className="flex items-center justify-between text-sm text-muted-foreground mb-1.5">
+              <span>{dep.seatsLeft} seats left</span>
+              <span>{dep.seatsTotal} max</span>
+            </div>
+            <div className="h-1 w-full bg-muted rounded-full overflow-hidden mb-5">
+              <div
+                className="h-full bg-brand/20 rounded-full transition-all"
+                style={{ width: `${seatsPercent}%` }}
+              />
+            </div>
           </div>
-          <h3 className="text-lg font-bold leading-snug mb-1.5">{pkg.title}</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-            {pkg.subtitle}
-          </p>
-          <div className="flex items-end justify-between">
+
+          <div className="border-t border-border mb-5" />
+
+          <div className="flex items-end justify-between gap-3">
             <div>
+              <p className="text-xs text-muted-foreground mb-1">per person</p>
               <div className="flex items-baseline gap-2">
                 <span className="text-2xl font-bold text-brand">
                   {formatPrice(dep.offerPrice ?? dep.price)}
@@ -76,21 +91,20 @@ export function UpcomingDetoxCard({ dep, pkg, dest }: UpcomingDetoxCardProps) {
                   </span>
                 )}
               </div>
-              <p className="text-xs text-muted-foreground mt-0.5">per person</p>
             </div>
             <Button
               size="sm"
               className={cn(
-                "h-10 px-4 text-sm font-semibold transition-all duration-300",
+                "h-11 px-5 text-sm font-semibold rounded-xl transition-all duration-300",
                 isFull
                   ? "bg-muted text-muted-foreground hover:bg-muted cursor-not-allowed"
-                  : "bg-brand text-brand-foreground hover:bg-brand/90 shadow-lg shadow-brand/10"
+                  : "bg-[var(--button-lime)] text-[var(--button-lime-text)] hover:bg-[var(--button-lime-text)] hover:text-[var(--button-lime)] shadow-lg shadow-[var(--button-lime)]/10"
               )}
               disabled={isFull}
               asChild
             >
               <Link href={isFull ? `/detox/${dest.slug}/${pkg.slug}` : `/book/${dep.code}`}>
-                {isFull ? "Waitlist" : "Book"}
+                {isFull ? "Waitlist" : "Book Now"}
                 {!isFull && <ArrowRight className="ml-1.5 h-3.5 w-3.5" />}
               </Link>
             </Button>
