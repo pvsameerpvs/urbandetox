@@ -28,7 +28,7 @@ export const UploadController = {
     res.json({
       maxSizeBytes: MAX_FILE_SIZE_MB * 1024 * 1024,
       maxSizeMB: MAX_FILE_SIZE_MB,
-      allowedTypes: ["image/jpeg", "image/png", "image/webp", "image/gif"],
+      allowedTypes: ["image/jpeg", "image/png", "image/webp", "image/gif", "application/pdf"],
     });
   },
 } as const;

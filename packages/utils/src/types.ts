@@ -8,6 +8,9 @@ export interface Destination {
   gallery: string[];
   meetingPoint: string;
   vibe: string;
+  itineraryPdf?: string;
+  seoTitle?: string;
+  seoDescription?: string;
 }
 
 export interface Package {

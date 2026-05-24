@@ -6,6 +6,7 @@ import { z } from "zod";
 import { Input, Textarea } from "@urbandetox/ui";
 import { ImageUpload } from "@/components/shared/ImageUpload";
 import { GalleryUpload } from "@/components/shared/GalleryUpload";
+import { PdfUpload } from "@/components/shared/PdfUpload";
 import {
   FormField,
   FormItem,
@@ -25,6 +26,9 @@ const schema = z.object({
   meetingPoint: z.string().min(1, "Meeting point is required"),
   vibe: z.string().min(1, "Vibe is required"),
   gallery: z.array(z.string()),
+  itineraryPdf: z.string().optional(),
+  seoTitle: z.string().optional(),
+  seoDescription: z.string().optional(),
 });
 
 export type DestinationFormData = z.infer<typeof schema>;
@@ -38,6 +42,14 @@ interface DestinationFormProps {
   cancelHref: string;
 }
 
+function generateSlug(name: string) {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
 export function DestinationForm({ mode, initialData, slugValue, onSubmit, submitLabel, cancelHref }: DestinationFormProps) {
   const form = useForm<DestinationFormData>({
     resolver: zodResolver(schema),
@@ -49,8 +61,14 @@ export function DestinationForm({ mode, initialData, slugValue, onSubmit, submit
       meetingPoint: initialData?.meetingPoint || "",
       vibe: initialData?.vibe || "",
       gallery: initialData?.gallery || [],
+      itineraryPdf: initialData?.itineraryPdf || "",
+      seoTitle: initialData?.seoTitle || "",
+      seoDescription: initialData?.seoDescription || "",
     },
   });
+
+  const watchedName = form.watch("name");
+  const displaySlug = mode === "create" ? generateSlug(watchedName) : slugValue;
 
   return (
     <FormProvider {...form}>
@@ -72,7 +90,7 @@ export function DestinationForm({ mode, initialData, slugValue, onSubmit, submit
             />
             <FormItem>
               <FormLabel>Slug</FormLabel>
-              <Input value={slugValue} readOnly className="h-11 rounded-xl bg-secondary/30" />
+              <Input value={displaySlug} readOnly className="h-11 rounded-xl bg-secondary/30" />
             </FormItem>
           </div>
 
@@ -159,6 +177,49 @@ export function DestinationForm({ mode, initialData, slugValue, onSubmit, submit
                   <FormLabel>Vibe</FormLabel>
                   <FormControl>
                     <Input placeholder={mode === "create" ? "e.g. Deep, alpine, lake-led" : undefined} className="h-11 rounded-xl" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <FormField
+            control={form.control}
+            name="itineraryPdf"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Itinerary PDF</FormLabel>
+                <FormControl>
+                  <PdfUpload value={field.value || ""} onChange={field.onChange} folder="destinations/itinerary" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <FormField
+              control={form.control}
+              name="seoTitle"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>SEO Title</FormLabel>
+                  <FormControl>
+                    <Input placeholder={mode === "create" ? "e.g. Kashmir Detox Retreat | Urban Detox" : undefined} className="h-11 rounded-xl" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="seoDescription"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>SEO Description</FormLabel>
+                  <FormControl>
+                    <Input placeholder={mode === "create" ? "e.g. A 5-day reset in the Kashmir valley..." : undefined} className="h-11 rounded-xl" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

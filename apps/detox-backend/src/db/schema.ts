@@ -28,6 +28,9 @@ export const destinations = pgTable("destinations", {
   gallery: jsonb("gallery").$type<string[]>().default([]),
   meetingPoint: varchar("meeting_point", { length: 255 }).notNull(),
   vibe: varchar("vibe", { length: 255 }).notNull(),
+  itineraryPdf: text("itinerary_pdf"),
+  seoTitle: text("seo_title"),
+  seoDescription: text("seo_description"),
 });
 
 export const packages = pgTable("packages", {

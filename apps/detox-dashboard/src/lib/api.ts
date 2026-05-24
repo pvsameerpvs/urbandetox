@@ -240,13 +240,13 @@ export async function updateUserRole(id: string, role: string) {
   });
 }
 
-// ─── Image Upload ────────────────────────────────────
+// ─── File Upload ────────────────────────────────────
 export interface UploadResult {
   url: string;
   key: string;
 }
 
-export async function uploadImage(file: File, folder?: string): Promise<UploadResult> {
+export async function uploadFile(file: File, folder?: string): Promise<UploadResult> {
   const { createClient } = await import("@/lib/supabase/client");
   const supabase = createClient();
   const { data } = await supabase.auth.getSession();
@@ -271,6 +271,9 @@ export async function uploadImage(file: File, folder?: string): Promise<UploadRe
 
   return res.json() as Promise<UploadResult>;
 }
+
+/** @deprecated Use uploadFile instead. Kept for backward compatibility. */
+export const uploadImage = uploadFile;
 
 // ─── Site Settings ───────────────────────────────────
 export async function fetchSiteSettings() {

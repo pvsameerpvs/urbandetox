@@ -9,6 +9,22 @@ export const destinationSlugParam = z.object({
   slug: slugSchema,
 });
 
+export const createDestinationBody = z.object({
+  slug: slugSchema,
+  name: z.string().min(1).max(255),
+  region: z.string().min(1).max(255),
+  description: z.string().min(1),
+  image: z.string().min(1),
+  gallery: z.array(z.string()).optional(),
+  meetingPoint: z.string().min(1).max(255),
+  vibe: z.string().min(1).max(255),
+  itineraryPdf: z.string().optional(),
+  seoTitle: z.string().optional(),
+  seoDescription: z.string().optional(),
+});
+
+export const updateDestinationBody = createDestinationBody.partial().omit({ slug: true });
+
 // ─── Packages ────────────────────────────────────
 export const packageSlugParam = z.object({
   slug: slugSchema,

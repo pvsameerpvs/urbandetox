@@ -3,6 +3,7 @@ import { ENV } from "@/config/env";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { v4 as uuidv4 } from "uuid";
 import path from "path";
+import { MAX_FILE_SIZE_MB } from "@/services/constants";
 
 /**
  * ── R2 Folder Structure ───────────────────────────────────────────────
@@ -60,9 +61,10 @@ const ALLOWED_MIME_TYPES = [
   "image/png",
   "image/webp",
   "image/gif",
+  "application/pdf",
 ];
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 export interface UploadResult {
   url: string;
