@@ -31,7 +31,7 @@ export function LoginHero() {
 
       <div className="relative z-10 p-8 xl:p-10">
         <Link href="/" className="inline-block">
-          <Image src="/log-detox-white.png" alt="Urban Detox" width={140} height={42} className="h-9 w-auto object-contain" priority />
+          <Image src="/log-detox-white.png" alt="Urban Detox" width={140} height={42} className="h-11 w-auto object-contain" priority />
         </Link>
       </div>
 

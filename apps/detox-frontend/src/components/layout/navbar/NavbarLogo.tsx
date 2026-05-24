@@ -16,7 +16,7 @@ export function NavbarLogo({ isLightMode, onClick, className }: NavbarLogoProps)
         alt="Urban Detox"
         width={160}
         height={160}
-        className="h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 object-contain"
+        className="h-28 w-28 sm:h-32 sm:w-32 lg:h-36 lg:w-36 object-contain"
         priority
       />
     </Link>

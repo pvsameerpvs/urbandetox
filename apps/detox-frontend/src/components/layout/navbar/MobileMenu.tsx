@@ -93,7 +93,7 @@ export function MobileMenu({ isLightMode }: MobileMenuProps) {
               alt="Urban Detox"
               width={130}
               height={36}
-              className="h-8 w-auto object-contain"
+              className="h-7 w-auto object-contain"
               priority
             />
           </Link>

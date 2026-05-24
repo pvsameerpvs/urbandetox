@@ -16,7 +16,7 @@ export function FooterBrandColumn({ settings }: FooterBrandColumnProps) {
           alt="Urban Detox"
           width={160}
           height={48}
-          className="h-11 w-auto object-contain"
+          className="h-12 w-auto object-contain"
         />
       </Link>
       <p className="text-sm text-white/60 leading-relaxed max-w-xs mb-6">

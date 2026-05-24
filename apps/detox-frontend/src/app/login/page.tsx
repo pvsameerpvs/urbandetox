@@ -21,7 +21,7 @@ export default function LoginPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-sidebar-dark/50 via-sidebar-dark/20 to-sidebar-dark/70" />
         <div className="absolute bottom-0 left-0 right-0 p-4 flex items-end justify-between">
           <Link href="/" className="inline-block">
-            <Image src="/log-detox-white.png" alt="Urban Detox" width={120} height={36} className="h-8 w-auto object-contain" priority />
+            <Image src="/log-detox-white.png" alt="Urban Detox" width={120} height={36} className="h-10 w-auto object-contain" priority />
           </Link>
         </div>
       </div>
