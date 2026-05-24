@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { AdminSidebar } from "@/components/layout/AdminSidebar";
+import { AdminMobileSidebar } from "@/components/layout/AdminMobileSidebar";
 import { AdminTopbar } from "@/components/layout/AdminTopbar";
 import { BookingNotificationProvider } from "@/components/layout/BookingNotificationContext";
 import { Loader2, ShieldAlert } from "lucide-react";
@@ -121,12 +122,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     <BookingNotificationProvider>
       <div className="min-h-screen bg-secondary/[0.02] font-sans">
         {!isPublicPath && <AdminSidebar />}
-
-        {mobileOpen && (
-          <div
-            className="fixed inset-0 z-40 bg-black/50 lg:hidden"
-            onClick={() => setMobileOpen(false)}
-          />
+        {!isPublicPath && (
+          <AdminMobileSidebar open={mobileOpen} onClose={() => setMobileOpen(false)} />
         )}
 
         <div className={isPublicPath ? "" : "lg:ml-[260px]"}>

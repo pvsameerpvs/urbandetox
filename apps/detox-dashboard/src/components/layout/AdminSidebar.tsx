@@ -16,7 +16,7 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 
-const navItems = [
+export const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/destinations", label: "Destinations", icon: MapPin },
   { href: "/packages", label: "Packages", icon: Package },
