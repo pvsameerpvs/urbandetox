@@ -2,13 +2,12 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { formatPrice } from "@urbandetox/utils";
-import { cn } from "@urbandetox/utils";
+import { motion } from "framer-motion";
+import { Button, Card, CardContent } from "@urbandetox/ui";
+import { formatPrice, cn } from "@urbandetox/utils";
 import type { Departure, Package, Destination } from "@urbandetox/utils";
 import { ArrowRight } from "lucide-react";
-import { motion } from "framer-motion";
 import { itemVariants } from "@/lib/animations";
-import { Button, Card, CardContent } from "@urbandetox/ui";
 
 interface UpcomingDetoxCardProps {
   dep: Departure;
@@ -103,9 +102,9 @@ export function UpcomingDetoxCard({ dep, pkg, dest }: UpcomingDetoxCardProps) {
               disabled={isFull}
               asChild
             >
-              <Link href={isFull ? `/detox/${dest.slug}/${pkg.slug}` : `/book/${dep.code}`}>
-                {isFull ? "Waitlist" : "Book Now"}
-                {!isFull && <ArrowRight className="ml-1.5 h-3.5 w-3.5" />}
+              <Link href={isFull ? `/detox/${dest.slug}/${pkg.slug}` : `/detox/${dest.slug}/${pkg.slug}?departure=${dep.code}`}>
+                {isFull ? "Waitlist" : "View Details"}
+                <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
               </Link>
             </Button>
           </div>

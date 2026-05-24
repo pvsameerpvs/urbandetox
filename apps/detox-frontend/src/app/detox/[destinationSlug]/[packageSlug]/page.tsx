@@ -1,13 +1,16 @@
 import { notFound } from "next/navigation";
 import { fetchPackageBySlug, fetchDeparturesByPackage, fetchGuides, fetchDestinationBySlug } from "@/lib/api";
-import { PackageDetailClient } from "./PackageDetailClient";
+import { PackageDetailClient } from "./components/PackageDetailClient";
 
 interface PageProps {
   params: Promise<{ destinationSlug: string; packageSlug: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export default async function DetoxDetailPage({ params }: PageProps) {
+export default async function DetoxDetailPage({ params, searchParams }: PageProps) {
   const { destinationSlug, packageSlug } = await params;
+  const query = searchParams ? await searchParams : {};
+  const selectedDepartureCode = typeof query.departure === "string" ? query.departure : undefined;
 
   const pkg = await fetchPackageBySlug(packageSlug);
   const dest = pkg ? await fetchDestinationBySlug(pkg.destinationSlug) : undefined;
@@ -19,5 +22,5 @@ export default async function DetoxDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  return <PackageDetailClient pkg={pkg} dest={dest} departures={departures} guides={guides} />;
+  return <PackageDetailClient pkg={pkg} dest={dest} departures={departures} guides={guides} selectedDepartureCode={selectedDepartureCode} />;
 }

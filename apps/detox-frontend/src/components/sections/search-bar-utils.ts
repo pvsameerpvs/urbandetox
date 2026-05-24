@@ -8,7 +8,7 @@ import {
 import { cn } from "@urbandetox/utils";
 import type { Departure, Package } from "@urbandetox/utils";
 
-export type TripDateMap = Record<string, Departure[]>;
+export type TripDateMap<T extends Departure = Departure> = Record<string, T[]>;
 
 export const WEEKDAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 export const WEEK_STARTS_ON = 1;
@@ -28,13 +28,13 @@ export function isBookable(dep: Departure) {
  * - click action
  * Preference: first bookable trip, else first trip.
  */
-export function primaryTrip(trips: Departure[]) {
+export function primaryTrip<T extends Departure>(trips: T[]): T | undefined {
   return trips.find(isBookable) || trips[0];
 }
 
 /** Build a map of every date → all trips running that day. */
-export function buildTripDateMap(departures: Departure[]): TripDateMap {
-  return departures.reduce<TripDateMap>((map, dep) => {
+export function buildTripDateMap<T extends Departure>(departures: T[]): TripDateMap<T> {
+  return departures.reduce<TripDateMap<T>>((map, dep) => {
     if (dep.status === "closed") return map;
 
     eachDayOfInterval({
@@ -103,7 +103,7 @@ export function rangeRadius(hasPrev: boolean, hasNext: boolean) {
 
 /** Check if the previous/next day belongs to the SAME trip (for range bar styling). */
 export function hasNeighbor(
-  tripDateMap: TripDateMap,
+  tripDateMap: TripDateMap<Departure>,
   day: Date,
   trip: Departure | undefined,
   direction: "prev" | "next"

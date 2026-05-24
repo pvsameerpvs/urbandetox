@@ -30,8 +30,6 @@ export function HeroSearchBar({ departures, availableDurations }: HeroSearchBarP
   const handleDateClick = (date: Date) => {
     const trips = tripDateMap[toDateKey(date)] || [];
 
-    // If a duration filter is active, the calendar only shows matching trips.
-    // Clicking a date navigates directly to the booking page.
     const filtered =
       activeDuration !== null
         ? trips.filter((t) => getDurationDays(t) === activeDuration)
@@ -44,8 +42,8 @@ export function HeroSearchBar({ departures, availableDurations }: HeroSearchBarP
       // No filter: clicking a date toggles filter for that trip's duration.
       router.push(`/?duration=${getDurationDays(trip)}`, { scroll: false });
     } else {
-      // Filter active: go to booking page.
-      router.push(`/book/${trip.code}`, { scroll: false });
+      // Filter active: go to the package detail page with the selected departure.
+      router.push(`/detox/${trip.dest.slug}/${trip.pkg.slug}?departure=${trip.code}`, { scroll: false });
     }
   };
 

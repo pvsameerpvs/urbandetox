@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-;
-;
 import { BookingHeader } from "../components/BookingHeader";
 import { BookingHero } from "../components/BookingHero";
 import { MobileBookingCTA } from "../components/MobileBookingCTA";
@@ -74,7 +72,7 @@ export function BookingPageClient({ code, departure, pkg, dest, allDepartures }:
 
   return (
     <main className="min-h-screen bg-white pb-24 md:pb-0">
-      <BookingHeader backHref={`/detox/${pkg.slug}`} backLabel="Back to Detox" stepLabel="Step 1 of 3" />
+      <BookingHeader backHref={`/detox/${dest.slug}/${pkg.slug}`} backLabel="Back to Detox" stepLabel="Step 1 of 3" />
       <BookingHero image={pkg.coverImage} title="Book Your Detox" destination={dest.name} durationLabel={pkg.durationLabel} subtitle={`${pkg.title} · Select a date and add your travelers`} />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-12">
