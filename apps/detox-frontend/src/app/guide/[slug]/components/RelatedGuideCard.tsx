@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { safeImageUrl } from "@urbandetox/utils";
 import type { GuideArticle } from "@urbandetox/utils";
 import { BookOpen, ArrowRight } from "lucide-react";
 import { Card } from "@urbandetox/ui"
@@ -23,7 +24,7 @@ export function RelatedGuideCard({ guide }: RelatedGuideCardProps) {
         <Card className="overflow-hidden border-0 shadow-lg shadow-black/[0.03] bg-white hover:shadow-xl transition-all duration-500 h-full">
           <div className="relative h-[160px] sm:h-[180px] overflow-hidden">
             <Image
-              src={guide.image}
+              src={safeImageUrl(guide.image)}
               alt={guide.title}
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-105"

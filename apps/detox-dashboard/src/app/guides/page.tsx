@@ -7,6 +7,7 @@ import { Button } from "@urbandetox/ui";
 import { Card, CardContent, Badge } from "@urbandetox/ui";
 import { getAdminGuides, deleteGuide } from "@/lib/guides";
 import { useAdminDestinations } from "@/hooks/use-admin-data";
+import { safeImageUrl } from "@urbandetox/utils";
 import type { GuideArticle } from "@urbandetox/utils";
 import { BookOpen, ExternalLink, Star, Eye, Pencil, Trash2, Plus } from "lucide-react";
 import { toast } from "sonner";
@@ -74,7 +75,7 @@ export default function GuidesPage() {
                 <div className="flex flex-col sm:flex-row">
                   <div className="relative h-40 sm:h-auto sm:w-48 shrink-0">
                     <Image
-                      src={guide.image}
+                      src={safeImageUrl(guide.image)}
                       alt={guide.title}
                       fill
                       className="object-cover"

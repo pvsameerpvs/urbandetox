@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { MapPin, ArrowRight, Compass, Images } from "lucide-react";
-import { cn } from "@urbandetox/utils";
+import { cn, safeImageUrl } from "@urbandetox/utils";
 import type { Destination } from "@urbandetox/utils";
 import { Badge } from "@urbandetox/ui"
 
@@ -47,7 +47,7 @@ function DestinationCard({
         >
           <div className="relative h-[320px] sm:h-[380px] overflow-hidden">
             <Image
-              src={destination.image}
+              src={safeImageUrl(destination.image)}
               alt={destination.name}
               fill
               sizes="(max-width: 640px) 100vw, 50vw"

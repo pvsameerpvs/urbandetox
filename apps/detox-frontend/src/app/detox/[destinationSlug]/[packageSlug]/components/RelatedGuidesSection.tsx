@@ -3,8 +3,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { safeImageUrl } from "@urbandetox/utils";
 import { Card, CardContent } from "@urbandetox/ui"
-;
 
 interface Guide {
   id: string;
@@ -33,7 +33,7 @@ export function RelatedGuidesSection({ guides }: RelatedGuidesSectionProps) {
           <Link key={g.id} href={`/guide/${g.slug}`} className="group">
             <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl overflow-hidden h-full hover:shadow-xl transition-all duration-500">
               <div className="relative aspect-[16/10] overflow-hidden">
-                <Image src={g.image} alt={g.title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" sizes="(max-width: 640px) 100vw, 33vw" />
+                <Image src={safeImageUrl(g.image)} alt={g.title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" sizes="(max-width: 640px) 100vw, 33vw" />
               </div>
               <CardContent className="p-4">
                 <p className="text-xs text-brand font-medium mb-1">{g.category}</p>

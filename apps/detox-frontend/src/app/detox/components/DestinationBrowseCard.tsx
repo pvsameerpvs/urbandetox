@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { MapPin, ArrowRight } from "lucide-react";
+import { safeImageUrl } from "@urbandetox/utils";
 import type { Destination } from "@urbandetox/utils";
 import { Card } from "@urbandetox/ui"
 
@@ -26,7 +27,7 @@ export function DestinationBrowseCard({ destination, packageCount }: Destination
         <Card className="overflow-hidden border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl !gap-0 !py-0 hover:shadow-xl transition-all duration-500">
           <div className="relative h-[260px] sm:h-[300px] overflow-hidden">
             <Image
-              src={destination.image}
+              src={safeImageUrl(destination.image)}
               alt={destination.name}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

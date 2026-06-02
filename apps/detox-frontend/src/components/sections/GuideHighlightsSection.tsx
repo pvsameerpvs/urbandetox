@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
-import { cn } from "@urbandetox/utils";
+import { cn, safeImageUrl } from "@urbandetox/utils";
 import type { GuideArticle } from "@urbandetox/utils";
 import { containerVariants, itemVariants } from "@/lib/animations";
 import { Card, CardContent } from "@urbandetox/ui"
@@ -61,7 +61,7 @@ export function GuideHighlightsSection({ guides }: GuideHighlightsSectionProps) 
                 >
                   <div className="relative h-[180px] sm:h-[200px] overflow-hidden">
                     <Image
-                      src={guide.image}
+                      src={safeImageUrl(guide.image)}
                       alt={guide.title}
                       fill
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
