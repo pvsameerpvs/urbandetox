@@ -3,7 +3,7 @@
 ;
 ;
 import { BookingSummaryCard } from "../../../components/BookingSummaryCard";
-import { formatPrice, formatDateRange } from "@urbandetox/utils";
+import { formatPrice, formatDateRange, safeImageUrl } from "@urbandetox/utils";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { Sparkles } from "lucide-react";
 import type { Package, Departure } from "@urbandetox/utils";
@@ -60,7 +60,7 @@ export function OnboardingSidebar({ pkg, dest, departure, travelers, step, total
       ) : (
         <>
           <BookingSummaryCard
-            image={pkg.coverImage}
+            image={safeImageUrl(pkg.coverImage)}
             title={pkg.title}
             destination={dest.name}
             durationLabel={pkg.durationLabel}

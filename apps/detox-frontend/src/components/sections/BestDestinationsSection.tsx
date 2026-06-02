@@ -65,7 +65,7 @@ function DestinationCard({
                 )}
                 <div className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-black/40 backdrop-blur-sm px-2.5 py-1 text-[10px] font-semibold text-white">
                   <Images className="h-3 w-3" />
-                  {destination.gallery.length} photos
+                  {(destination.gallery ?? []).length} photos
                 </div>
               </div>
 

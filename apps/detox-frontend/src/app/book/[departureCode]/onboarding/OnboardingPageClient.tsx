@@ -88,7 +88,7 @@ export function OnboardingPageClient({ code, departure, pkg, dest }: OnboardingP
   return (
     <main className="min-h-screen bg-white pb-24 md:pb-0">
       <BookingHeader backHref={`/book/${code}/payment`} backLabel="Back to Payment" stepLabel={`Onboarding ${step} of ${steps.length}`} />
-      <BookingHero image={pkg.coverImage} title="Trip Onboarding" destination={dest.name} durationLabel={pkg.durationLabel} dates={formatDateRange(departure.startDate, departure.endDate)} subtitle={travelers.length > 1 ? "Review your group details and complete final check-in." : "Review your details and complete final check-in."} />
+      <BookingHero image={departure.image || pkg.coverImage} title="Trip Onboarding" destination={dest.name} durationLabel={pkg.durationLabel} dates={formatDateRange(departure.startDate, departure.endDate)} subtitle={travelers.length > 1 ? "Review your group details and complete final check-in." : "Review your details and complete final check-in."} />
       <Stepper steps={steps} currentStep={step} />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10">

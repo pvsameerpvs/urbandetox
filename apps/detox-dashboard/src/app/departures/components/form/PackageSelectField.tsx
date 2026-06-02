@@ -35,7 +35,7 @@ interface PackageSelectFieldProps {
 function groupPackagesByDestination(
   packages: Package[],
   destinations: Destination[]
-): Array<{ dest: Destination | undefined; packages: Package[] }> {
+): Array<{ slug: string; dest: Destination | undefined; packages: Package[] }> {
   const groups = new Map<string, Package[]>();
   for (const pkg of packages) {
     const list = groups.get(pkg.destinationSlug) ?? [];
@@ -43,6 +43,7 @@ function groupPackagesByDestination(
     groups.set(pkg.destinationSlug, list);
   }
   return Array.from(groups.entries()).map(([slug, pkgs]) => ({
+    slug,
     dest: destinations.find((d) => d.slug === slug),
     packages: pkgs,
   }));
@@ -98,7 +99,7 @@ export function PackageSelectField({
                 <SelectContent>
                   {hasPackages ? (
                     grouped.map((group) => (
-                      <SelectGroup key={group.dest?.slug || "unknown"}>
+                      <SelectGroup key={group.slug}>
                         <SelectLabel className="text-xs font-semibold text-muted-foreground px-3 py-2">
                           {group.dest?.name || "Unknown Destination"}
                         </SelectLabel>

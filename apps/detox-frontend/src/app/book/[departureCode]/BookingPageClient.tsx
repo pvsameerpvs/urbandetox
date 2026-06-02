@@ -73,7 +73,7 @@ export function BookingPageClient({ code, departure, pkg, dest, allDepartures }:
   return (
     <main className="min-h-screen bg-white pb-24 md:pb-0">
       <BookingHeader backHref={`/detox/${dest.slug}/${pkg.slug}`} backLabel="Back to Detox" stepLabel="Step 1 of 3" />
-      <BookingHero image={pkg.coverImage} title="Book Your Detox" destination={dest.name} durationLabel={pkg.durationLabel} subtitle={`${pkg.title} · Select a date and add your travelers`} />
+      <BookingHero image={departure.image || pkg.coverImage} title="Book Your Detox" destination={dest.name} durationLabel={pkg.durationLabel} subtitle={`${pkg.title} · Select a date and add your travelers`} />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-12">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">

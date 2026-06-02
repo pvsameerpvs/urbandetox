@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 ;
 ;
 import { BookOpen, Sparkles, Clock, ArrowRight } from "lucide-react";
-import { cn } from "@urbandetox/utils";
+import { cn, safeImageUrl } from "@urbandetox/utils";
 import { Card, CardContent, Badge } from "@urbandetox/ui"
 
 interface Guide {
@@ -25,7 +25,7 @@ export function GuideCard({ guide }: { guide: Guide }) {
       <Link href={`/guide/${guide.slug}`} className="group block h-full">
         <Card className={cn("overflow-hidden border-0 shadow-lg shadow-black/[0.03] bg-white h-full", "hover:shadow-xl transition-all duration-500")}>
           <div className="relative h-[200px] sm:h-[220px] overflow-hidden">
-            <Image src={guide.image} alt={guide.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
+            <Image src={safeImageUrl(guide.image)} alt={guide.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
             <div className="absolute top-3 left-3">
               <Badge className="bg-white/95 text-foreground shadow-sm font-medium text-xs backdrop-blur-sm"><BookOpen className="mr-1 h-3 w-3" /> {guide.category}</Badge>

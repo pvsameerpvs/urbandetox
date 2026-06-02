@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 ;
 ;
 import { Tag, Clock, User, Sparkles, ArrowRight } from "lucide-react";
+import { safeImageUrl } from "@urbandetox/utils";
 import { Card, CardContent, Badge, Button } from "@urbandetox/ui"
 
 interface Guide {
@@ -25,7 +26,7 @@ export function FeaturedGuide({ guide }: { guide: Guide }) {
         <Card className="overflow-hidden border-0 shadow-xl shadow-black/[0.05] bg-white">
           <div className="grid grid-cols-1 lg:grid-cols-2">
             <div className="relative h-[280px] sm:h-[360px] lg:h-auto overflow-hidden">
-              <Image src={guide.image} alt={guide.title} fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
+              <Image src={safeImageUrl(guide.image)} alt={guide.title} fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/20 lg:bg-gradient-to-l" />
               <div className="absolute top-4 left-4">
                 <Badge className="bg-brand text-brand-foreground shadow-lg font-semibold text-xs"><Sparkles className="mr-1.5 h-3.5 w-3.5" /> Featured Guide</Badge>

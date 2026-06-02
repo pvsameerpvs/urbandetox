@@ -1,6 +1,7 @@
 import Image from "next/image";
 ;
 ;
+import { safeImageUrl } from "@urbandetox/utils";
 import { Check } from "lucide-react";
 import { Calendar, MapPin, Users, Clock } from "lucide-react";
 import { Card, CardContent, Separator } from "@urbandetox/ui"
@@ -40,7 +41,7 @@ export function BookingSummaryCard({
   return (
     <Card className="border-0 shadow-xl shadow-black/[0.06] bg-white rounded-2xl overflow-hidden">
       <div className="relative h-36">
-        <Image src={image} alt={title} fill className="object-cover" sizes="(max-width: 1024px) 100vw, 40vw" />
+        <Image src={safeImageUrl(image)} alt={title} fill className="object-cover" sizes="(max-width: 1024px) 100vw, 40vw" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
         <div className="absolute bottom-3 left-4 right-4">
           <h3 className="text-white font-bold text-lg">{title}</h3>

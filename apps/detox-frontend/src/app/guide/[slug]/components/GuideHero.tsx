@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 ;
 import { BookOpen, MapPin, Clock, ArrowLeft } from "lucide-react";
+import { safeImageUrl } from "@urbandetox/utils";
 import { Badge } from "@urbandetox/ui"
 
 interface GuideHeroProps {
@@ -20,7 +21,7 @@ export function GuideHero({ title, excerpt, category, image, destName, featured 
   return (
     <div className="relative">
       <div className="relative h-[45vh] min-h-[320px] max-h-[520px] overflow-hidden">
-        <Image src={image} alt={title} fill className="object-cover" sizes="100vw" priority />
+        <Image src={safeImageUrl(image)} alt={title} fill className="object-cover" sizes="100vw" priority />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60" />
       </div>

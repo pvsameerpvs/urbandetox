@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { MapPin, ArrowLeft, Compass } from "lucide-react";
+import { safeImageUrl } from "@urbandetox/utils";
 import type { Destination } from "@urbandetox/utils";
 
 interface DestinationHeroProps {
@@ -16,7 +17,7 @@ export function DestinationHero({ destination, packageCount }: DestinationHeroPr
     <div className="relative bg-sidebar-dark overflow-hidden">
       <div className="absolute inset-0">
         <Image
-          src={destination.image}
+          src={safeImageUrl(destination.image)}
           alt={destination.name}
           fill
           className="object-cover opacity-40"

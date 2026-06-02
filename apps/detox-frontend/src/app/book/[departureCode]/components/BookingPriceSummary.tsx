@@ -1,7 +1,7 @@
 "use client";
 
 import { BookingSummaryCard } from "../../components/BookingSummaryCard";
-import { formatPrice, formatDateRange } from "@urbandetox/utils";
+import { formatPrice, formatDateRange, safeImageUrl } from "@urbandetox/utils";
 import { format } from "date-fns";
 import type { Package } from "@urbandetox/utils";
 import type { Destination } from "@urbandetox/utils";
@@ -34,7 +34,7 @@ export function BookingPriceSummary({ pkg, dest, departure, selectedDate, select
 
   return (
     <BookingSummaryCard
-      image={pkg.coverImage}
+      image={safeImageUrl(pkg.coverImage)}
       title={pkg.title}
       destination={dest.name}
       durationLabel={pkg.durationLabel}

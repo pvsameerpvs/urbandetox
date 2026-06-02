@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { formatPrice } from "@urbandetox/utils";
+import { formatPrice, safeImageUrl } from "@urbandetox/utils";
 import { Clock } from "lucide-react";
 import type { Package } from "@urbandetox/utils";
 import type { Destination } from "@urbandetox/utils";
@@ -27,7 +27,7 @@ export function SeasonalPackageCard({ pkg, dest, index }: SeasonalPackageCardPro
         <div className="overflow-hidden rounded-2xl border-0 shadow-lg shadow-black/[0.03] bg-white hover:shadow-xl transition-all duration-500">
           <div className="relative h-[160px] sm:h-[180px] overflow-hidden">
             <Image
-              src={pkg.coverImage}
+              src={safeImageUrl(pkg.coverImage)}
               alt={pkg.title}
               fill
               sizes="280px"

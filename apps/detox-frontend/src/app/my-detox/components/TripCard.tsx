@@ -7,7 +7,7 @@ import Link from "next/link";
 ;
 import { Progress } from "@/components/ui/progress";
 import { format, parseISO } from "date-fns";
-import { cn } from "@urbandetox/utils";
+import { cn, safeImageUrl } from "@urbandetox/utils";
 import { Calendar, MapPin, CheckCircle2, AlertCircle, ArrowRight, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { Card, CardContent, Badge, Button } from "@urbandetox/ui"
@@ -47,7 +47,7 @@ export function TripCard({ trip, index }: TripCardProps) {
       <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-500">
         <div className="grid grid-cols-1 md:grid-cols-5">
           <div className="relative h-48 sm:h-56 md:h-auto md:col-span-2 overflow-hidden">
-            <Image src={trip.image} alt={trip.packageTitle} fill className="object-cover" sizes="(max-width: 768px) 100vw, 40vw" />
+            <Image src={safeImageUrl(trip.image)} alt={trip.packageTitle} fill className="object-cover" sizes="(max-width: 768px) 100vw, 40vw" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent md:bg-gradient-to-r" />
             <div className="absolute top-3 left-3 flex gap-2">
               <Badge className={cn("border-0 text-xs font-medium backdrop-blur-sm", isUpcoming ? "bg-brand text-brand-foreground" : "bg-white/90 text-foreground")}>

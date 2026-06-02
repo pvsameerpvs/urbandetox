@@ -5,7 +5,7 @@ import Image from "next/image";
 ;
 ;
 ;
-import { formatPrice, formatDateRange } from "@urbandetox/utils";
+import { formatPrice, formatDateRange, safeImageUrl } from "@urbandetox/utils";
 import { Clock, Calendar as CalendarIcon, Users, ArrowRight, MapPin } from "lucide-react";
 import type { Package } from "@urbandetox/utils";
 import type { Departure } from "@urbandetox/utils";
@@ -26,7 +26,7 @@ export function DestinationPackageCard({ pkg, destination, upcomingCount, nextDe
       <Card className="overflow-hidden border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl !gap-0 !py-0 hover:shadow-xl transition-all duration-500 h-full">
         <div className="relative h-[200px] sm:h-[220px] overflow-hidden">
           <Image
-            src={pkg.coverImage}
+            src={safeImageUrl(pkg.coverImage)}
             alt={pkg.title}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

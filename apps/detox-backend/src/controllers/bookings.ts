@@ -8,7 +8,7 @@ import {
   bookingConfirmationTemplate,
   bookingAdminAlertTemplate,
 } from "@/templates";
-import { formatPrice } from "@urbandetox/utils";
+import { formatPrice, safeImageUrl } from "@urbandetox/utils";
 
 export const BookingController = {
   async list(req: Request, res: Response) {
@@ -51,7 +51,7 @@ export const BookingController = {
       status: computeTripStatus(r.startDate),
       onboardingStatus: "completed",
       paymentStatus: r.paymentStatus === "paid" ? "paid" : "pending",
-      image: r.coverImage || "",
+      image: safeImageUrl(r.coverImage),
       bookingCode: r.departureCode,
       travelers: r.travelers,
     }));

@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import type { Package, Destination } from "@urbandetox/utils";
-import { formatPrice } from "@urbandetox/utils";
+import { formatPrice, safeImageUrl } from "@urbandetox/utils";
 import { MapPin, Clock, ArrowRight } from "lucide-react";
 import { Card, CardContent } from "@urbandetox/ui"
 
@@ -26,7 +26,7 @@ export function RelatedPackageCard({ pkg, dest }: RelatedPackageCardProps) {
           <div className="flex flex-col sm:flex-row">
             <div className="relative h-44 sm:h-auto sm:w-40 shrink-0 overflow-hidden">
               <Image
-                src={pkg.coverImage}
+                src={safeImageUrl(pkg.coverImage)}
                 alt={pkg.title}
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"

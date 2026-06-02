@@ -129,7 +129,7 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
                   </CardContent>
                 </Card>
               ) : (
-                <BookingSummaryCard image={pkg.coverImage} title={pkg.title} destination={dest.name} durationLabel={pkg.durationLabel} dates={formatDateRange(departure.startDate, departure.endDate)} meetingPoint={dest.meetingPoint} travelers={travelerCount} seatsLeft={departure.seatsLeft} priceLines={priceLines} total={total} />
+                <BookingSummaryCard image={departure.image || pkg.coverImage} title={pkg.title} destination={dest.name} durationLabel={pkg.durationLabel} dates={formatDateRange(departure.startDate, departure.endDate)} meetingPoint={dest.meetingPoint} travelers={travelerCount} seatsLeft={departure.seatsLeft} priceLines={priceLines} total={total} />
               )}
             </div>
           </div>
