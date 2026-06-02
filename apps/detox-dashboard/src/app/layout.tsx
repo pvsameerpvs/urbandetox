@@ -30,6 +30,9 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 export const metadata: Metadata = {
   title: "Urban Detox Admin",
   description: "Admin dashboard for Urban Detox",
+  icons: {
+    icon: "/fevic.png",
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

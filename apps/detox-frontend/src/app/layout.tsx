@@ -15,6 +15,9 @@ export const metadata: Metadata = {
   title: "Urban Detox — Disconnect from routine. Step into your next detox.",
   description:
     "Curated offbeat escapes for real reset. Small-group detox trips to Kodaikanal, North Kerala, Gokarna, and beyond.",
+  icons: {
+    icon: "/fevic.png",
+  },
 };
 
 export default function RootLayout({
