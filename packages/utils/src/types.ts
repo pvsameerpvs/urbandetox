@@ -62,6 +62,8 @@ export interface Departure {
   status: DepartureStatus;
   tripStatus?: TripStatus;
   image?: string;
+  startTime?: string;
+  endTime?: string;
 }
 
 export interface GuideArticle {

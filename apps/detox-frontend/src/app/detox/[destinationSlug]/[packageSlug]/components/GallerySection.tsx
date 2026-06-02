@@ -11,6 +11,9 @@ interface GallerySectionProps {
 
 export function GallerySection({ images }: GallerySectionProps) {
   const [selected, setSelected] = useState(0);
+  const validImages = images.filter(Boolean);
+
+  if (validImages.length === 0) return null;
 
   return (
     <motion.section initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
@@ -22,10 +25,10 @@ export function GallerySection({ images }: GallerySectionProps) {
 
       <div className="space-y-3">
         <div className="relative aspect-[16/9] overflow-hidden rounded-2xl">
-          <Image src={images[selected]} alt="Gallery main" fill className="object-cover" sizes="(max-width: 1024px) 100vw, 66vw" />
+          <Image src={validImages[selected]} alt="Gallery main" fill className="object-cover" sizes="(max-width: 1024px) 100vw, 66vw" />
         </div>
         <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
-          {images.map((img, i) => (
+          {validImages.map((img, i) => (
             <button
               key={i}
               onClick={() => setSelected(i)}

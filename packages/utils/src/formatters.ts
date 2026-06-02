@@ -44,3 +44,12 @@ export function getDurationLabel(days: number): string {
 export function pluralize(count: number, singular: string, plural: string): string {
   return count === 1 ? `${count} ${singular}` : `${count} ${plural}`;
 }
+
+export function formatTime(timeStr: string | undefined): string {
+  if (!timeStr) return "";
+  const [hours, minutes] = timeStr.split(":");
+  const h = parseInt(hours, 10);
+  const ampm = h >= 12 ? "PM" : "AM";
+  const displayH = h % 12 || 12;
+  return `${displayH}:${minutes} ${ampm}`;
+}

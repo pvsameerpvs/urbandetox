@@ -13,6 +13,8 @@ export const departureFormSchema = z.object({
   status: z.enum(["open", "filling", "full", "closed"]),
   tripStatus: z.enum(["finished", "canceled", "postponed"]).optional(),
   image: z.string().optional(),
+  startTime: z.string().optional(),
+  endTime: z.string().optional(),
 });
 
 export type DepartureFormData = z.infer<typeof departureFormSchema>;

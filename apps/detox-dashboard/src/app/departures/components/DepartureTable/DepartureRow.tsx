@@ -9,6 +9,7 @@ import {
   MapPin,
   ArrowRight,
   ExternalLink,
+  Clock,
 } from "lucide-react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { cn } from "@urbandetox/utils";
@@ -96,6 +97,15 @@ export function DepartureRow({ dep, packages, destinations, onDeleteClick }: Dep
             <ArrowRight className="h-3 w-3" />
             <span>{dep.endDate}</span>
           </div>
+          {(dep.startTime || dep.endTime) && (
+            <div className="flex items-center gap-1 text-[10px] text-muted-foreground mt-0.5">
+              <Clock className="h-3 w-3" />
+              <span>
+                {dep.startTime || "—"}
+                {dep.endTime ? ` → ${dep.endTime}` : ""}
+              </span>
+            </div>
+          )}
         </div>
       </td>
 

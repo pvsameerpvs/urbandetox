@@ -31,7 +31,7 @@ export function ImageField({ control }: ImageFieldProps) {
               value={field.value || ""}
               onChange={(url) => field.onChange(url || undefined)}
               label="Upload a departure cover image"
-              folder="packages/covers"
+              folder="departures/covers"
             />
           </FormControl>
           <FormMessage />

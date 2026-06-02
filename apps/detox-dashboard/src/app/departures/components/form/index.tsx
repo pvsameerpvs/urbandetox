@@ -13,7 +13,7 @@ import {
 import { FormSection } from "@/components/forms/FormSection";
 import { FormActions } from "@/components/forms/FormActions";
 import type { Departure, Package, Destination } from "@urbandetox/utils";
-import { Tag } from "lucide-react";
+import { Tag, Clock } from "lucide-react";
 import { PackageSelectField } from "./PackageSelectField";
 import { StatusFields } from "./StatusFields";
 import { ImageField } from "./ImageField";
@@ -55,6 +55,8 @@ export function DepartureForm({
       status: (initialData?.status as DepartureFormData["status"]) || "open",
       tripStatus: (initialData?.tripStatus as DepartureFormData["tripStatus"]) ?? undefined,
       image: initialData?.image ?? undefined,
+      startTime: initialData?.startTime ?? undefined,
+      endTime: initialData?.endTime ?? undefined,
     },
   });
 
@@ -101,6 +103,8 @@ export function DepartureForm({
           <ImageField control={form.control} />
 
           <DateRangeFields control={form.control} />
+
+          <TimeRangeFields control={form.control} />
 
           <PricingFields control={form.control} />
 
@@ -153,6 +157,43 @@ function DateRangeFields({ control }: { control: import("react-hook-form").Contr
             <FormLabel>End Date</FormLabel>
             <FormControl>
               <Input type="date" className="h-11 rounded-xl" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </div>
+  );
+}
+
+function TimeRangeFields({ control }: { control: import("react-hook-form").Control<DepartureFormData> }) {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <FormField
+        control={control}
+        name="startTime"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="flex items-center gap-2">
+              <Clock className="h-4 w-4 text-brand" /> Start Time
+            </FormLabel>
+            <FormControl>
+              <Input type="time" className="h-11 rounded-xl" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={control}
+        name="endTime"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="flex items-center gap-2">
+              <Clock className="h-4 w-4 text-brand" /> End Time
+            </FormLabel>
+            <FormControl>
+              <Input type="time" className="h-11 rounded-xl" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>

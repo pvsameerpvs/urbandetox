@@ -85,6 +85,8 @@ export const departures = pgTable("departures", {
   status: departureStatusEnum("status").notNull().default("open"),
   tripStatus: tripStatusEnum("trip_status"),
   image: text("image"),
+  startTime: varchar("start_time", { length: 10 }),
+  endTime: varchar("end_time", { length: 10 }),
 });
 
 export const guides = pgTable("guides", {

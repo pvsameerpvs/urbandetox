@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Card, CardContent, Badge, Button } from "@urbandetox/ui";
-import { formatPrice, formatDateRange } from "@urbandetox/utils";
+import { formatPrice, formatDateRange, formatTime } from "@urbandetox/utils";
 import type { Departure } from "@urbandetox/utils";
-import { Calendar, Check } from "lucide-react";
+import { Calendar, Check, Clock } from "lucide-react";
 
 interface DeparturesSectionProps {
   departures: Departure[];
@@ -41,10 +42,28 @@ export function DeparturesSection({ departures, selectedCode }: DeparturesSectio
                 className={`border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl hover:shadow-md transition-all duration-300 ${isSelected ? "ring-2 ring-brand bg-brand/[0.02]" : ""}`}
               >
                 <CardContent className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+                  {dep.image && (
+                    <div className="relative w-full sm:w-20 h-32 sm:h-20 rounded-xl overflow-hidden shrink-0">
+                      <Image
+                        src={dep.image}
+                        alt="Departure cover"
+                        fill
+                        sizes="80px"
+                        className="object-cover"
+                      />
+                    </div>
+                  )}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1.5">
+                    <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                       <Calendar className="h-4 w-4 text-brand shrink-0" />
                       <span className="text-sm font-bold">{formatDateRange(dep.startDate, dep.endDate)}</span>
+                      {dep.startTime && (
+                        <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                          <Clock className="h-3 w-3" />
+                          {formatTime(dep.startTime)}
+                          {dep.endTime && ` - ${formatTime(dep.endTime)}`}
+                        </span>
+                      )}
                       {isSelected && (
                         <Badge className="bg-brand text-brand-foreground border-0 text-[10px] font-medium flex items-center gap-1">
                           <Check className="h-3 w-3" /> Selected

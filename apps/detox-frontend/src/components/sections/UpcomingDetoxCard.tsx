@@ -4,9 +4,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Button, Card, CardContent } from "@urbandetox/ui";
-import { formatPrice, cn } from "@urbandetox/utils";
+import { formatPrice, formatTime, cn } from "@urbandetox/utils";
 import type { Departure, Package, Destination } from "@urbandetox/utils";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Clock } from "lucide-react";
 import { itemVariants } from "@/lib/animations";
 
 interface UpcomingDetoxCardProps {
@@ -43,7 +43,7 @@ export function UpcomingDetoxCard({ dep, pkg, dest }: UpcomingDetoxCardProps) {
       >
         <div className="relative h-[200px] sm:h-[220px] overflow-hidden rounded-t-2xl shrink-0">
           <Image
-            src={pkg.coverImage}
+            src={dep.image || pkg.coverImage}
             alt={pkg.title}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -56,6 +56,13 @@ export function UpcomingDetoxCard({ dep, pkg, dest }: UpcomingDetoxCardProps) {
           <div className="flex-1">
             <p className="text-sm font-semibold text-muted-foreground tracking-wide mb-2">
               {formatCardDateRange(dep.startDate, dep.endDate)}
+              {dep.startTime && (
+                <span className="inline-flex items-center gap-1 ml-2 text-brand">
+                  <Clock className="h-3 w-3" />
+                  {formatTime(dep.startTime)}
+                  {dep.endTime && ` - ${formatTime(dep.endTime)}`}
+                </span>
+              )}
             </p>
 
             <h3 className="text-lg font-bold leading-snug mb-1.5">{pkg.title}</h3>
