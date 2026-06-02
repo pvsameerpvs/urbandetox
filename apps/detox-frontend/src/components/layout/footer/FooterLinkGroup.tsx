@@ -13,7 +13,7 @@ interface FooterLinkGroupProps {
 export function FooterLinkGroup({ title, links }: FooterLinkGroupProps) {
   return (
     <div>
-      <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-white/40 mb-5">
+      <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-footer-foreground/40 mb-5">
         {title}
       </h4>
       <ul className="flex flex-col gap-3">
@@ -21,7 +21,7 @@ export function FooterLinkGroup({ title, links }: FooterLinkGroupProps) {
           <li key={link.label}>
             <Link
               href={link.href}
-              className="text-sm text-white/70 hover:text-white transition-colors"
+              className="text-sm text-footer-foreground/70 hover:text-footer-foreground transition-colors"
             >
               {link.label}
             </Link>

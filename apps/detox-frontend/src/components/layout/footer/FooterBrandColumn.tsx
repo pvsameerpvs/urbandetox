@@ -19,7 +19,7 @@ export function FooterBrandColumn({ settings }: FooterBrandColumnProps) {
           className="h-12 w-auto object-contain"
         />
       </Link>
-      <p className="text-sm text-white/60 leading-relaxed max-w-xs mb-6">
+      <p className="text-sm text-footer-foreground/60 leading-relaxed max-w-xs mb-6">
         Disconnect from routine. Step into curated offbeat escapes designed for real reset.
       </p>
       <FooterSocialRow settings={settings} />

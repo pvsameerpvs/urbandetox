@@ -43,6 +43,8 @@
   --color-brand-foreground: var(--brand-foreground);
   --color-brand-muted: var(--brand-muted);
   --color-brand-accent: var(--brand-accent);
+  --color-footer: var(--footer);
+  --color-footer-foreground: var(--footer-foreground);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -89,6 +91,8 @@
   --brand-foreground: #ffffff;
   --brand-muted: #e8f0eb;
   --brand-accent: #d4a373;
+  --footer: #c9f269;
+  --footer-foreground: #083c2f;
 }
 
 .dark {
@@ -127,6 +131,8 @@
   --brand-foreground: #1c1917;
   --brand-muted: #1a2e24;
   --brand-accent: #d4a373;
+  --footer: #c9f269;
+  --footer-foreground: #083c2f;
 }
 
 @layer base {

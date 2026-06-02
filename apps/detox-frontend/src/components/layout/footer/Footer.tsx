@@ -28,12 +28,12 @@ interface FooterProps {
 
 export function Footer({ settings }: FooterProps) {
   return (
-    <footer className="w-full bg-sidebar-dark text-white relative overflow-hidden">
+    <footer className="w-full bg-footer text-footer-foreground relative overflow-hidden">
       {/* Dot pattern */}
       <div
         className="absolute inset-0 opacity-[0.03]"
         style={{
-          backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
+          backgroundImage: "radial-gradient(circle, var(--footer-foreground) 1px, transparent 1px)",
           backgroundSize: "24px 24px",
         }}
       />

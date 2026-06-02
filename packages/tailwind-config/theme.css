@@ -39,6 +39,8 @@
   --color-brand-muted: var(--brand-muted);
   --color-brand-accent: var(--brand-accent);
   --color-sidebar-dark: var(--sidebar-dark);
+  --color-footer: var(--footer);
+  --color-footer-foreground: var(--footer-foreground);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -86,6 +88,8 @@
   --brand-muted: #e8f0eb;
   --brand-accent: #d4a373;
   --sidebar-dark: #0a1628;
+  --footer: #c9f269;
+  --footer-foreground: #083c2f;
 }
 
 .dark {
@@ -125,6 +129,8 @@
   --brand-muted: #1a2e24;
   --brand-accent: #d4a373;
   --sidebar-dark: #0a1628;
+  --footer: #c9f269;
+  --footer-foreground: #083c2f;
 }
 
 @layer base {

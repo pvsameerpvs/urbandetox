@@ -31,7 +31,7 @@ export function FooterSocialRow({ settings }: FooterSocialRowProps) {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={socialPlatformLabels[social.platform]}
-          className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-white/10 text-white/70 hover:bg-brand hover:text-white transition-all duration-300"
+          className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-footer-foreground/10 text-footer-foreground/70 hover:bg-footer-foreground hover:text-footer transition-all duration-300"
         >
           <SocialIcon platform={social.platform} className="h-4 w-4" />
         </a>
@@ -42,7 +42,7 @@ export function FooterSocialRow({ settings }: FooterSocialRowProps) {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Email"
-        className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-white/10 text-white/70 hover:bg-brand hover:text-white transition-all duration-300"
+        className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-footer-foreground/10 text-footer-foreground/70 hover:bg-footer-foreground hover:text-footer transition-all duration-300"
       >
         <Mail className="h-4 w-4" />
       </a>
@@ -53,7 +53,7 @@ export function FooterSocialRow({ settings }: FooterSocialRowProps) {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="WhatsApp"
-          className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-white/10 text-white/70 hover:bg-brand hover:text-white transition-all duration-300"
+          className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-footer-foreground/10 text-footer-foreground/70 hover:bg-footer-foreground hover:text-footer transition-all duration-300"
         >
           <WhatsAppIcon className="h-4 w-4" />
         </a>
