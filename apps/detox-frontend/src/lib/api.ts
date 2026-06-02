@@ -126,6 +126,26 @@ export async function fetchTestimonials(limit = 4): Promise<Testimonial[]> {
   return api<Testimonial[]>(`/api/testimonials?limit=${limit}`);
 }
 
+// ── Google Reviews ──────────────────────────────────
+export interface GoogleReview {
+  name: string;
+  avatar?: string;
+  rating: number;
+  text: string;
+  relativeTime: string;
+}
+
+export interface GoogleReviewsResponse {
+  reviews: GoogleReview[];
+  rating: number;
+  total: number;
+  url: string;
+}
+
+export async function fetchGoogleReviews(): Promise<GoogleReviewsResponse> {
+  return api<GoogleReviewsResponse>("/api/google-reviews");
+}
+
 // ── Bookings ──────────────────────────────────────
 export async function fetchMyBookings(): Promise<unknown[]> {
   const { createClient } = await import("@/lib/supabase/client");

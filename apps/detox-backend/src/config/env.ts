@@ -9,6 +9,8 @@ export const ENV = {
   R2_BUCKET_NAME: process.env.R2_BUCKET_NAME || "",
   R2_ENDPOINT: process.env.R2_ENDPOINT || "",
   R2_PUBLIC_URL: process.env.R2_PUBLIC_URL || "",
+  GOOGLE_PLACES_API_KEY: process.env.GOOGLE_PLACES_API_KEY || "",
+  GOOGLE_PLACE_ID: process.env.GOOGLE_PLACE_ID || "",
 } as const;
 
 if (!ENV.SUPABASE_URL || !ENV.SUPABASE_SERVICE_ROLE_KEY) {

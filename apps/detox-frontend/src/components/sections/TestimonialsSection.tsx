@@ -6,13 +6,22 @@ import { motion } from "framer-motion";
 import { cn } from "@urbandetox/utils";
 import type { Testimonial } from "@urbandetox/utils";
 import { containerVariants, itemVariants } from "@/lib/animations";
-import { Card, CardContent } from "@urbandetox/ui"
+import { Card, CardContent } from "@urbandetox/ui";
+import { GoogleReviewsBadge } from "./GoogleReviewsBadge";
 
 interface TestimonialsSectionProps {
   testimonials: Testimonial[];
+  googleRating?: number;
+  googleTotal?: number;
+  googleUrl?: string;
 }
 
-export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
+export function TestimonialsSection({
+  testimonials,
+  googleRating,
+  googleTotal,
+  googleUrl,
+}: TestimonialsSectionProps) {
   return (
     <section className="py-24 sm:py-32 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -28,10 +37,15 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
               Traveler <span className="text-brand">Memories</span>
             </h2>
           </div>
-          <div className="lg:flex lg:items-end">
-            <p className="text-base sm:text-lg text-muted-foreground leading-relaxed lg:max-w-md">
+          <div className="lg:flex lg:flex-col lg:items-end lg:justify-end gap-4">
+            <p className="text-base sm:text-lg text-muted-foreground leading-relaxed lg:max-w-md lg:text-right">
               Real stories from real travelers. No filters, no scripts. Just honest words about reset.
             </p>
+            <GoogleReviewsBadge
+              rating={googleRating || 0}
+              total={googleTotal || 0}
+              url={googleUrl || ""}
+            />
           </div>
         </div>
 

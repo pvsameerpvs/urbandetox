@@ -6,6 +6,7 @@ import {
   fetchUpcomingDepartures,
   fetchFeaturedGuides,
   fetchTestimonials,
+  fetchGoogleReviews,
 } from "@/lib/api";
 import type { Destination, Package, Departure } from "@urbandetox/utils";
 import { initialSeasonalTags } from "@urbandetox/utils";
@@ -20,12 +21,13 @@ import { CorporateUniversitySection } from "@/components/sections/CorporateUnive
 import { FinalCTASection } from "@/components/sections/FinalCTASection";
 
 export default async function Home() {
-  const [destinations, packages, departures, guides, testimonials] = await Promise.all([
+  const [destinations, packages, departures, guides, testimonials, googleReviews] = await Promise.all([
     fetchDestinations(),
     fetchPackages(),
     fetchUpcomingDepartures(50),
     fetchFeaturedGuides(4),
     fetchTestimonials(4),
+    fetchGoogleReviews().catch(() => ({ rating: 0, total: 0, url: "" })),
   ]);
 
   const destMap = new Map(destinations.map((d) => [d.slug, d]));
@@ -74,7 +76,12 @@ export default async function Home() {
       />
       <UpcomingDetoxSection departures={enrichedDepartures} />
       <WhySection />
-      <TestimonialsSection testimonials={testimonials} />
+      <TestimonialsSection
+        testimonials={testimonials}
+        googleRating={googleReviews.rating}
+        googleTotal={googleReviews.total}
+        googleUrl={googleReviews.url}
+      />
 
       <BestDestinationsSection
         destinations={destinations}
