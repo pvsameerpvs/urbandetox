@@ -83,8 +83,9 @@ export default function UsersPage() {
   const columns = useMemo(
     () => [
       {
-        key: "user",
-        header: "User",
+        key: "fullName",
+        header: "Name",
+        sortable: true,
         cell: (u: DashboardUser) => (
           <div className="flex items-center gap-3">
             <div className="h-8 w-8 rounded-full bg-brand/10 flex items-center justify-center shrink-0">
@@ -92,11 +93,16 @@ export default function UsersPage() {
                 {u.fullName?.charAt(0) || u.email.charAt(0)}
               </span>
             </div>
-            <div>
-              <p className="font-medium text-xs">{u.fullName || "—"}</p>
-              <p className="text-[10px] text-muted-foreground">{u.email}</p>
-            </div>
+            <p className="font-medium text-xs">{u.fullName || "—"}</p>
           </div>
+        ),
+      },
+      {
+        key: "email",
+        header: "Email",
+        sortable: true,
+        cell: (u: DashboardUser) => (
+          <p className="text-xs text-muted-foreground">{u.email}</p>
         ),
       },
       {

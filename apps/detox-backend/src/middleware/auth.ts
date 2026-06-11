@@ -7,6 +7,8 @@ export interface AuthUser {
   id: string;
   email: string;
   role: UserRole;
+  fullName?: string | null;
+  avatarUrl?: string | null;
 }
 
 declare global {
@@ -41,10 +43,13 @@ export async function authMiddleware(
     return;
   }
 
+  const meta = data.user.user_metadata || {};
   req.user = {
     id: data.user.id,
     email: data.user.email || "",
     role: resolveRole(data.user.app_metadata),
+    fullName: (meta.full_name as string | undefined) || null,
+    avatarUrl: (meta.avatar_url as string | undefined) || null,
   };
 
   next();

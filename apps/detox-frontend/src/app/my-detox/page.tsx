@@ -30,7 +30,7 @@ export default function MyDetoxPage() {
   const upcoming = trips.filter((t) => t.status === "upcoming");
   const hasTrips = trips.length > 0;
 
-  const displayName = authUser?.fullName || profile.personal.fullName || "User";
+  const displayName = profile.personal.fullName || authUser?.fullName || "User";
   const email = authUser?.email || profile.personal.email || "";
   const initials = displayName.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
 

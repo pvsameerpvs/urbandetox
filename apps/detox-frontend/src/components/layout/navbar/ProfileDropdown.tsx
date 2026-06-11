@@ -11,7 +11,7 @@ export function ProfileDropdown() {
   const { authUser, logout, profile } = useUserProfile();
   const router = useRouter();
 
-  const displayName = authUser?.fullName || profile.personal.fullName || "User";
+  const displayName = profile.personal.fullName || authUser?.fullName || "User";
   const email = authUser?.email || profile.personal.email || "";
   const initials = displayName
     .split(" ")

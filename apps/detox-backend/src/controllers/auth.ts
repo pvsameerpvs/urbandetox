@@ -68,7 +68,10 @@ export const AuthController = {
 
     // Auto-create profile for new OAuth users on first /me call
     if (!profile) {
-      profile = await createUserAndSendWelcome(userId, email);
+      profile = await createUserAndSendWelcome(userId, email, {
+        fullName: req.user!.fullName || undefined,
+        avatarUrl: req.user!.avatarUrl || undefined,
+      });
     }
 
     res.json({
@@ -103,11 +106,11 @@ export const AuthController = {
     }
 
     const created = await createUserAndSendWelcome(userId, email, {
-      fullName,
+      fullName: fullName ?? req.user!.fullName ?? undefined,
       phone,
       dateOfBirth,
       gender,
-      avatarUrl,
+      avatarUrl: avatarUrl ?? req.user!.avatarUrl ?? undefined,
     });
 
     res.status(201).json(created);
