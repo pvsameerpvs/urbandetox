@@ -17,7 +17,7 @@ import { slideVariants } from "@/lib/animations";
 import { type Traveler, type CommonDetails, type Departure, type Package, type Destination } from "@urbandetox/utils";
 import { useBooking } from "@/hooks/use-booking";
 import { formatDateRange } from "@urbandetox/utils";
-import { createBooking } from "@/lib/api";
+import { updateBookingOnboarding } from "@/lib/api";
 import { Users, Utensils, PhoneCall, FileCheck } from "lucide-react";
 import { Card, CardContent } from "@urbandetox/ui"
 
@@ -65,16 +65,14 @@ export function OnboardingPageClient({ code, departure, pkg, dest }: OnboardingP
   const handleSubmit = async () => {
     setSubmitting(true);
 
-    // Send booking to backend
     try {
-      await createBooking({
-        departureCode: code,
-        fullName: travelers[0]?.name || "",
-        phone: travelers[0]?.phone || "",
-        travelers: travelers.length,
-      });
+      if (!booking?.bookingId) {
+        throw new Error("A paid or reserved booking is required");
+      }
+      await updateBookingOnboarding(booking.bookingId, { travelers, common });
     } catch {
-      // Continue even if backend booking fails (demo environment)
+      setSubmitting(false);
+      return;
     }
 
     setSubmitting(false);

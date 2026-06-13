@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { type BookingState } from "@urbandetox/utils";
 import { useUserProfile } from "@/lib/user-profile";
 import { loadBookingState, saveBookingState } from "@/lib/booking-storage";
@@ -21,10 +21,15 @@ const FALLBACK: Pick<BookingState, "departureCode" | "travelers" | "common"> = {
 export function useBooking(departureCode: string) {
   const { profile, isLoggedIn } = useUserProfile();
 
-  const booking = useMemo(
-    () => loadBookingState(departureCode),
-    [departureCode]
-  );
+  const [booking, setBooking] = useState<BookingState | null>(null);
+
+  useEffect(() => {
+    const timer = window.setTimeout(
+      () => setBooking(loadBookingState(departureCode)),
+      0
+    );
+    return () => window.clearTimeout(timer);
+  }, [departureCode]);
 
   const save = useCallback(
     (patch: Partial<Omit<BookingState, "departureCode">> & { departureCode?: string }) => {
@@ -49,6 +54,7 @@ export function useBooking(departureCode: string) {
       }
 
       saveBookingState(next);
+      setBooking(next);
       return next;
     },
     [

@@ -17,6 +17,31 @@ async function api<T>(path: string): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+async function authApi<T>(path: string, options?: RequestInit): Promise<T> {
+  const { createClient } = await import("@/lib/supabase/client");
+  const supabase = createClient();
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+
+  if (!token) throw new Error("You must be signed in to continue");
+
+  const res = await fetch(`${API_BASE}${path}`, {
+    ...options,
+    cache: "no-store",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+      ...(options?.headers || {}),
+    },
+  });
+
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error((body as { error?: string }).error || `API error: ${res.status}`);
+  }
+  return body as T;
+}
+
 // ── Destinations ────────────────────────────────────
 export async function fetchDestinations(): Promise<Destination[]> {
   return api<Destination[]>("/api/destinations");
@@ -163,20 +188,73 @@ export async function fetchMyBookings(): Promise<unknown[]> {
   return res.json();
 }
 
-export async function createBooking(payload: {
+export async function createCheckoutSession(payload: {
+  idempotencyKey: string;
   departureCode: string;
-  fullName: string;
-  phone: string;
-  email?: string;
-  travelers?: number;
-}): Promise<unknown> {
-  const res = await fetch(`${API_BASE}/api/bookings`, {
+  travelerCount: number;
+  customer: { name: string; phone: string; email?: string };
+}): Promise<{
+  checkoutSessionId: string;
+  razorpayOrderId: string;
+  amountPaise: number;
+  currency: string;
+  keyId: string;
+  expiresAt: string;
+  status: string;
+}> {
+  return authApi("/api/payments/checkout-sessions", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) throw new Error(`Booking failed: ${res.status}`);
-  return res.json();
+}
+
+export async function verifyRazorpayPayment(payload: {
+  checkoutSessionId: string;
+  razorpayPaymentId: string;
+  razorpaySignature: string;
+}): Promise<{ status: string; bookingId?: string; checkoutSessionId: string }> {
+  return authApi("/api/payments/verify", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function fetchCheckoutStatus(
+  checkoutSessionId: string
+): Promise<{
+  checkoutSessionId: string;
+  status: string;
+  expiresAt: string;
+  bookingId?: string;
+}> {
+  return authApi(
+    `/api/payments/checkout-sessions/${encodeURIComponent(checkoutSessionId)}/status`
+  );
+}
+
+export async function createPayOnArrival(payload: {
+  idempotencyKey: string;
+  departureCode: string;
+  travelerCount: number;
+  customer: { name: string; phone: string; email?: string };
+}): Promise<{ bookingId: string; status: string }> {
+  return authApi("/api/payments/pay-on-arrival", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateBookingOnboarding(
+  bookingId: string,
+  payload: {
+    travelers: import("@urbandetox/utils").Traveler[];
+    common: import("@urbandetox/utils").CommonDetails;
+  }
+): Promise<unknown> {
+  return authApi(`/api/bookings/${encodeURIComponent(bookingId)}/onboarding`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
 }
 
 // ── Contact ────────────────────────────────────────

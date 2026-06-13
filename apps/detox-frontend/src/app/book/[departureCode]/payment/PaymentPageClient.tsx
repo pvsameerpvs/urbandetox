@@ -1,10 +1,8 @@
 "use client";
 
-import { useState, useEffect, startTransition } from "react";
+import { useState, useEffect, startTransition, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
-;
-;
-;
+import Script from "next/script";
 import { BookingHeader } from "../../components/BookingHeader";
 import { BookingSummaryCard } from "../../components/BookingSummaryCard";
 import { MobileBookingCTA } from "../../components/MobileBookingCTA";
@@ -12,13 +10,35 @@ import { PaymentStatusAlert } from "../../components/PaymentStatusAlert";
 import { PaymentMethodOption } from "../components/PaymentMethodOption";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { useBooking } from "@/hooks/use-booking";
+import {
+  createCheckoutSession,
+  createPayOnArrival,
+  fetchCheckoutStatus,
+  verifyRazorpayPayment,
+} from "@/lib/api";
 import { formatPrice, formatDateRange } from "@urbandetox/utils";
 import { CreditCard, Wallet, Lock, Loader2, Shield } from "lucide-react";
 import { Button, Card, CardContent, Separator } from "@urbandetox/ui"
 import type { Departure, Package, Destination } from "@urbandetox/utils";
 
 type PaymentMethod = "razorpay" | "cod";
-type PaymentStatus = "idle" | "processing" | "success" | "failure";
+type PaymentStatus = "idle" | "processing" | "success" | "review" | "uncertain" | "failure";
+
+interface RazorpaySuccessResponse {
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+}
+
+interface RazorpayInstance {
+  open(): void;
+  on(event: "payment.failed", handler: () => void): void;
+}
+
+declare global {
+  interface Window {
+    Razorpay?: new (options: Record<string, unknown>) => RazorpayInstance;
+  }
+}
 
 interface PaymentPageClientProps {
   code: string;
@@ -28,7 +48,7 @@ interface PaymentPageClientProps {
 }
 
 export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageClientProps) {
-  const { booking, save } = useBooking(code);
+  const { booking, save, load } = useBooking(code);
 
   const [travelerCount, setTravelerCount] = useState(1);
 
@@ -40,6 +60,7 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
 
   const [method, setMethod] = useState<PaymentMethod>("razorpay");
   const [status, setStatus] = useState<PaymentStatus>("idle");
+  const [scriptReady, setScriptReady] = useState(false);
   const hydrated = useHydrated();
 
   const pricePerPerson = departure.offerPrice ?? departure.price;
@@ -47,14 +68,254 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
   const gst = Math.round(subtotal * 0.05);
   const total = subtotal + gst;
 
-  const handlePay = () => {
-    setStatus("processing");
-    setTimeout(() => {
+  const finish = useCallback(
+    (patch: {
+      bookingId: string;
+      checkoutSessionId?: string;
+      paymentStatus: "paid" | "cod";
+      paymentMethod: PaymentMethod;
+    }) => {
+      save({ ...patch, paymentConfirmationPending: false });
       setStatus("success");
-      // Persist payment status before redirecting
-      save({ paymentStatus: method === "cod" ? "cod" : "paid", paymentMethod: method });
-      setTimeout(() => { window.location.href = `/book/${code}/onboarding`; }, 2000);
-    }, 2500);
+      setTimeout(() => {
+        window.location.href = `/book/${code}/onboarding`;
+      }, 1200);
+    },
+    [code, save]
+  );
+
+  const waitForCapturedPayment = async (checkoutSessionId: string) => {
+    for (let attempt = 0; attempt < 12; attempt++) {
+      let checkout: Awaited<ReturnType<typeof fetchCheckoutStatus>>;
+      try {
+        checkout = await fetchCheckoutStatus(checkoutSessionId);
+      } catch {
+        if (attempt === 11) throw new Error("Unable to confirm payment status");
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        continue;
+      }
+      if (checkout.status === "paid" && checkout.bookingId) {
+        return { bookingId: checkout.bookingId, status: "paid" as const };
+      }
+      if (checkout.status === "payment_review" && checkout.bookingId) {
+        return { bookingId: checkout.bookingId, status: "payment_review" as const };
+      }
+      if (["payment_failed", "expired", "order_failed"].includes(checkout.status)) {
+        throw new Error(`Checkout entered ${checkout.status}`);
+      }
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+    }
+    throw new Error("Payment capture is taking longer than expected");
+  };
+
+  const finishPaymentResult = useCallback(
+    (result: {
+      bookingId: string;
+      status: "paid" | "payment_review";
+      checkoutSessionId: string;
+    }) => {
+      save({
+        bookingId: result.bookingId,
+        checkoutSessionId: result.checkoutSessionId,
+        paymentStatus: "paid",
+        paymentMethod: "razorpay",
+        paymentConfirmationPending: false,
+      });
+      if (result.status === "payment_review") {
+        setStatus("review");
+        return;
+      }
+      finish({
+        bookingId: result.bookingId,
+        checkoutSessionId: result.checkoutSessionId,
+        paymentStatus: "paid",
+        paymentMethod: "razorpay",
+      });
+    },
+    [finish, save]
+  );
+
+  useEffect(() => {
+    if (!booking?.paymentConfirmationPending || !booking.checkoutSessionId) return;
+
+    let active = true;
+    const reconcile = async () => {
+      setStatus("uncertain");
+      while (active) {
+        try {
+          const checkout = await fetchCheckoutStatus(booking.checkoutSessionId!);
+          if (!active) return;
+
+          if (checkout.status === "paid" && checkout.bookingId) {
+            finishPaymentResult({
+              bookingId: checkout.bookingId,
+              status: "paid",
+              checkoutSessionId: booking.checkoutSessionId!,
+            });
+            return;
+          }
+          if (checkout.status === "payment_review" && checkout.bookingId) {
+            finishPaymentResult({
+              bookingId: checkout.bookingId,
+              status: "payment_review",
+              checkoutSessionId: booking.checkoutSessionId!,
+            });
+            return;
+          }
+          if (["payment_failed", "expired", "order_failed"].includes(checkout.status)) {
+            save({ paymentConfirmationPending: false });
+            setStatus("failure");
+            return;
+          }
+        } catch {
+          // A temporary network/API failure must never invite a second payment.
+        }
+        await new Promise((resolve) => window.setTimeout(resolve, 5000));
+      }
+    };
+    const timer = window.setTimeout(() => void reconcile(), 0);
+
+    return () => {
+      active = false;
+      window.clearTimeout(timer);
+    };
+  }, [
+    booking?.checkoutSessionId,
+    booking?.paymentConfirmationPending,
+    finishPaymentResult,
+    save,
+  ]);
+
+  const handlePay = async () => {
+    const current = load();
+    const primary = current?.travelers[0];
+    if (!current || !primary) {
+      setStatus("failure");
+      return;
+    }
+    if (current.paymentConfirmationPending) {
+      setStatus("uncertain");
+      return;
+    }
+
+    setStatus("processing");
+
+    try {
+      const customer = {
+        name: primary.name,
+        phone: primary.phone,
+        ...(primary.email && { email: primary.email }),
+      };
+
+      if (method === "cod") {
+        const idempotencyKey = current.checkoutIdempotencyKey?.startsWith("cod_")
+          ? current.checkoutIdempotencyKey
+          : `cod_${crypto.randomUUID()}`;
+        save({ checkoutIdempotencyKey: idempotencyKey });
+        const result = await createPayOnArrival({
+          idempotencyKey,
+          departureCode: code,
+          travelerCount: current.travelers.length,
+          customer,
+        });
+        finish({
+          bookingId: result.bookingId,
+          paymentStatus: "cod",
+          paymentMethod: "cod",
+        });
+        return;
+      }
+
+      if (!scriptReady || !window.Razorpay) {
+        throw new Error("Razorpay Checkout is still loading");
+      }
+
+      const idempotencyKey =
+        current.checkoutIdempotencyKey?.startsWith("razorpay_")
+          ? current.checkoutIdempotencyKey
+          : `razorpay_${crypto.randomUUID()}`;
+      save({ checkoutIdempotencyKey: idempotencyKey });
+
+      const checkout = await createCheckoutSession({
+        idempotencyKey,
+        departureCode: code,
+        travelerCount: current.travelers.length,
+        customer,
+      });
+      save({ checkoutSessionId: checkout.checkoutSessionId });
+
+      if (["paid", "payment_review"].includes(checkout.status)) {
+        const paymentResult = await waitForCapturedPayment(checkout.checkoutSessionId);
+        finishPaymentResult({
+          ...paymentResult,
+          checkoutSessionId: checkout.checkoutSessionId,
+        });
+        return;
+      }
+      if (["expired", "order_failed"].includes(checkout.status)) {
+        save({ checkoutIdempotencyKey: undefined });
+        throw new Error("The previous checkout expired. Please try again.");
+      }
+      if (!checkout.razorpayOrderId) {
+        throw new Error("Unable to create Razorpay order");
+      }
+
+      const razorpay = new window.Razorpay({
+        key: checkout.keyId,
+        amount: checkout.amountPaise,
+        currency: checkout.currency,
+        name: "Urban Detox",
+        description: `${pkg.title} · ${code}`,
+        order_id: checkout.razorpayOrderId,
+        prefill: {
+          name: primary.name,
+          email: primary.email,
+          contact: primary.phone,
+        },
+        notes: {
+          checkoutSessionId: checkout.checkoutSessionId,
+        },
+        handler: async (response: RazorpaySuccessResponse) => {
+          save({ paymentConfirmationPending: true });
+          try {
+            const verified = await verifyRazorpayPayment({
+              checkoutSessionId: checkout.checkoutSessionId,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+            });
+            const paymentResult = verified.bookingId
+              ? {
+                  bookingId: verified.bookingId,
+                  status:
+                    verified.status === "payment_review"
+                      ? ("payment_review" as const)
+                      : ("paid" as const),
+                }
+              : await waitForCapturedPayment(verified.checkoutSessionId);
+            finishPaymentResult({
+              ...paymentResult,
+              checkoutSessionId: verified.checkoutSessionId,
+            });
+          } catch {
+            setStatus("uncertain");
+          }
+        },
+        modal: {
+          ondismiss: () => setStatus("idle"),
+        },
+        theme: {
+          color: "#84cc16",
+        },
+      });
+
+      razorpay.on("payment.failed", () => {
+        save({ paymentConfirmationPending: false });
+        setStatus("failure");
+      });
+      razorpay.open();
+    } catch {
+      setStatus("failure");
+    }
   };
 
   const priceLines = [
@@ -65,6 +326,12 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
 
   return (
     <main className="min-h-screen bg-white pb-24 md:pb-0">
+      <Script
+        src="https://checkout.razorpay.com/v1/checkout.js"
+        strategy="afterInteractive"
+        onLoad={() => setScriptReady(true)}
+        onError={() => setStatus("failure")}
+      />
       <BookingHeader backHref={`/book/${code}`} backLabel="Back to Booking" stepLabel="Step 2 of 3" />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-12">
@@ -104,11 +371,11 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
 
                 <div className="flex items-start gap-3 rounded-xl bg-secondary/30 p-4">
                   <Shield className="h-4 w-4 text-brand shrink-0 mt-0.5" />
-                  <p className="text-xs text-muted-foreground leading-relaxed">Your payment is secured with 256-bit SSL encryption. We do not store your card details. This is a demo environment — no real payment will be deducted.</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">Razorpay securely processes your payment details. Urban Detox does not receive or store your card number, CVV, or UPI PIN.</p>
                 </div>
 
-                <Button className="w-full rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-12 text-sm font-semibold shadow-lg shadow-brand/10" onClick={handlePay} disabled={!hydrated || status === "processing" || status === "success"}>
-                  {!hydrated ? <span className="inline-flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Loading price...</span> : status === "processing" ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing Payment...</> : <><Lock className="mr-2 h-4 w-4" /> Pay {formatPrice(total)} Securely</>}
+                <Button className="w-full rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-12 text-sm font-semibold shadow-lg shadow-brand/10" onClick={handlePay} disabled={!hydrated || status === "processing" || status === "success" || status === "review" || status === "uncertain" || booking?.paymentConfirmationPending}>
+                  {!hydrated ? <span className="inline-flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Loading price...</span> : status === "processing" ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Preparing Checkout...</> : <><Lock className="mr-2 h-4 w-4" /> {method === "cod" ? "Reserve with Pay on Arrival" : `Pay ${formatPrice(total)} Securely`}</>}
                 </Button>
 
                 <p className="text-xs text-muted-foreground text-center">By clicking Pay, you agree to our Terms of Service and Cancellation Policy.</p>
@@ -136,7 +403,7 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
         </div>
       </div>
 
-      <MobileBookingCTA total={hydrated ? total : 0} label={hydrated ? "Pay Now" : "Loading..."} onClick={handlePay} isProcessing={!hydrated || status === "processing"} disabled={!hydrated || status === "success"} />
+      <MobileBookingCTA total={hydrated ? total : 0} label={hydrated ? (method === "cod" ? "Reserve Now" : "Pay Now") : "Loading..."} onClick={handlePay} isProcessing={!hydrated || status === "processing"} disabled={!hydrated || status === "success" || status === "review" || status === "uncertain" || booking?.paymentConfirmationPending} />
     </main>
   );
 }

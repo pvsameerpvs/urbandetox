@@ -38,8 +38,12 @@ export interface BookingState {
   travelers: Traveler[];
   common: CommonDetails;
   onboardingComplete?: boolean;
-  paymentStatus?: "paid" | "pending" | "cod";
+  paymentStatus?: "paid" | "pending" | "cod" | "refunded";
   paymentMethod?: "razorpay" | "cod";
+  bookingId?: string;
+  checkoutSessionId?: string;
+  checkoutIdempotencyKey?: string;
+  paymentConfirmationPending?: boolean;
   /** Account holder who initiated the booking (may differ from primary traveler). */
   bookedByName?: string;
   bookedByEmail?: string;
