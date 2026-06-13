@@ -50,6 +50,20 @@
       "when": 1779604840000,
       "tag": "0006_add_departure_times",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1781172000000,
+      "tag": "0007_secure_payments",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1781175600000,
+      "tag": "0008_email_delivery_events",
+      "breakpoints": true
     }
   ]
 }

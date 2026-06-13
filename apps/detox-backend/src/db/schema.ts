@@ -87,6 +87,7 @@ export const departures = pgTable("departures", {
   image: text("image"),
   startTime: varchar("start_time", { length: 10 }),
   endTime: varchar("end_time", { length: 10 }),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
 export const guides = pgTable("guides", {
@@ -144,9 +145,46 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+export const checkoutSessions = pgTable("checkout_sessions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  idempotencyKey: varchar("idempotency_key", { length: 100 }).notNull().unique(),
+  userId: uuid("user_id").notNull().references(() => users.id),
+  departureCode: varchar("departure_code", { length: 50 }).notNull(),
+  travelerCount: integer("traveler_count").notNull(),
+  customerName: varchar("customer_name", { length: 255 }).notNull(),
+  customerPhone: varchar("customer_phone", { length: 50 }).notNull(),
+  customerEmail: varchar("customer_email", { length: 255 }).notNull(),
+  subtotalPaise: integer("subtotal_paise").notNull(),
+  gstPaise: integer("gst_paise").notNull(),
+  totalPaise: integer("total_paise").notNull(),
+  currency: varchar("currency", { length: 10 }).notNull().default("INR"),
+  status: varchar("status", { length: 50 }).notNull().default("created"),
+  razorpayOrderId: varchar("razorpay_order_id", { length: 100 }).unique(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const seatHolds = pgTable("seat_holds", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  checkoutSessionId: uuid("checkout_session_id")
+    .notNull()
+    .unique()
+    .references(() => checkoutSessions.id),
+  departureCode: varchar("departure_code", { length: 50 }).notNull(),
+  seats: integer("seats").notNull(),
+  status: varchar("status", { length: 50 }).notNull().default("active"),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 export const bookings = pgTable("bookings", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id),
+  checkoutSessionId: uuid("checkout_session_id")
+    .unique()
+    .references(() => checkoutSessions.id),
   departureCode: varchar("departure_code", { length: 50 }).notNull(),
   fullName: varchar("full_name", { length: 255 }).notNull(),
   phone: varchar("phone", { length: 50 }).notNull(),
@@ -186,6 +224,53 @@ export const bookings = pgTable("bookings", {
     bookedByPhone?: string;
   }>().default({}),
   createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const payments = pgTable("payments", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  checkoutSessionId: uuid("checkout_session_id")
+    .notNull()
+    .references(() => checkoutSessions.id),
+  bookingId: uuid("booking_id").references(() => bookings.id),
+  razorpayOrderId: varchar("razorpay_order_id", { length: 100 }).notNull(),
+  razorpayPaymentId: varchar("razorpay_payment_id", { length: 100 }).notNull().unique(),
+  amountPaise: integer("amount_paise").notNull(),
+  amountRefundedPaise: integer("amount_refunded_paise").notNull().default(0),
+  currency: varchar("currency", { length: 10 }).notNull(),
+  status: varchar("status", { length: 50 }).notNull(),
+  method: varchar("method", { length: 50 }),
+  signatureVerified: boolean("signature_verified").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const refunds = pgTable("refunds", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  paymentId: uuid("payment_id").notNull().references(() => payments.id),
+  razorpayRefundId: varchar("razorpay_refund_id", { length: 100 }).notNull().unique(),
+  idempotencyKey: varchar("idempotency_key", { length: 100 }).notNull().unique(),
+  amountPaise: integer("amount_paise").notNull(),
+  status: varchar("status", { length: 50 }).notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const webhookEvents = pgTable("webhook_events", {
+  eventId: varchar("event_id", { length: 100 }).primaryKey(),
+  eventType: varchar("event_type", { length: 100 }).notNull(),
+  processedAt: timestamp("processed_at").notNull().defaultNow(),
+});
+
+export const emailDeliveryEvents = pgTable("email_delivery_events", {
+  eventId: varchar("event_id", { length: 100 }).primaryKey(),
+  emailId: varchar("email_id", { length: 100 }).notNull(),
+  eventType: varchar("event_type", { length: 100 }).notNull(),
+  recipients: jsonb("recipients").$type<string[]>().notNull().default([]),
+  subject: text("subject"),
+  detail: text("detail"),
+  occurredAt: timestamp("occurred_at").notNull(),
+  receivedAt: timestamp("received_at").notNull().defaultNow(),
 });
 
 export const siteSettings = pgTable("site_settings", {
@@ -204,4 +289,9 @@ export type FaqItem = typeof faqs.$inferSelect;
 export type Testimonial = typeof testimonials.$inferSelect;
 export type SeasonalTag = typeof seasonalTags.$inferSelect;
 export type BookingRecord = typeof bookings.$inferSelect;
+export type CheckoutSession = typeof checkoutSessions.$inferSelect;
+export type SeatHold = typeof seatHolds.$inferSelect;
+export type PaymentRecord = typeof payments.$inferSelect;
+export type RefundRecord = typeof refunds.$inferSelect;
+export type EmailDeliveryEvent = typeof emailDeliveryEvents.$inferSelect;
 export type SiteSettingsRecord = typeof siteSettings.$inferSelect;

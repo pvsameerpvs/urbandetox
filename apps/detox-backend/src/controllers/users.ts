@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 import { UserService } from "@/services/users";
+import { supabaseAdmin } from "@/lib/supabase";
 
 const listUsersQuery = z.object({
   search: z.string().optional(),
@@ -47,6 +48,19 @@ export const UserController = {
 
     if (!id || !role || !["admin", "authenticated"].includes(role)) {
       res.status(400).json({ error: "Invalid request" });
+      return;
+    }
+
+    if (id === req.user!.id && role !== "admin") {
+      res.status(400).json({ error: "You cannot remove your own admin access" });
+      return;
+    }
+
+    const { error } = await supabaseAdmin.auth.admin.updateUserById(id, {
+      app_metadata: { role },
+    });
+    if (error) {
+      res.status(502).json({ error: "Unable to update the authentication role" });
       return;
     }
 

@@ -78,6 +78,7 @@ export const AuthController = {
       ...profile,
       id: userId,
       email,
+      role: req.user!.role,
     });
   },
 

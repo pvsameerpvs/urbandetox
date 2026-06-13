@@ -14,6 +14,7 @@ import userRoutes from "./users";
 import settingsRoutes from "./settings";
 import uploadRoutes from "./uploads";
 import contactRoutes from "./contact";
+import paymentRoutes from "./payments";
 
 const router = express.Router();
 
@@ -32,5 +33,6 @@ router.use("/api/users", userRoutes);
 router.use("/api/settings", settingsRoutes);
 router.use("/api/uploads", uploadRoutes);
 router.use("/api/contact", contactRoutes);
+router.use("/api/payments", paymentRoutes);
 
 export default router;

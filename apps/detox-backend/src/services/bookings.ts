@@ -1,15 +1,65 @@
-import { eq, sql } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { bookings, departures } from "@/db/schema";
+import { bookings, departures, payments } from "@/db/schema";
 import type { Departure } from "@/db/schema";
 
 export const BookingService = {
   async getAll() {
-    return db.select().from(bookings);
+    const [bookingRows, paymentRows] = await Promise.all([
+      db.select().from(bookings).orderBy(desc(bookings.createdAt)),
+      db.select().from(payments),
+    ]);
+    const paymentByBookingId = new Map(
+      paymentRows
+        .filter((payment) => payment.bookingId)
+        .map((payment) => [payment.bookingId!, payment])
+    );
+
+    return bookingRows.map((booking) => ({
+      ...booking,
+      payment: paymentByBookingId.get(booking.id) || null,
+    }));
   },
 
   async getByUserId(userId: string) {
     return db.select().from(bookings).where(eq(bookings.userId, userId));
+  },
+
+  async updateOnboarding(input: {
+    userId: string;
+    bookingId: string;
+    travelers: unknown[];
+    common: Record<string, unknown>;
+  }) {
+    const [booking] = await db
+      .select()
+      .from(bookings)
+      .where(eq(bookings.id, input.bookingId));
+
+    if (!booking || booking.userId !== input.userId) {
+      throw new Error("Booking not found");
+    }
+    if (booking.status === "payment_review" || booking.status === "canceled") {
+      throw new Error("Booking is not ready for onboarding");
+    }
+
+    const [updated] = await db
+      .update(bookings)
+      .set({
+        details: {
+          ...(booking.details || {}),
+          travelers: input.travelers as NonNullable<
+            typeof booking.details
+          >["travelers"],
+          common: input.common as NonNullable<typeof booking.details>["common"],
+          onboardingComplete: true,
+        },
+        updatedAt: new Date(),
+      })
+      .where(eq(bookings.id, input.bookingId))
+      .returning();
+
+    return updated;
   },
 
   /**

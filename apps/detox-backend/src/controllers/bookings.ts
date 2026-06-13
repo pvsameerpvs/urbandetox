@@ -12,9 +12,7 @@ import { formatPrice, safeImageUrl } from "@urbandetox/utils";
 
 export const BookingController = {
   async list(req: Request, res: Response) {
-    // GET /api/bookings is protected by authMiddleware, req.user is always present
-    const userId = req.user!.id;
-    res.json(await BookingService.getByUserId(userId));
+    res.json(await BookingService.getAll());
   },
 
   async myBookings(req: Request, res: Response) {
@@ -29,6 +27,8 @@ export const BookingController = {
         travelers: bookings.travelers,
         status: bookings.status,
         paymentStatus: bookings.paymentStatus,
+        bookingStatus: bookings.status,
+        details: bookings.details,
         createdAt: bookings.createdAt,
         packageTitle: packages.title,
         destinationName: destinations.name,
@@ -48,8 +48,11 @@ export const BookingController = {
       destination: r.destinationName || "Unknown",
       startDate: r.startDate || "",
       endDate: r.endDate || "",
-      status: computeTripStatus(r.startDate),
-      onboardingStatus: "completed",
+      status:
+        r.bookingStatus === "canceled"
+          ? "cancelled"
+          : computeTripStatus(r.startDate),
+      onboardingStatus: r.details?.onboardingComplete ? "completed" : "pending",
       paymentStatus: r.paymentStatus === "paid" ? "paid" : "pending",
       image: safeImageUrl(r.coverImage),
       bookingCode: r.departureCode,
@@ -167,6 +170,16 @@ export const BookingController = {
 
       res.status(500).json({ error: message });
     }
+  },
+
+  async updateOnboarding(req: Request, res: Response) {
+    const booking = await BookingService.updateOnboarding({
+      userId: req.user!.id,
+      bookingId: String(req.params.id),
+      travelers: req.body.travelers,
+      common: req.body.common,
+    });
+    res.json(booking);
   },
 };
 

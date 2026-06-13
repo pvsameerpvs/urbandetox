@@ -11,6 +11,14 @@ export const ENV = {
   R2_PUBLIC_URL: process.env.R2_PUBLIC_URL || "",
   GOOGLE_PLACES_API_KEY: process.env.GOOGLE_PLACES_API_KEY || "",
   GOOGLE_PLACE_ID: process.env.GOOGLE_PLACE_ID || "",
+  RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID || "",
+  RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET || "",
+  RAZORPAY_WEBHOOK_SECRET: process.env.RAZORPAY_WEBHOOK_SECRET || "",
+  RESEND_WEBHOOK_SECRET: process.env.RESEND_WEBHOOK_SECRET || "",
+  CORS_ORIGINS:
+    process.env.CORS_ORIGINS ||
+    "http://localhost:3000,http://localhost:3001",
+  TRUST_PROXY_HOPS: Number(process.env.TRUST_PROXY_HOPS) || 1,
 } as const;
 
 if (!ENV.SUPABASE_URL || !ENV.SUPABASE_SERVICE_ROLE_KEY) {

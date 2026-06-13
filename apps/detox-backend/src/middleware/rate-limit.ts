@@ -47,9 +47,8 @@ export interface RateLimitOptions {
 }
 
 const defaultKeyGenerator = (req: Request) => {
-  const forwarded = req.headers["x-forwarded-for"];
-  const ip = (typeof forwarded === "string" ? forwarded.split(",")[0] : req.ip) || "unknown";
-  return `${ip}:${req.method}:${req.path}`;
+  const identity = req.user?.id || req.ip || "unknown";
+  return `${identity}:${req.method}:${req.path}`;
 };
 
 export function rateLimit(options: RateLimitOptions) {

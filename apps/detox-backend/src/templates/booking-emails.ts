@@ -187,3 +187,236 @@ hello@urbandetox.in | https://urbandetox.in
     text: textContent,
   };
 }
+
+export function paymentReviewCustomerTemplate(data: {
+  fullName: string;
+  departureCode: string;
+  packageTitle: string;
+  totalPrice?: string;
+}): EmailContent {
+  const firstName = escapeHtml(data.fullName.split(" ")[0] || "Traveler");
+  const htmlContent = `
+    <h2>We received your payment, ${firstName}</h2>
+    <p>Your payment was successful, but your booking needs a quick manual seat review before we can confirm it.</p>
+    <div class="badge">Payment Received — Review in Progress</div>
+    <div class="details">
+      <div class="details-row">
+        <span class="details-label">Trip</span>
+        <span class="details-value">${escapeHtml(data.packageTitle)}</span>
+      </div>
+      <div class="details-row">
+        <span class="details-label">Departure Code</span>
+        <span class="details-value">${escapeHtml(data.departureCode)}</span>
+      </div>
+      ${data.totalPrice ? `
+      <div class="details-row">
+        <span class="details-label">Payment Received</span>
+        <span class="details-value">${escapeHtml(data.totalPrice)}</span>
+      </div>` : ""}
+    </div>
+    <p><strong>Please do not make another payment.</strong> Our team has been notified and will contact you shortly.</p>
+  `;
+
+  return {
+    html: baseTemplate("Payment Received — Urban Detox", htmlContent),
+    text: `Payment received, ${data.fullName.split(" ")[0] || "Traveler"}.
+
+Your payment was successful, but your booking needs a manual seat review.
+Trip: ${data.packageTitle}
+Departure Code: ${data.departureCode}
+${data.totalPrice ? `Payment Received: ${data.totalPrice}\n` : ""}
+Please do not make another payment. Our team will contact you shortly.`,
+  };
+}
+
+export function paymentReviewAdminTemplate(data: {
+  fullName: string;
+  email?: string;
+  phone: string;
+  departureCode: string;
+  packageTitle: string;
+  totalPrice?: string;
+}): EmailContent {
+  const htmlContent = `
+    <h2>Urgent: Paid Booking Needs Review</h2>
+    <p>A payment was captured after its seat hold was no longer active. Contact the customer and resolve the booking before accepting another reservation.</p>
+    <div class="details">
+      <div class="details-row"><span class="details-label">Customer</span><span class="details-value">${escapeHtml(data.fullName)}</span></div>
+      <div class="details-row"><span class="details-label">Email</span><span class="details-value">${data.email ? escapeHtml(data.email) : "—"}</span></div>
+      <div class="details-row"><span class="details-label">Phone</span><span class="details-value">${escapeHtml(data.phone)}</span></div>
+      <div class="details-row"><span class="details-label">Trip</span><span class="details-value">${escapeHtml(data.packageTitle)}</span></div>
+      <div class="details-row"><span class="details-label">Departure Code</span><span class="details-value">${escapeHtml(data.departureCode)}</span></div>
+      ${data.totalPrice ? `<div class="details-row"><span class="details-label">Payment Received</span><span class="details-value">${escapeHtml(data.totalPrice)}</span></div>` : ""}
+    </div>
+  `;
+
+  return {
+    html: baseTemplate("Paid Booking Needs Review — Urban Detox", htmlContent),
+    text: `URGENT: PAID BOOKING NEEDS REVIEW
+
+Customer: ${data.fullName}
+Email: ${data.email || "—"}
+Phone: ${data.phone}
+Trip: ${data.packageTitle}
+Departure Code: ${data.departureCode}
+${data.totalPrice ? `Payment Received: ${data.totalPrice}\n` : ""}
+The payment was captured after its seat hold was no longer active. Contact the customer and resolve the booking.`,
+  };
+}
+
+export function bookingRefundedTemplate(data: {
+  fullName: string;
+  departureCode: string;
+  packageTitle: string;
+  totalPrice?: string;
+}): EmailContent {
+  const htmlContent = `
+    <h2>Your Urban Detox payment was refunded</h2>
+    <p>Hi ${escapeHtml(data.fullName.split(" ")[0] || "Traveler")}, your booking has been canceled and the full payment refund has been processed.</p>
+    <div class="details">
+      <div class="details-row"><span class="details-label">Trip</span><span class="details-value">${escapeHtml(data.packageTitle)}</span></div>
+      <div class="details-row"><span class="details-label">Departure Code</span><span class="details-value">${escapeHtml(data.departureCode)}</span></div>
+      ${data.totalPrice ? `<div class="details-row"><span class="details-label">Refund Amount</span><span class="details-value">${escapeHtml(data.totalPrice)}</span></div>` : ""}
+    </div>
+    <p>The refund may take several business days to appear, depending on your bank or payment method.</p>
+  `;
+
+  return {
+    html: baseTemplate("Payment Refunded — Urban Detox", htmlContent),
+    text: `Your Urban Detox payment was refunded.
+
+Trip: ${data.packageTitle}
+Departure Code: ${data.departureCode}
+${data.totalPrice ? `Refund Amount: ${data.totalPrice}\n` : ""}
+The refund may take several business days to appear, depending on your bank or payment method.`,
+  };
+}
+
+export function bookingRefundedAdminTemplate(data: {
+  fullName: string;
+  email?: string;
+  departureCode: string;
+  packageTitle: string;
+  totalPrice?: string;
+}): EmailContent {
+  const htmlContent = `
+    <h2>Booking Fully Refunded</h2>
+    <p>The booking was canceled, its full payment was refunded, and its seats were restored.</p>
+    <div class="details">
+      <div class="details-row"><span class="details-label">Customer</span><span class="details-value">${escapeHtml(data.fullName)}</span></div>
+      <div class="details-row"><span class="details-label">Email</span><span class="details-value">${data.email ? escapeHtml(data.email) : "—"}</span></div>
+      <div class="details-row"><span class="details-label">Trip</span><span class="details-value">${escapeHtml(data.packageTitle)}</span></div>
+      <div class="details-row"><span class="details-label">Departure Code</span><span class="details-value">${escapeHtml(data.departureCode)}</span></div>
+      ${data.totalPrice ? `<div class="details-row"><span class="details-label">Refund Amount</span><span class="details-value">${escapeHtml(data.totalPrice)}</span></div>` : ""}
+    </div>
+  `;
+
+  return {
+    html: baseTemplate("Booking Fully Refunded — Urban Detox", htmlContent),
+    text: `BOOKING FULLY REFUNDED
+
+Customer: ${data.fullName}
+Email: ${data.email || "—"}
+Trip: ${data.packageTitle}
+Departure Code: ${data.departureCode}
+${data.totalPrice ? `Refund Amount: ${data.totalPrice}\n` : ""}
+The booking was canceled and its seats were restored.`,
+  };
+}
+
+export function paymentFailedTemplate(data: {
+  fullName: string;
+  departureCode: string;
+  packageTitle: string;
+  totalPrice: string;
+  retryUntil: string;
+}): EmailContent {
+  const firstName = escapeHtml(data.fullName.split(" ")[0] || "Traveler");
+  const htmlContent = `
+    <h2>Your payment was not completed, ${firstName}</h2>
+    <p>We could not complete your payment for this Urban Detox trip. No confirmed booking was created from this payment attempt.</p>
+    <div class="details">
+      <div class="details-row"><span class="details-label">Trip</span><span class="details-value">${escapeHtml(data.packageTitle)}</span></div>
+      <div class="details-row"><span class="details-label">Departure Code</span><span class="details-value">${escapeHtml(data.departureCode)}</span></div>
+      <div class="details-row"><span class="details-label">Amount Attempted</span><span class="details-value">${escapeHtml(data.totalPrice)}</span></div>
+      <div class="details-row"><span class="details-label">Seat Hold Until</span><span class="details-value">${escapeHtml(data.retryUntil)}</span></div>
+    </div>
+    <p>You can safely retry payment before the seat hold expires or choose another payment method.</p>
+    <p>If your bank shows a debit despite this failed attempt, do not pay again immediately. Contact us with the bank reference so we can verify it.</p>
+  `;
+
+  return {
+    html: baseTemplate("Payment Not Completed — Urban Detox", htmlContent),
+    text: `Your payment was not completed, ${data.fullName.split(" ")[0] || "Traveler"}.
+
+No confirmed booking was created from this payment attempt.
+Trip: ${data.packageTitle}
+Departure Code: ${data.departureCode}
+Amount Attempted: ${data.totalPrice}
+Seat Hold Until: ${data.retryUntil}
+
+You can safely retry before the seat hold expires. If your bank shows a debit, do not pay again immediately; contact us so we can verify it.`,
+  };
+}
+
+export function partialRefundTemplate(data: {
+  fullName: string;
+  departureCode: string;
+  packageTitle: string;
+  refundAmount: string;
+}): EmailContent {
+  const htmlContent = `
+    <h2>Your partial refund was processed</h2>
+    <p>Hi ${escapeHtml(data.fullName.split(" ")[0] || "Traveler")}, a partial refund has been processed for your Urban Detox booking.</p>
+    <div class="details">
+      <div class="details-row"><span class="details-label">Trip</span><span class="details-value">${escapeHtml(data.packageTitle)}</span></div>
+      <div class="details-row"><span class="details-label">Departure Code</span><span class="details-value">${escapeHtml(data.departureCode)}</span></div>
+      <div class="details-row"><span class="details-label">Refund Amount</span><span class="details-value">${escapeHtml(data.refundAmount)}</span></div>
+    </div>
+    <p>Your booking remains active. The refund may take several business days to appear.</p>
+  `;
+
+  return {
+    html: baseTemplate("Partial Refund Processed — Urban Detox", htmlContent),
+    text: `Your partial refund was processed.
+
+Trip: ${data.packageTitle}
+Departure Code: ${data.departureCode}
+Refund Amount: ${data.refundAmount}
+
+Your booking remains active. The refund may take several business days to appear.`,
+  };
+}
+
+export function refundFailedAdminTemplate(data: {
+  fullName: string;
+  email?: string;
+  departureCode: string;
+  packageTitle: string;
+  refundAmount: string;
+}): EmailContent {
+  const htmlContent = `
+    <h2>Urgent: Refund Attempt Failed</h2>
+    <p>A Razorpay refund attempt failed. Review the payment in Razorpay before retrying.</p>
+    <div class="details">
+      <div class="details-row"><span class="details-label">Customer</span><span class="details-value">${escapeHtml(data.fullName)}</span></div>
+      <div class="details-row"><span class="details-label">Email</span><span class="details-value">${data.email ? escapeHtml(data.email) : "—"}</span></div>
+      <div class="details-row"><span class="details-label">Trip</span><span class="details-value">${escapeHtml(data.packageTitle)}</span></div>
+      <div class="details-row"><span class="details-label">Departure Code</span><span class="details-value">${escapeHtml(data.departureCode)}</span></div>
+      <div class="details-row"><span class="details-label">Refund Amount</span><span class="details-value">${escapeHtml(data.refundAmount)}</span></div>
+    </div>
+  `;
+
+  return {
+    html: baseTemplate("Refund Attempt Failed — Urban Detox", htmlContent),
+    text: `URGENT: REFUND ATTEMPT FAILED
+
+Customer: ${data.fullName}
+Email: ${data.email || "—"}
+Trip: ${data.packageTitle}
+Departure Code: ${data.departureCode}
+Refund Amount: ${data.refundAmount}
+
+Review the payment in Razorpay before retrying.`,
+  };
+}

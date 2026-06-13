@@ -6,7 +6,9 @@ import { Pool } from "pg";
 async function main() {
   const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false },
+    ssl: {
+      rejectUnauthorized: process.env.NODE_ENV === "production",
+    },
   });
 
   const db = drizzle(pool);

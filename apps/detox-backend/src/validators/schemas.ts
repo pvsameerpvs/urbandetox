@@ -105,6 +105,66 @@ export const createBookingBody = z.object({
   details: z.any().optional(),
 });
 
+const checkoutCustomer = z.object({
+  name: z.string().trim().min(2).max(255),
+  phone: z.string().trim().min(5).max(50),
+  email: z.string().email().optional(),
+}).strict();
+
+export const createCheckoutBody = z.object({
+  idempotencyKey: z.string().min(10).max(100).regex(/^[a-zA-Z0-9_-]+$/),
+  departureCode: z.string().min(1).max(50),
+  travelerCount: z.number().int().min(1).max(20),
+  customer: checkoutCustomer,
+}).strict();
+
+export const payOnArrivalBody = z.object({
+  idempotencyKey: z.string().min(10).max(100).regex(/^[a-zA-Z0-9_-]+$/),
+  departureCode: z.string().min(1).max(50),
+  travelerCount: z.number().int().min(1).max(20),
+  customer: checkoutCustomer,
+}).strict();
+
+export const verifyPaymentBody = z.object({
+  checkoutSessionId: uuidSchema,
+  razorpayPaymentId: z.string().min(5).max(100),
+  razorpaySignature: z.string().length(64).regex(/^[a-f0-9]+$/i),
+}).strict();
+
+export const refundPaymentBody = z.object({
+  amountPaise: z.number().int().positive().optional(),
+  idempotencyKey: z.string().min(10).max(100).regex(/^[a-zA-Z0-9_-]+$/),
+}).strict();
+
+const onboardingTraveler = z.object({
+  id: z.string().min(1).max(100),
+  type: z.enum(["primary", "companion"]),
+  name: z.string().max(255),
+  phone: z.string().max(50),
+  email: z.string().max(255),
+  dateOfBirth: z.string().max(20),
+  gender: z.string().max(50),
+  foodPreference: z.string().max(100),
+  allergies: z.string().max(1000),
+  medicalConditions: z.string().max(2000),
+  bloodGroup: z.string().max(20),
+  photoUrl: z.string().max(2000),
+  idUrl: z.string().max(2000).optional(),
+  idType: z.string().max(100).optional(),
+  emergencyName: z.string().max(255),
+  emergencyPhone: z.string().max(50),
+  emergencyRelation: z.string().max(100),
+}).strict();
+
+export const updateOnboardingBody = z.object({
+  travelers: z.array(onboardingTraveler).min(1).max(20),
+  common: z.object({
+    groupNote: z.string().max(2000),
+    modeOfArrival: z.string().max(255),
+    needsTravelHelp: z.boolean(),
+  }).strict(),
+}).strict();
+
 // ─── Contact ──────────────────────────────────────
 export const contactFormBody = z.object({
   name: z.string().min(2).max(255),
