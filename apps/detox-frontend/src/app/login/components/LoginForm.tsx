@@ -1,47 +1,62 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUserProfile } from "@/lib/user-profile";
-import { Mail, Lock, ArrowRight, Eye, EyeOff, ShieldCheck, Leaf, User } from "lucide-react";
+import { Mail, Lock, ArrowRight, Eye, EyeOff, ShieldCheck, Leaf, User, Phone, Loader2 } from "lucide-react";
 import { Button, Input, Label, Separator } from "@urbandetox/ui"
+import { loginFormSchema, type LoginFormValues } from "@/lib/login-schema";
 
 export function LoginForm() {
   const router = useRouter();
   const { login, signup, loginWithGoogle } = useUserProfile();
   const [tab, setTab] = useState<"login" | "signup">("login");
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const errorRef = useRef(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginFormSchema),
+    defaultValues: { name: "", email: "", password: "", phone: "" },
+  });
+
+  const { formState: { errors, isSubmitting }, register, handleSubmit, reset } = form;
+
+  const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    void handleSubmit(onSubmit)(e);
+  };
+
+  const switchTab = (t: "login" | "signup") => {
+    setTab(t);
     setError("");
-    setLoading(true);
+    reset();
+  };
+
+  const onSubmit = async (data: LoginFormValues) => {
+    if (errorRef.current) return;
+    errorRef.current = true;
+    setError("");
 
     try {
       if (tab === "signup") {
-        if (!name.trim() || !email.trim() || password.length < 6) {
-          throw new Error("Please fill all fields. Password must be at least 6 characters.");
+        if (!data.name || data.name.trim().length < 2) {
+          setError("Please enter your full name.");
+          errorRef.current = false;
+          return;
         }
-        await signup(email, password, name, phone);
+        await signup(data.email, data.password, data.name, data.phone ?? "");
       } else {
-        if (!email.trim() || !password) {
-          throw new Error("Please enter email and password.");
-        }
-        await login(email, password);
+        await login(data.email, data.password);
       }
       router.push("/profile");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
-    } finally {
-      setLoading(false);
+      errorRef.current = false;
     }
   };
 
@@ -81,7 +96,7 @@ export function LoginForm() {
 
       <div className="flex rounded-xl bg-secondary/30 p-0.5 mb-4">
         {(["login", "signup"] as const).map((t) => (
-          <button key={t} onClick={() => { setTab(t); setError(""); }} className={`flex-1 h-8 rounded-lg text-xs font-semibold transition-all ${tab === t ? "bg-white shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+          <button key={t} type="button" onClick={() => switchTab(t)} className={`flex-1 h-8 rounded-lg text-xs font-semibold transition-all ${tab === t ? "bg-white shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}>
             {t === "login" ? "Sign In" : "New Account"}
           </button>
         ))}
@@ -94,14 +109,15 @@ export function LoginForm() {
       )}
 
       <AnimatePresence mode="wait">
-        <motion.form key={tab} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.2 }} onSubmit={handleSubmit} className="space-y-3">
+        <motion.form key={tab} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.2 }} onSubmit={onFormSubmit} className="space-y-3" noValidate>
           {tab === "signup" && (
             <div className="space-y-1">
               <Label htmlFor="name" className="text-xs font-semibold">Full Name</Label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input id="name" placeholder="Your full name" value={name} onChange={(e) => setName(e.target.value)} className="h-10 pl-10 rounded-xl bg-secondary/40 border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20" />
+                <Input id="name" placeholder="Your full name" {...register("name")} className={`h-10 pl-10 rounded-xl bg-secondary/40 border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20 ${errors.name ? "ring-2 ring-red-400" : ""}`} />
               </div>
+              {errors.name && <p className="text-red-500 text-xs">{errors.name.message}</p>}
             </div>
           )}
 
@@ -109,8 +125,9 @@ export function LoginForm() {
             <Label htmlFor="email" className="text-xs font-semibold">Email</Label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="h-10 pl-10 rounded-xl bg-secondary/40 border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20" />
+              <Input id="email" type="email" placeholder="you@example.com" {...register("email")} className={`h-10 pl-10 rounded-xl bg-secondary/40 border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20 ${errors.email ? "ring-2 ring-red-400" : ""}`} />
             </div>
+            {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
           </div>
 
           <div className="space-y-1">
@@ -120,25 +137,26 @@ export function LoginForm() {
             </div>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input id="password" type={showPassword ? "text" : "password"} placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="h-10 pl-10 pr-10 rounded-xl bg-secondary/40 border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20" />
+              <Input id="password" type={showPassword ? "text" : "password"} placeholder="••••••••" {...register("password")} className={`h-10 pl-10 pr-10 rounded-xl bg-secondary/40 border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20 ${errors.password ? "ring-2 ring-red-400" : ""}`} />
               <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-secondary transition-colors">
                 {showPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
               </button>
             </div>
+            {errors.password && <p className="text-red-500 text-xs">{errors.password.message}</p>}
           </div>
 
           {tab === "signup" && (
             <div className="space-y-1">
-              <Label htmlFor="phone" className="text-xs font-semibold">Phone</Label>
+              <Label htmlFor="phone" className="text-xs font-semibold">Phone (Optional)</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input id="phone" type="tel" placeholder="+91 98765 43210" value={phone} onChange={(e) => setPhone(e.target.value)} className="h-10 pl-10 rounded-xl bg-secondary/40 border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20" />
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input id="phone" type="tel" placeholder="+91 98765 43210" {...register("phone")} className="h-10 pl-10 rounded-xl bg-secondary/40 border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20" />
               </div>
             </div>
           )}
 
-          <Button type="submit" disabled={loading} className="w-full h-10 rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 text-sm font-semibold shadow-lg shadow-brand/10 disabled:opacity-60">
-            {loading ? "Please wait..." : tab === "login" ? "Sign In" : "Create Account"} <ArrowRight className="ml-2 h-4 w-4" />
+          <Button type="submit" disabled={isSubmitting} className="w-full h-10 rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 text-sm font-semibold shadow-lg shadow-brand/10 disabled:opacity-60">
+            {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait...</> : <>{tab === "login" ? "Sign In" : "Create Account"} <ArrowRight className="ml-2 h-4 w-4" /></>}
           </Button>
         </motion.form>
       </AnimatePresence>
@@ -148,7 +166,7 @@ export function LoginForm() {
       <div className="text-center space-y-1">
         <p className="text-xs sm:text-sm text-muted-foreground">
           {tab === "login" ? "No account yet?" : "Already have an account?"}{" "}
-          <button onClick={() => { setTab(tab === "login" ? "signup" : "login"); setError(""); }} className="text-brand hover:underline font-semibold inline-flex items-center gap-1">
+          <button type="button" onClick={() => switchTab(tab === "login" ? "signup" : "login")} className="text-brand hover:underline font-semibold inline-flex items-center gap-1">
             {tab === "login" ? <>Create one <ArrowRight className="h-3 w-3" /></> : <>Sign in <ArrowRight className="h-3 w-3" /></>}
           </button>
         </p>
