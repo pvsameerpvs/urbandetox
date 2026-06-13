@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, startTransition, useCallback } from "react";
+import { useState, useEffect, startTransition, useCallback, useRef } from "react";
 import { AnimatePresence } from "framer-motion";
 import Script from "next/script";
 import { BookingHeader } from "../../components/BookingHeader";
@@ -62,6 +62,7 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
   const [status, setStatus] = useState<PaymentStatus>("idle");
   const [scriptReady, setScriptReady] = useState(false);
   const hydrated = useHydrated();
+  const processingRef = useRef(false);
 
   const pricePerPerson = departure.offerPrice ?? departure.price;
   const subtotal = pricePerPerson * travelerCount;
@@ -187,14 +188,19 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
   ]);
 
   const handlePay = async () => {
+    if (processingRef.current) return;
+    processingRef.current = true;
+
     const current = load();
     const primary = current?.travelers[0];
     if (!current || !primary) {
       setStatus("failure");
+      processingRef.current = false;
       return;
     }
     if (current.paymentConfirmationPending) {
       setStatus("uncertain");
+      processingRef.current = false;
       return;
     }
 
@@ -301,7 +307,10 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
           }
         },
         modal: {
-          ondismiss: () => setStatus("idle"),
+          ondismiss: () => {
+            setStatus("idle");
+            processingRef.current = false;
+          },
         },
         theme: {
           color: "#84cc16",
@@ -311,10 +320,12 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
       razorpay.on("payment.failed", () => {
         save({ paymentConfirmationPending: false });
         setStatus("failure");
+        processingRef.current = false;
       });
       razorpay.open();
     } catch {
       setStatus("failure");
+      processingRef.current = false;
     }
   };
 

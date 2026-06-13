@@ -15,7 +15,7 @@ import { containerVariants, itemVariants } from "@/lib/animations";
 import { type Traveler, type CommonDetails, type Departure, type Package, type Destination } from "@urbandetox/utils";
 import { createPrimaryTraveler, createCompanionTraveler, createDefaultCommon } from "@/lib/booking-factory";
 import { useBooking } from "@/hooks/use-booking";
-import { User, ChevronRight } from "lucide-react";
+import { User, ChevronRight, Loader2 } from "lucide-react";
 import { parseISO, format } from "date-fns";
 import { Card, CardContent, Button } from "@urbandetox/ui"
 
@@ -38,6 +38,7 @@ export function BookingPageClient({ code, departure, pkg, dest, allDepartures }:
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(parseISO(departure.startDate));
   const [travelers, setTravelers] = useState<Traveler[]>([createPrimaryTraveler(profile.personal, profile.health)]);
   const [common, setCommon] = useState<CommonDetails>(createDefaultCommon());
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const availableDates: Record<string, { status: string; seatsLeft: number; code: string; price: number; offerPrice?: number }> = {};
   allDepartures.forEach((dep) => {
@@ -56,7 +57,8 @@ export function BookingPageClient({ code, departure, pkg, dest, allDepartures }:
   const incompleteCount = travelers.filter((t) => t.name.trim().length <= 2 || t.phone.trim().length <= 5).length;
 
   const handleSubmit = () => {
-    if (!allTravelersValid) return;
+    if (!allTravelersValid || isProcessing) return;
+    setIsProcessing(true);
     save({ travelers, common });
     window.location.href = `/book/${code}/payment`;
   };
@@ -110,10 +112,10 @@ export function BookingPageClient({ code, departure, pkg, dest, allDepartures }:
             </motion.div>
 
             <div className="hidden lg:block">
-              <Button onClick={handleSubmit} disabled={!allTravelersValid} className="w-full rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-12 text-sm font-semibold shadow-lg shadow-brand/10 disabled:opacity-50">
-                Continue to Payment <ChevronRight className="ml-2 h-4 w-4" />
+              <Button onClick={handleSubmit} disabled={!allTravelersValid || isProcessing} className="w-full rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-12 text-sm font-semibold shadow-lg shadow-brand/10 disabled:opacity-50">
+                {isProcessing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...</> : <>Continue to Payment <ChevronRight className="ml-2 h-4 w-4" /></>}
               </Button>
-              {!allTravelersValid && <p className="text-xs text-amber-600 text-center mt-2">{incompleteCount} traveler{incompleteCount > 1 ? "s" : ""} need name and phone</p>}
+              {!allTravelersValid && !isProcessing && <p className="text-xs text-amber-600 text-center mt-2">{incompleteCount} traveler{incompleteCount > 1 ? "s" : ""} need name and phone</p>}
             </div>
           </motion.div>
 
@@ -135,7 +137,7 @@ export function BookingPageClient({ code, departure, pkg, dest, allDepartures }:
         </div>
       </div>
 
-      <MobileBookingCTA total={grandTotal} label={allTravelersValid ? "Continue to Payment" : `Fill ${incompleteCount} traveler${incompleteCount > 1 ? "s" : ""}`} onClick={handleSubmit} disabled={!allTravelersValid} />
+      <MobileBookingCTA total={grandTotal} label={allTravelersValid ? "Continue to Payment" : `Fill ${incompleteCount} traveler${incompleteCount > 1 ? "s" : ""}`} onClick={handleSubmit} isProcessing={isProcessing} disabled={!allTravelersValid} />
     </main>
   );
 }

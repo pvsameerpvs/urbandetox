@@ -1,4 +1,3 @@
-;
 import { ChevronLeft, ChevronRight, Check, Loader2 } from "lucide-react";
 import { Button } from "@urbandetox/ui"
 
@@ -33,8 +32,13 @@ export function OnboardingNavigation({
         <Button
           className="rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-11 px-6 text-sm font-semibold shadow-lg shadow-brand/10"
           onClick={onNext}
+          disabled={isSubmitting}
         >
-          Next Step <ChevronRight className="ml-1.5 h-4 w-4" />
+          {isSubmitting ? (
+            <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait...</>
+          ) : (
+            <>Next Step <ChevronRight className="ml-1.5 h-4 w-4" /></>
+          )}
         </Button>
       ) : (
         <Button
