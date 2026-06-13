@@ -22,13 +22,14 @@ import { InfoBlock } from "./components/InfoBlock";
 import { PaymentInfoBlock } from "./components/PaymentInfoBlock";
 import { PaymentDetailsCard } from "./components/PaymentDetailsCard";
 import { TravelerDetailCard } from "./components/TravelerDetailCard";
-import type { BookingState, Package as PackageType, Destination, Departure } from "@urbandetox/utils";
+import type { Package as PackageType, Destination, Departure } from "@urbandetox/utils";
+import type { BookingWithMeta } from "@/lib/bookings";
 
 export default function BookingDetailPage() {
   const params = useParams();
-  const code = String(params.departureCode);
+  const bookingId = String(params.departureCode);
 
-  const [booking, setBooking] = useState<BookingState | null>(null);
+  const [booking, setBooking] = useState<BookingWithMeta | null>(null);
   const [departure, setDeparture] = useState<Departure | undefined>(undefined);
   const [pkg, setPkg] = useState<PackageType | undefined>(undefined);
   const [dest, setDest] = useState<Destination | undefined>(undefined);
@@ -36,7 +37,7 @@ export default function BookingDetailPage() {
 
   useEffect(() => {
     async function load() {
-      const fetchedBooking = await getBooking(code);
+      const fetchedBooking = await getBooking(bookingId);
       if (!fetchedBooking) {
         setBooking(null);
         setLoading(false);
@@ -44,7 +45,7 @@ export default function BookingDetailPage() {
       }
       setBooking(fetchedBooking);
 
-      const fetchedDeparture = await getDepartureByCode(code);
+      const fetchedDeparture = await getDepartureByCode(fetchedBooking.departureCode);
       setDeparture(fetchedDeparture);
 
       if (fetchedDeparture) {
@@ -60,7 +61,7 @@ export default function BookingDetailPage() {
     }
 
     load();
-  }, [code]);
+  }, [bookingId]);
 
   if (loading) {
     return (
@@ -84,7 +85,11 @@ export default function BookingDetailPage() {
         </Link>
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-bold tracking-tight">Booking Details</h1>
-          {booking.onboardingComplete ? (
+          {booking.bookingStatus === "payment_review" ? (
+            <Badge className="bg-red-100 text-red-700 hover:bg-red-100 text-[10px] h-5">
+              <Clock className="h-3 w-3 mr-1" /> Payment Review Required
+            </Badge>
+          ) : booking.onboardingComplete ? (
             <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 text-[10px] h-5">
               <CheckCircle2 className="h-3 w-3 mr-1" /> Complete
             </Badge>
@@ -95,7 +100,7 @@ export default function BookingDetailPage() {
           )}
         </div>
         <p className="text-sm text-muted-foreground mt-1">
-          Departure <span className="font-mono font-medium text-foreground">{code}</span> · {booking.travelers.length} traveler{booking.travelers.length !== 1 ? "s" : ""}
+          Departure <span className="font-mono font-medium text-foreground">{booking.departureCode}</span> · {booking.travelerCount} traveler{booking.travelerCount !== 1 ? "s" : ""}
         </p>
       </div>
 
@@ -128,7 +133,9 @@ export default function BookingDetailPage() {
         status={booking.paymentStatus}
         method={booking.paymentMethod}
         departure={departure}
-        travelerCount={booking.travelers.length}
+        travelerCount={booking.travelerCount}
+        payment={booking.payment}
+        bookingStatus={booking.bookingStatus}
       />
 
       {/* Group Details */}
@@ -164,7 +171,7 @@ export default function BookingDetailPage() {
       {/* Travelers */}
       <div>
         <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
-          <Users className="h-4 w-4" /> Travelers ({booking.travelers.length})
+          <Users className="h-4 w-4" /> Travelers ({booking.travelerCount})
         </h3>
         <div className="space-y-4">
           {primary && <TravelerDetailCard traveler={primary} isPrimary index={0} />}

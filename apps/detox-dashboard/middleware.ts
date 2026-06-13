@@ -1,11 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
-function isAdmin(user: { app_metadata?: Record<string, unknown>; user_metadata?: Record<string, unknown> }) {
-  return (
-    user.app_metadata?.role === "admin" ||
-    user.user_metadata?.role === "admin"
-  );
+function isAdmin(user: { app_metadata?: Record<string, unknown> }) {
+  return user.app_metadata?.role === "admin";
 }
 
 export async function middleware(request: NextRequest) {

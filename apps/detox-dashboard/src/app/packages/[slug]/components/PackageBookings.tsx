@@ -65,7 +65,7 @@ export function PackageBookings({ bookings }: PackageBookingsProps) {
                 </div>
               </div>
               <Link
-                href={`/bookings/${b.departureCode}`}
+                href={`/bookings/${b.id}`}
                 className="inline-flex items-center gap-1 text-[10px] font-semibold text-brand hover:text-brand/80 transition-colors shrink-0"
               >
                 View <ExternalLink className="h-3 w-3" />
@@ -77,5 +77,4 @@ export function PackageBookings({ bookings }: PackageBookingsProps) {
     </div>
   );
 }
-
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { CreditCard, Banknote, Wallet } from "lucide-react";
+import { CreditCard, Banknote, Wallet, RotateCcw } from "lucide-react";
 import { InfoBlock } from "./InfoBlock";
 
 export function PaymentInfoBlock({ status, method }: { status?: string; method?: string }) {
@@ -19,6 +19,15 @@ export function PaymentInfoBlock({ status, method }: { status?: string; method?:
         icon={<Banknote className="h-4 w-4 text-blue-600" />}
         label="Payment"
         value="Pay on Arrival (COD)"
+      />
+    );
+  }
+  if (status === "refunded") {
+    return (
+      <InfoBlock
+        icon={<RotateCcw className="h-4 w-4 text-red-600" />}
+        label="Payment"
+        value="Refunded"
       />
     );
   }

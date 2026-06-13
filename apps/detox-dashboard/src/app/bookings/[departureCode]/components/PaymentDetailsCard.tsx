@@ -16,6 +16,16 @@ interface PaymentDetailsCardProps {
   method?: string;
   departure?: { price: number; offerPrice?: number };
   travelerCount: number;
+  bookingStatus?: string;
+  payment?: {
+    razorpayPaymentId: string;
+    amountPaise: number;
+    amountRefundedPaise: number;
+    currency: string;
+    status: string;
+    method?: string;
+    createdAt?: string;
+  } | null;
 }
 
 export function PaymentDetailsCard({
@@ -23,6 +33,8 @@ export function PaymentDetailsCard({
   method,
   departure,
   travelerCount,
+  bookingStatus,
+  payment,
 }: PaymentDetailsCardProps) {
   const pricePerPerson = departure?.offerPrice ?? departure?.price ?? 0;
   const subtotal = pricePerPerson * travelerCount;
@@ -31,18 +43,22 @@ export function PaymentDetailsCard({
 
   const isPaid = status === "paid";
   const isCod = status === "cod";
+  const isRefunded = status === "refunded";
+  const needsReview = bookingStatus === "payment_review";
 
   return (
     <Card className="border border-border/40 rounded-2xl overflow-hidden">
-      <div className={`h-1.5 ${isPaid ? "bg-emerald-400" : isCod ? "bg-blue-400" : "bg-amber-400"}`} />
+      <div className={`h-1.5 ${needsReview ? "bg-red-400" : isPaid ? "bg-emerald-400" : isCod ? "bg-blue-400" : isRefunded ? "bg-red-400" : "bg-amber-400"}`} />
       <CardContent className="p-5 space-y-5">
         {/* Header */}
         <div className="flex items-start gap-4">
-          <div className={`h-12 w-12 rounded-xl flex items-center justify-center shrink-0 ${isPaid ? "bg-emerald-100" : isCod ? "bg-blue-100" : "bg-amber-100"}`}>
+          <div className={`h-12 w-12 rounded-xl flex items-center justify-center shrink-0 ${isPaid ? "bg-emerald-100" : isCod ? "bg-blue-100" : isRefunded ? "bg-red-100" : "bg-amber-100"}`}>
             {isPaid ? (
               <CreditCard className="h-6 w-6 text-emerald-700" />
             ) : isCod ? (
               <Banknote className="h-6 w-6 text-blue-700" />
+            ) : isRefunded ? (
+              <Receipt className="h-6 w-6 text-red-700" />
             ) : (
               <Wallet className="h-6 w-6 text-amber-700" />
             )}
@@ -60,7 +76,12 @@ export function PaymentDetailsCard({
                   <Banknote className="h-3 w-3 mr-1" /> COD
                 </Badge>
               )}
-              {!isPaid && !isCod && (
+              {isRefunded && (
+                <Badge className="bg-red-100 text-red-700 hover:bg-red-100 text-[10px] h-5">
+                  Refunded
+                </Badge>
+              )}
+              {!isPaid && !isCod && !isRefunded && (
                 <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100 text-[10px] h-5">
                   <Clock className="h-3 w-3 mr-1" /> Pending
                 </Badge>
@@ -68,9 +89,13 @@ export function PaymentDetailsCard({
             </div>
             <p className="text-sm text-muted-foreground mt-0.5">
               {isPaid
-                ? `Paid via ${method === "razorpay" ? "Razorpay" : "Online"} · Transaction complete`
+                ? needsReview
+                  ? `Paid via ${method === "razorpay" ? "Razorpay" : "Online"} · Manual booking review required`
+                  : `Paid via ${method === "razorpay" ? "Razorpay" : "Online"} · Transaction complete`
                 : isCod
                   ? "Customer will pay cash at the meeting point"
+                  : isRefunded
+                    ? "The online payment has been refunded"
                   : "Customer has not completed payment yet"}
             </p>
           </div>
@@ -116,6 +141,8 @@ export function PaymentDetailsCard({
               <CheckCircle2 className="h-4 w-4 text-emerald-600" />
             ) : isCod ? (
               <Banknote className="h-4 w-4 text-blue-600" />
+            ) : isRefunded ? (
+              <Receipt className="h-4 w-4 text-red-600" />
             ) : (
               <Clock className="h-4 w-4 text-amber-600" />
             )}
@@ -123,20 +150,50 @@ export function PaymentDetailsCard({
           <div>
             <p className="font-medium">
               {isPaid
-                ? "Payment received and confirmed"
+                ? needsReview
+                  ? "Payment received; booking needs manual review"
+                  : "Payment received and confirmed"
                 : isCod
                   ? "Pay on Arrival — collect cash at meeting point"
+                  : isRefunded
+                    ? "Payment refunded and booking canceled"
                   : "Awaiting customer payment"}
             </p>
             <p className="text-xs text-muted-foreground mt-0.5">
               {isPaid
-                ? "The customer has successfully completed the online payment."
+                ? needsReview
+                  ? "Do not ask the customer to pay again. Resolve seat availability and contact them."
+                  : "The customer has successfully completed the online payment."
                 : isCod
                   ? "Remind customer to bring exact change if possible."
+                  : isRefunded
+                    ? "The captured payment has been returned to the customer."
                   : "Customer may return to the payment page to complete checkout."}
             </p>
           </div>
         </div>
+
+        {payment && (
+          <div className="rounded-xl border border-border/30 p-4 text-sm space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Razorpay Transaction
+            </p>
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-muted-foreground">Payment ID</span>
+              <span className="font-mono text-xs break-all text-right">{payment.razorpayPaymentId}</span>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-muted-foreground">Captured amount</span>
+              <span className="font-medium">
+                {payment.currency} {(payment.amountPaise / 100).toLocaleString("en-IN")}
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-muted-foreground">Gateway status</span>
+              <span className="font-medium capitalize">{payment.status}</span>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

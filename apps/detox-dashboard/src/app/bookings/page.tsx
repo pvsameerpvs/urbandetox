@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { Card, CardContent } from "@urbandetox/ui";
 import {
   Users,
@@ -22,22 +22,15 @@ export default function BookingsPage() {
   const { data: packages } = useAdminPackages();
   const { data: destinations } = useAdminDestinations();
 
-  useEffect(() => {
-    clearUnread();
-    const t = setTimeout(async () => {
+  const loadBookings = useCallback(async () => {
+    try {
       const raw = await getAllBookings();
       const enriched = raw.map((b) => {
         const dep = departures.find((d) => d.code === b.departureCode);
         const pkg = dep ? packages.find((p) => p.slug === dep.packageSlug) : undefined;
         const dest = dep ? destinations.find((d) => d.slug === dep.destinationSlug) : undefined;
-        const primary = b.travelers.find((t) => t.type === "primary");
         return {
           ...b,
-          id: b.departureCode,
-          primaryName: primary?.name || "—",
-          primaryPhone: primary?.phone || "",
-          primaryEmail: primary?.email || "",
-          travelerCount: b.travelers.length,
           packageSlug: dep?.packageSlug,
           packageTitle: pkg?.title,
           destinationName: dest?.name,
@@ -47,9 +40,20 @@ export default function BookingsPage() {
         };
       });
       setBookings(enriched);
-    }, 0);
-    return () => clearTimeout(t);
-  }, [clearUnread, departures, packages, destinations]);
+    } catch {
+      // Keep the last successful dashboard snapshot during temporary API errors.
+    }
+  }, [departures, packages, destinations]);
+
+  useEffect(() => {
+    clearUnread();
+    const initialLoad = window.setTimeout(() => void loadBookings(), 0);
+    const interval = window.setInterval(() => void loadBookings(), 15000);
+    return () => {
+      window.clearTimeout(initialLoad);
+      window.clearInterval(interval);
+    };
+  }, [clearUnread, loadBookings]);
 
   const stats = useMemo(() => {
     const total = bookings.length;
@@ -57,7 +61,7 @@ export default function BookingsPage() {
     const pending = total - complete;
     const paid = bookings.filter((b) => b.paymentStatus === "paid").length;
     const cod = bookings.filter((b) => b.paymentStatus === "cod").length;
-    const totalTravelers = bookings.reduce((sum, b) => sum + b.travelers.length, 0);
+    const totalTravelers = bookings.reduce((sum, b) => sum + b.travelerCount, 0);
     return { total, complete, pending, paid, cod, totalTravelers };
   }, [bookings]);
 

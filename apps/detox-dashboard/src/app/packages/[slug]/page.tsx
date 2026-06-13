@@ -49,19 +49,13 @@ export default function PackageDetailPage() {
 
       for (const b of bookingsRaw.filter((b) => bookingCodes.includes(b.departureCode))) {
         const dep = await getDepartureByCode(b.departureCode);
-        const primary = b.travelers.find((t) => t.type === "primary");
         relevant.push({
           ...b,
-          id: b.departureCode,
-          primaryName: primary?.name || "—",
-          primaryPhone: primary?.phone || "",
-          primaryEmail: primary?.email || "",
-          travelerCount: b.travelers.length,
           startDate: dep?.startDate,
           endDate: dep?.endDate,
         });
         const price = dep?.offerPrice ?? dep?.price ?? 0;
-        revenue += price * b.travelers.length;
+        revenue += price * b.travelerCount;
       }
 
       setRelevantBookings(relevant);

@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge } from "@urbandetox/ui";
-import { CreditCard, Banknote, Wallet } from "lucide-react";
+import { CreditCard, Banknote, Wallet, RotateCcw } from "lucide-react";
 
 interface PaymentBadgeProps {
   status?: string;
@@ -19,6 +19,13 @@ export function PaymentBadge({ status }: PaymentBadgeProps) {
     return (
       <Badge variant="outline" className="text-[10px] h-4 border-blue-200 text-blue-600 bg-blue-50">
         <Banknote className="h-3 w-3 mr-1" /> COD
+      </Badge>
+    );
+  }
+  if (status === "refunded") {
+    return (
+      <Badge variant="outline" className="text-[10px] h-4 border-red-200 text-red-600 bg-red-50">
+        <RotateCcw className="h-3 w-3 mr-1" /> Refunded
       </Badge>
     );
   }

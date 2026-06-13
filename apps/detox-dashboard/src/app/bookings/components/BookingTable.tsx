@@ -10,6 +10,7 @@ import {
   MapPin,
   ArrowRight,
   ExternalLink,
+  XCircle,
 } from "lucide-react";
 import { cn } from "@urbandetox/utils";
 import { PaymentBadge } from "@/components/ui/PaymentBadge";
@@ -29,7 +30,7 @@ export function BookingTable({ bookings }: BookingTableProps) {
           </div>
           <h3 className="text-base font-bold">No bookings yet</h3>
           <p className="text-sm text-muted-foreground mt-1 max-w-sm mx-auto">
-            Bookings appear here when customers complete onboarding on the frontend. Try booking a trip from the customer site.
+            Confirmed, pay-on-arrival, and payment-review bookings will appear here after checkout.
           </p>
         </CardContent>
       </Card>
@@ -106,7 +107,15 @@ export function BookingTable({ bookings }: BookingTableProps) {
                 </td>
                 <td className="px-4 py-3.5">
                   <div className="flex flex-col gap-1">
-                    {b.onboardingComplete ? (
+                    {b.bookingStatus === "payment_review" ? (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-red-600">
+                        <Clock className="h-3 w-3" /> Payment Review
+                      </span>
+                    ) : b.bookingStatus === "canceled" ? (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-red-600">
+                        <XCircle className="h-3 w-3" /> Canceled
+                      </span>
+                    ) : b.onboardingComplete ? (
                       <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600">
                         <CheckCircle2 className="h-3 w-3" /> Complete
                       </span>
@@ -120,7 +129,7 @@ export function BookingTable({ bookings }: BookingTableProps) {
                 </td>
                 <td className="px-4 py-3.5 text-right">
                   <Link
-                    href={`/bookings/${b.departureCode}`}
+                    href={`/bookings/${b.id}`}
                     className="inline-flex items-center gap-1 text-[10px] font-semibold text-brand hover:text-brand/80 transition-colors"
                   >
                     View <ExternalLink className="h-3 w-3" />
@@ -134,5 +143,3 @@ export function BookingTable({ bookings }: BookingTableProps) {
     </Card>
   );
 }
-
-

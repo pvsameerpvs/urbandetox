@@ -2,8 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { toast } from "sonner";
-import { type BookingState } from "@urbandetox/utils";
-import { getDepartureByCode, getPackageBySlug } from "@/lib/admin-data";
+import { getAllBookings } from "@/lib/bookings";
 
 interface BookingNotificationContextValue {
   unreadCount: number;
@@ -18,31 +17,9 @@ export function useBookingNotifications() {
   return ctx;
 }
 
-async function getBookingMeta(booking: BookingState) {
-  const dep = await getDepartureByCode(booking.departureCode);
-  const pkg = dep ? await getPackageBySlug(dep.packageSlug) : undefined;
-  const primary = booking.travelers.find((t) => t.type === "primary");
-  return {
-    name: primary?.name || "New traveler",
-    packageTitle: pkg?.title || dep?.packageSlug || "Unknown package",
-  };
-}
-
-function getBookingKeys(): string[] {
-  if (typeof window === "undefined") return [];
-  const keys: string[] = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key && key.startsWith("urbandetox-booking-")) {
-      keys.push(key);
-    }
-  }
-  return keys.sort();
-}
-
 export function BookingNotificationProvider({ children }: { children: React.ReactNode }) {
   const [unreadCount, setUnreadCount] = useState(0);
-  const seenKeysRef = useRef<Set<string>>(new Set());
+  const seenStatesRef = useRef<Map<string, string>>(new Map());
   const initializedRef = useRef(false);
 
   const clearUnread = useCallback(() => {
@@ -50,46 +27,79 @@ export function BookingNotificationProvider({ children }: { children: React.Reac
   }, []);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    let active = true;
 
-    // Initialize seen keys silently (no toasts on first load)
-    const initKeys = getBookingKeys();
-    seenKeysRef.current = new Set(initKeys);
-    initializedRef.current = true;
+    const poll = async () => {
+      try {
+        const bookings = await getAllBookings();
+        if (!active) return;
 
-    const interval = setInterval(async () => {
-      const currentKeys = getBookingKeys();
-      const prevSeen = seenKeysRef.current;
-      const newKeys = currentKeys.filter((k) => !prevSeen.has(k));
-
-      if (newKeys.length > 0) {
-        // Update seen set first
-        const nextSeen = new Set(prevSeen);
-        newKeys.forEach((k) => nextSeen.add(k));
-        seenKeysRef.current = nextSeen;
-
-        // Show toasts for each new booking
-        for (const key of newKeys) {
-          try {
-            const raw = localStorage.getItem(key);
-            if (!raw) continue;
-            const booking: BookingState = JSON.parse(raw);
-            const meta = await getBookingMeta(booking);
-            toast.success(`New booking from ${meta.name} — ${meta.packageTitle}`, {
-              description: `${booking.travelers.length} traveler${booking.travelers.length > 1 ? "s" : ""}`,
-              duration: 6000,
-            });
-          } catch {
-            // skip corrupted entries
-          }
+        if (!initializedRef.current) {
+          seenStatesRef.current = new Map(
+            bookings.map((booking) => [
+              booking.id,
+              `${booking.bookingStatus}:${booking.paymentStatus}`,
+            ])
+          );
+          initializedRef.current = true;
+          return;
         }
 
-        // Increment unread count
-        setUnreadCount((prev) => prev + newKeys.length);
-      }
-    }, 30000);
+        const newBookings = bookings.filter(
+          (booking) => !seenStatesRef.current.has(booking.id)
+        );
+        const changedBookings = bookings.filter((booking) => {
+          const previous = seenStatesRef.current.get(booking.id);
+          return (
+            previous !== undefined &&
+            previous !== `${booking.bookingStatus}:${booking.paymentStatus}`
+          );
+        });
+        if (newBookings.length === 0 && changedBookings.length === 0) return;
 
-    return () => clearInterval(interval);
+        bookings.forEach((booking) =>
+          seenStatesRef.current.set(
+            booking.id,
+            `${booking.bookingStatus}:${booking.paymentStatus}`
+          )
+        );
+        for (const booking of newBookings) {
+          const needsReview = booking.bookingStatus === "payment_review";
+          const message = needsReview
+            ? `Paid booking needs review — ${booking.primaryName}`
+            : `New booking from ${booking.primaryName}`;
+          toast[needsReview ? "warning" : "success"](message, {
+            description: `${booking.departureCode} · ${booking.travelerCount} traveler${booking.travelerCount !== 1 ? "s" : ""}`,
+            duration: 6000,
+          });
+        }
+        for (const booking of changedBookings) {
+          if (booking.paymentStatus === "refunded") {
+            toast.info(`Booking refunded — ${booking.primaryName}`, {
+              description: booking.departureCode,
+              duration: 6000,
+            });
+          } else {
+            toast.info(`Booking status updated — ${booking.primaryName}`, {
+              description: `${booking.departureCode} · ${booking.bookingStatus}`,
+              duration: 6000,
+            });
+          }
+        }
+        setUnreadCount(
+          (previous) => previous + newBookings.length + changedBookings.length
+        );
+      } catch {
+        // Authentication may still be loading, or the API may be temporarily unavailable.
+      }
+    };
+
+    void poll();
+    const interval = window.setInterval(() => void poll(), 15000);
+    return () => {
+      active = false;
+      window.clearInterval(interval);
+    };
   }, []);
 
   return (
