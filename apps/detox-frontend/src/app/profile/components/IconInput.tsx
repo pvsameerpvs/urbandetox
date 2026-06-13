@@ -1,15 +1,15 @@
-;
-;
+import { cn } from "@urbandetox/utils";
 import { LucideIcon } from "lucide-react";
 import { Input, Label } from "@urbandetox/ui"
 
-interface IconInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange"> {
+interface IconInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "className"> {
   label: string;
   icon: LucideIcon;
   onChange?: (value: string) => void;
+  className?: string;
 }
 
-export function IconInput({ label, icon: Icon, onChange, ...props }: IconInputProps) {
+export function IconInput({ label, icon: Icon, onChange, className, ...props }: IconInputProps) {
   return (
     <div className="space-y-2">
       <Label htmlFor={props.id} className="text-sm font-semibold">{label}</Label>
@@ -18,7 +18,7 @@ export function IconInput({ label, icon: Icon, onChange, ...props }: IconInputPr
         <Input
           {...props}
           onChange={(e) => onChange?.(e.target.value)}
-          className="h-12 pl-11 rounded-xl bg-secondary/40 border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20"
+          className={cn("h-12 pl-11 rounded-xl bg-secondary/40 border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20", className)}
         />
       </div>
     </div>

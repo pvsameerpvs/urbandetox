@@ -1,15 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
-;
-;
-;
-;
 import { ProfileSectionHeader } from "../components/ProfileSectionHeader";
 import { IconInput } from "../components/IconInput";
 import { SaveButton } from "../components/SaveButton";
 import { useUserProfile } from "@/lib/user-profile";
+import { emergencyContactItemSchema } from "@/lib/profile-schema";
 import { PhoneCall, User, Heart, AlertCircle, Phone, Mail, Plus, Trash2, CheckCircle2 } from "lucide-react";
 import { Card, CardContent, Button, Badge, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@urbandetox/ui"
 
@@ -25,14 +22,41 @@ const relationOptions = [
 export default function EmergencyContactPage() {
   const { profile, updateEmergencyContact, addEmergencyContact, removeEmergencyContact } = useUserProfile();
   const [saved, setSaved] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const savingRef = useRef(false);
+  const errorTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  const contacts = profile.emergencyContacts;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (savingRef.current) return;
+
+    const fieldErrors: Record<string, string> = {};
+    contacts.forEach((contact, i) => {
+      const result = emergencyContactItemSchema.safeParse(contact);
+      if (!result.success) {
+          result.error.issues.forEach((issue) => {
+          const key = `${i}.${String(issue.path[0])}`;
+          if (!fieldErrors[key]) fieldErrors[key] = issue.message;
+        });
+      }
+    });
+
+    if (Object.keys(fieldErrors).length > 0) {
+      setErrors(fieldErrors);
+      clearTimeout(errorTimeoutRef.current);
+      errorTimeoutRef.current = setTimeout(() => setErrors({}), 5000);
+      return;
+    }
+
+    savingRef.current = true;
+    setErrors({});
     setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    setTimeout(() => { setSaved(false); savingRef.current = false; }, 3000);
   };
 
-  const contacts = profile.emergencyContacts;
+  const errorClass = (key: string) => errors[key] ? "ring-2 ring-red-400" : "";
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
@@ -75,22 +99,30 @@ export default function EmergencyContactPage() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <IconInput
-                    label="Full Name"
-                    icon={User}
-                    id={`eName-${index}`}
-                    value={contact.name}
-                    onChange={(v) => updateEmergencyContact(index, { name: v })}
-                    placeholder="Contact name"
-                  />
-                  <IconInput
-                    label="Phone Number"
-                    icon={Phone}
-                    id={`ePhone-${index}`}
-                    value={contact.phone}
-                    onChange={(v) => updateEmergencyContact(index, { phone: v })}
-                    placeholder="+91 98765 43210"
-                  />
+                  <div>
+                    <IconInput
+                      label="Full Name"
+                      icon={User}
+                      id={`eName-${index}`}
+                      value={contact.name}
+                      onChange={(v) => updateEmergencyContact(index, { name: v })}
+                      placeholder="Contact name"
+                      className={errorClass(`${index}.name`)}
+                    />
+                    {errors[`${index}.name`] && <p className="text-red-500 text-xs mt-1">{errors[`${index}.name`]}</p>}
+                  </div>
+                  <div>
+                    <IconInput
+                      label="Phone Number"
+                      icon={Phone}
+                      id={`ePhone-${index}`}
+                      value={contact.phone}
+                      onChange={(v) => updateEmergencyContact(index, { phone: v })}
+                      placeholder="+91 98765 43210"
+                      className={errorClass(`${index}.phone`)}
+                    />
+                    {errors[`${index}.phone`] && <p className="text-red-500 text-xs mt-1">{errors[`${index}.phone`]}</p>}
+                  </div>
                   <IconInput
                     label="Email"
                     icon={Mail}
@@ -108,7 +140,7 @@ export default function EmergencyContactPage() {
                         value={contact.relation}
                         onValueChange={(v) => updateEmergencyContact(index, { relation: v ?? "" })}
                       >
-                        <SelectTrigger className="h-12 pl-11 rounded-xl bg-secondary/40 border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20">
+                        <SelectTrigger className={`h-12 pl-11 rounded-xl bg-secondary/40 border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20 ${errorClass(`${index}.relation`)}`}>
                           <SelectValue placeholder="Select relationship" />
                         </SelectTrigger>
                         <SelectContent>
@@ -118,6 +150,7 @@ export default function EmergencyContactPage() {
                         </SelectContent>
                       </Select>
                     </div>
+                    {errors[`${index}.relation`] && <p className="text-red-500 text-xs mt-1">{errors[`${index}.relation`]}</p>}
                   </div>
                 </div>
               </div>
@@ -133,7 +166,7 @@ export default function EmergencyContactPage() {
             </Button>
 
             <hr className="border-border/40" />
-            <SaveButton label="Save Emergency Contacts" saved={saved} savedMessage="Emergency contacts saved. Onboarding will auto-fill." />
+            <SaveButton label="Save Emergency Contacts" saved={saved} savedMessage="Emergency contacts saved. Onboarding will auto-fill." errors={errors} />
           </form>
         </CardContent>
       </Card>

@@ -1,15 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
-;
-;
-;
 import { ProfileSectionHeader } from "../components/ProfileSectionHeader";
 import { IconInput } from "../components/IconInput";
 import { SaveButton } from "../components/SaveButton";
 import { useUserProfile } from "@/lib/user-profile";
 import { cn } from "@urbandetox/utils";
+import { personalSchema } from "@/lib/profile-schema";
 import { User, Phone, Mail, CalendarDays, Camera } from "lucide-react";
 import { Card, CardContent, Button, Avatar, AvatarImage, AvatarFallback } from "@urbandetox/ui"
 
@@ -23,12 +21,31 @@ const genderOptions = [
 export default function PersonalDetailsPage() {
   const { profile, updatePersonal, authUser } = useUserProfile();
   const [saved, setSaved] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const savingRef = useRef(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (savingRef.current) return;
+
+    const result = personalSchema.safeParse(profile.personal);
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      result.error.issues.forEach((issue) => {
+        const key = issue.path[0] as string;
+        if (!fieldErrors[key]) fieldErrors[key] = issue.message;
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+
+    savingRef.current = true;
+    setErrors({});
     setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    setTimeout(() => { setSaved(false); savingRef.current = false; }, 3000);
   };
+
+  const errorClass = (key: string) => errors[key] ? "ring-2 ring-red-400" : "";
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
@@ -50,28 +67,40 @@ export default function PersonalDetailsPage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <IconInput
-                label="Full Name"
-                icon={User}
-                id="fullName"
-                value={profile.personal.fullName}
-                onChange={(v) => updatePersonal({ fullName: v })}
-              />
-              <IconInput
-                label="Phone Number"
-                icon={Phone}
-                id="phone"
-                value={profile.personal.phone}
-                onChange={(v) => updatePersonal({ phone: v })}
-              />
-              <IconInput
-                label="Email"
-                icon={Mail}
-                id="email"
-                type="email"
-                value={profile.personal.email}
-                onChange={(v) => updatePersonal({ email: v })}
-              />
+              <div>
+                <IconInput
+                  label="Full Name"
+                  icon={User}
+                  id="fullName"
+                  value={profile.personal.fullName}
+                  onChange={(v) => updatePersonal({ fullName: v })}
+                  className={errorClass("fullName")}
+                />
+                {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
+              </div>
+              <div>
+                <IconInput
+                  label="Phone Number"
+                  icon={Phone}
+                  id="phone"
+                  value={profile.personal.phone}
+                  onChange={(v) => updatePersonal({ phone: v })}
+                  className={errorClass("phone")}
+                />
+                {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+              </div>
+              <div>
+                <IconInput
+                  label="Email"
+                  icon={Mail}
+                  id="email"
+                  type="email"
+                  value={profile.personal.email}
+                  onChange={(v) => updatePersonal({ email: v })}
+                  className={errorClass("email")}
+                />
+                {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+              </div>
               <IconInput
                 label="Date of Birth"
                 icon={CalendarDays}
@@ -104,7 +133,7 @@ export default function PersonalDetailsPage() {
             </div>
 
             <hr className="border-border/40" />
-            <SaveButton label="Save Changes" saved={saved} savedMessage="Changes saved. Booking forms will auto-fill." />
+            <SaveButton label="Save Changes" saved={saved} savedMessage="Changes saved. Booking forms will auto-fill." errors={errors} />
           </form>
         </CardContent>
       </Card>

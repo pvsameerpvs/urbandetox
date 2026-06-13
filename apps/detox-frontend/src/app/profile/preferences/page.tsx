@@ -1,10 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
-;
-;
-;
 import { ProfileSectionHeader } from "../components/ProfileSectionHeader";
 import { IconInput } from "../components/IconInput";
 import { SaveButton } from "../components/SaveButton";
@@ -25,11 +22,14 @@ const bloodOptions = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
 export default function PreferencesPage() {
   const { profile, updateHealth } = useUserProfile();
   const [saved, setSaved] = useState(false);
+  const savingRef = useRef(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (savingRef.current) return;
+    savingRef.current = true;
     setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    setTimeout(() => { setSaved(false); savingRef.current = false; }, 3000);
   };
 
   return (
