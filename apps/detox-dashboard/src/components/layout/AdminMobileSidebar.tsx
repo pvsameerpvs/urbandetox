@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@urbandetox/utils";
@@ -16,6 +17,17 @@ export function AdminMobileSidebar({ open, onClose }: AdminMobileSidebarProps) {
   const pathname = usePathname();
   const { unreadCount } = useBookingNotifications();
 
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
   return (
     <>
       {/* Overlay */}
@@ -29,7 +41,7 @@ export function AdminMobileSidebar({ open, onClose }: AdminMobileSidebarProps) {
       {/* Slide Panel */}
       <div
         className={cn(
-          "fixed top-0 left-0 z-[70] h-full w-[260px] bg-sidebar-dark border-r border-white/5 flex flex-col lg:hidden transition-transform duration-300 ease-out",
+          "fixed top-0 left-0 z-[70] h-dvh w-[260px] bg-sidebar-dark border-r border-white/5 flex flex-col lg:hidden transition-transform duration-300 ease-out",
           open ? "translate-x-0" : "-translate-x-full"
         )}
       >

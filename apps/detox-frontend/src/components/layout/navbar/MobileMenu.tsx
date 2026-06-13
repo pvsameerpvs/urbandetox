@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import {
   Menu,
   X,
@@ -41,12 +41,29 @@ export function MobileMenu({ isLightMode }: MobileMenuProps) {
   const [open, setOpen] = useState(false);
   const { profile, authUser, isLoggedIn, logout, isHydrated } = useUserProfile();
   const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
   const initials = profile.personal.fullName
     .split(" ")
     .map((n) => n[0])
     .join("")
     .slice(0, 2)
     .toUpperCase();
+
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
   const handleLogout = () => {
     logout();
@@ -81,7 +98,7 @@ export function MobileMenu({ isLightMode }: MobileMenuProps) {
       {/* Slide Panel */}
       <div
         className={cn(
-          "fixed top-0 right-0 z-[70] h-full w-80 max-w-[85vw] bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-out",
+          "fixed top-0 right-0 z-[70] h-dvh w-80 max-w-[85vw] bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-out",
           open ? "translate-x-0" : "translate-x-full"
         )}
       >
