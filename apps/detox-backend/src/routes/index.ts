@@ -18,6 +18,10 @@ import paymentRoutes from "./payments";
 
 const router = express.Router();
 
+router.get("/", (_req, res) => {
+  res.json({ name: "Urban Detox API", status: "running" });
+});
+
 router.use("/health", healthRoutes);
 router.use("/api/destinations", destinationRoutes);
 router.use("/api/packages", packageRoutes);

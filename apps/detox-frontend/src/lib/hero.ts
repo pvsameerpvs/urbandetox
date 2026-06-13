@@ -15,12 +15,12 @@ export interface HeroText {
 }
 
 export const DEFAULT_TEXT: HeroText = {
-  badge: "",
-  headline1: "",
-  headline2: "",
-  subheadline: "",
-  ctaPrimary: "",
-  ctaSecondary: "",
+  badge: "Curated Offbeat Escapes",
+  headline1: "Disconnect from routine.",
+  headline2: "Step into your next detox.",
+  subheadline: "Small-group escapes to the Western Ghats, Kerala, and beyond. Local stays, guided stillness, and real reset.",
+  ctaPrimary: "Explore Detox",
+  ctaSecondary: "View Upcoming",
 };
 
 export function getHeroImages(): string[] {
