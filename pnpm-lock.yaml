@@ -41,6 +41,9 @@ importers:
       multer:
         specifier: ^2.1.1
         version: 2.1.1
+      node-cron:
+        specifier: ^4.2.1
+        version: 4.2.1
       pg:
         specifier: ^8.21.0
         version: 8.21.0
@@ -72,6 +75,9 @@ importers:
       '@types/node':
         specifier: ^22.0.0
         version: 22.19.18
+      '@types/node-cron':
+        specifier: ^3.0.11
+        version: 3.0.11
       '@types/pg':
         specifier: ^8.20.0
         version: 8.20.0
@@ -2164,6 +2170,9 @@ packages:
   '@types/multer@2.1.0':
     resolution: {integrity: sha512-zYZb0+nJhOHtPpGDb3vqPjwpdeGlGC157VpkqNQL+UU2qwoacoQ7MpsAmUptI/0Oa127X32JzWDqQVEXp2RcIA==}
 
+  '@types/node-cron@3.0.11':
+    resolution: {integrity: sha512-0ikrnug3/IyneSHqCBeslAhlK2aBfYek1fGo4bP4QnZPmiqSGRK+Oy7ZMisLWkesffJvQ1cqAcBnJC+8+nxIAg==}
+
   '@types/node@22.19.18':
     resolution: {integrity: sha512-9v00a+dn2yWVsYDEunWC4g/TcRKVq3r8N5FuZp7u0SGrPvdN9c2yXI9bBuf5Fl0hNCb+QTIePTn5pJs2pwBOQQ==}
 
@@ -3999,6 +4008,10 @@ packages:
         optional: true
       sass:
         optional: true
+
+  node-cron@4.2.1:
+    resolution: {integrity: sha512-lgimEHPE/QDgFlywTd8yTR61ptugX3Qer29efeyWw2rv259HtGBNn1vZVmp8lB9uo9wC0t/AT4iGqXxia+CJFg==}
+    engines: {node: '>=6.0.0'}
 
   node-domexception@1.0.0:
     resolution: {integrity: sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==}
@@ -6686,6 +6699,8 @@ snapshots:
     dependencies:
       '@types/express': 5.0.6
 
+  '@types/node-cron@3.0.11': {}
+
   '@types/node@22.19.18':
     dependencies:
       undici-types: 6.21.0
@@ -7544,7 +7559,7 @@ snapshots:
       eslint: 9.39.4(jiti@2.7.0)
       eslint-import-resolver-node: 0.3.10
       eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))
-      eslint-plugin-import: 2.32.0(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))
+      eslint-plugin-import: 2.32.0(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))
       eslint-plugin-jsx-a11y: 6.10.2(eslint@9.39.4(jiti@2.7.0))
       eslint-plugin-react: 7.37.5(eslint@9.39.4(jiti@2.7.0))
       eslint-plugin-react-hooks: 7.1.1(eslint@9.39.4(jiti@2.7.0))
@@ -7577,7 +7592,7 @@ snapshots:
       tinyglobby: 0.2.16
       unrs-resolver: 1.11.1
     optionalDependencies:
-      eslint-plugin-import: 2.32.0(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))
+      eslint-plugin-import: 2.32.0(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))
     transitivePeerDependencies:
       - supports-color
 
@@ -7591,7 +7606,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.32.0(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)):
+  eslint-plugin-import@2.32.0(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0)):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9
@@ -8623,6 +8638,8 @@ snapshots:
     transitivePeerDependencies:
       - '@babel/core'
       - babel-plugin-macros
+
+  node-cron@4.2.1: {}
 
   node-domexception@1.0.0: {}
 

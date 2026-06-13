@@ -17,7 +17,7 @@ export const ENV = {
   RESEND_WEBHOOK_SECRET: process.env.RESEND_WEBHOOK_SECRET || "",
   CORS_ORIGINS:
     process.env.CORS_ORIGINS ||
-    "http://localhost:3000,http://localhost:3001",
+    "http://localhost:3000,http://localhost:3001,https://urbandetox.in,https://www.urbandetox.in,https://beta.urbandetox.in,https://admin.urbandetox.in",
   TRUST_PROXY_HOPS: Number(process.env.TRUST_PROXY_HOPS) || 1,
 } as const;
 

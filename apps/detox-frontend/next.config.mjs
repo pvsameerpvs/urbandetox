@@ -11,6 +11,14 @@ const nextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: "https://api.urbandetox.in/api/:path*",
+      },
+    ];
+  },
 };
 
 export default nextConfig;

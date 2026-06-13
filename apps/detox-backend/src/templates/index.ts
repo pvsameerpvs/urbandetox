@@ -9,6 +9,7 @@ export {
   paymentFailedTemplate,
   partialRefundTemplate,
   refundFailedAdminTemplate,
+  onboardingReminderTemplate,
 } from "./booking-emails";
 export {
   contactAutoReplyTemplate,

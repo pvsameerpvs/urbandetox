@@ -7,7 +7,7 @@ import type {
   Testimonial,
 } from "@urbandetox/utils";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://api.urbandetox.in";
 
 async function api<T>(path: string): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
@@ -257,6 +257,29 @@ export async function updateBookingOnboarding(
   });
 }
 
+export async function saveOnboardingProgress(
+  bookingId: string,
+  payload: {
+    step: number;
+    travelers: import("@urbandetox/utils").Traveler[];
+    common: import("@urbandetox/utils").CommonDetails;
+  }
+): Promise<unknown> {
+  return authApi(`/api/bookings/${encodeURIComponent(bookingId)}/onboarding/progress`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function fetchOnboardingProgress(bookingId: string): Promise<{
+  travelers: import("@urbandetox/utils").Traveler[];
+  common: import("@urbandetox/utils").CommonDetails;
+  onboardingStep: number;
+  onboardingComplete: boolean;
+}> {
+  return authApi(`/api/bookings/${encodeURIComponent(bookingId)}/onboarding/progress`);
+}
+
 // ── Contact ────────────────────────────────────────
 export async function submitContact(payload: {
   name: string;
@@ -275,13 +298,21 @@ export async function submitContact(payload: {
 
 // ── Site Settings ────────────────────────────────────
 export async function fetchSiteSettings(): Promise<import("@urbandetox/utils").SiteSettings> {
-  const res = await fetch(`${API_BASE}/api/settings`, {
-    cache: "no-store",
-    headers: { Accept: "application/json" },
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(err.error || `Settings error: ${res.status}`);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5000);
+
+  try {
+    const res = await fetch(`${API_BASE}/api/settings`, {
+      signal: controller.signal,
+      cache: "no-store",
+      headers: { Accept: "application/json" },
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: res.statusText }));
+      throw new Error(err.error || `Settings error: ${res.status}`);
+    }
+    return res.json() as Promise<import("@urbandetox/utils").SiteSettings>;
+  } finally {
+    clearTimeout(timeout);
   }
-  return res.json() as Promise<import("@urbandetox/utils").SiteSettings>;
 }

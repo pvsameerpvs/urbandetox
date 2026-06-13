@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, startTransition } from "react";
+import { useState, useEffect, useRef, startTransition, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 ;
 import { BookingHeader } from "../../components/BookingHeader";
@@ -17,7 +18,7 @@ import { slideVariants } from "@/lib/animations";
 import { type Traveler, type CommonDetails, type Departure, type Package, type Destination } from "@urbandetox/utils";
 import { useBooking } from "@/hooks/use-booking";
 import { formatDateRange } from "@urbandetox/utils";
-import { updateBookingOnboarding } from "@/lib/api";
+import { updateBookingOnboarding, saveOnboardingProgress, fetchOnboardingProgress } from "@/lib/api";
 import { Users, Utensils, PhoneCall, FileCheck } from "lucide-react";
 import { Card, CardContent } from "@urbandetox/ui"
 
@@ -37,9 +38,12 @@ interface OnboardingPageClientProps {
 
 export function OnboardingPageClient({ code, departure, pkg, dest }: OnboardingPageClientProps) {
   const { booking, save } = useBooking(code);
+  const searchParams = useSearchParams();
+  const stepParam = searchParams.get("step");
 
   const [travelers, setTravelers] = useState<Traveler[]>([]);
   const [common, setCommon] = useState<CommonDetails>({ groupNote: "", modeOfArrival: "", needsTravelHelp: false });
+  const [loadedFromServer, setLoadedFromServer] = useState(false);
 
   useEffect(() => {
     if (booking) {
@@ -50,10 +54,66 @@ export function OnboardingPageClient({ code, departure, pkg, dest }: OnboardingP
     }
   }, [booking]);
 
+  const [initialStepDone, setInitialStepDone] = useState(false);
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const prevStep = useRef(step);
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  useEffect(() => {
+    if (initialStepDone) return;
+    if (stepParam) {
+      const parsed = Number(stepParam);
+      if (parsed >= 1 && parsed <= 4) {
+        setStep(parsed);
+      }
+    }
+    setInitialStepDone(true);
+  }, [stepParam, initialStepDone]);
+
+  useEffect(() => {
+    if (!booking?.bookingId || loadedFromServer) return;
+    (async () => {
+      try {
+        const server = await fetchOnboardingProgress(booking.bookingId!);
+        if (server.travelers.length > 0) {
+          setTravelers(server.travelers);
+          setCommon(server.common);
+          if (!stepParam && server.onboardingStep) {
+            setStep(server.onboardingStep);
+          }
+        }
+      } catch {
+        // server state not available — use local
+      }
+      setLoadedFromServer(true);
+    })();
+  }, [booking?.bookingId, loadedFromServer, stepParam]);
+
+  const persistProgress = useCallback(async () => {
+    if (!booking?.bookingId) return;
+    try {
+      await saveOnboardingProgress(booking.bookingId, {
+        step,
+        travelers,
+        common,
+      });
+    } catch {
+      // silent — saves are fire-and-forget
+    }
+  }, [booking?.bookingId, step, travelers, common]);
+
+  useEffect(() => {
+    if (prevStep.current !== step) {
+      prevStep.current = step;
+      save({ onboardingStep: step });
+      clearTimeout(saveTimer.current);
+      saveTimer.current = setTimeout(persistProgress, 500);
+    }
+    return () => clearTimeout(saveTimer.current);
+  }, [step, persistProgress, save]);
 
   const next = () => { setDirection(1); setStep((s) => Math.min(s + 1, steps.length)); };
   const prev = () => { setDirection(-1); setStep((s) => Math.max(s - 1, 1)); };
@@ -77,7 +137,7 @@ export function OnboardingPageClient({ code, departure, pkg, dest }: OnboardingP
 
     setSubmitting(false);
     setSubmitted(true);
-    save({ travelers, common, onboardingComplete: true });
+    save({ travelers, common, onboardingComplete: true, onboardingStep: 4 });
     setTimeout(() => { window.location.href = `/book/${code}/success`; }, 1500);
   };
 

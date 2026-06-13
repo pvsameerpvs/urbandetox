@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Footer } from "@/components/layout/footer";
 import { fetchSiteSettings } from "@/lib/api";
-import { normalizeSettings, type SiteSettings } from "@urbandetox/utils";
+import { defaultSiteSettings, normalizeSettings, type SiteSettings } from "@urbandetox/utils";
 
 const HIDDEN_FOOTER_PATHS = ["/login"];
 
@@ -14,13 +14,10 @@ export function ConditionalFooter() {
 
   useEffect(() => {
     fetchSiteSettings()
-      .then((data) => {
-        const normalized = normalizeSettings(data);
-        console.log("[Footer] Settings loaded:", normalized);
-        setSettings(normalized);
-      })
-      .catch((err: unknown) => {
-        console.error("[Footer] Failed to load settings:", err);
+      .then((data) => setSettings(normalizeSettings(data)))
+      .catch(() => {
+        console.warn("[Footer] Backend unavailable — using default settings");
+        setSettings(defaultSiteSettings);
       });
   }, []);
 

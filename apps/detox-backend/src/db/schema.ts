@@ -218,6 +218,8 @@ export const bookings = pgTable("bookings", {
       needsTravelHelp: boolean;
     };
     onboardingComplete?: boolean;
+    onboardingStep?: number;
+    onboardingStepUpdatedAt?: string;
     paymentMethod?: "razorpay" | "cod";
     bookedByName?: string;
     bookedByEmail?: string;

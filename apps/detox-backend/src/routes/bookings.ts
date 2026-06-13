@@ -4,7 +4,7 @@ import { validateBody } from "@/validators/middleware";
 import { authMiddleware } from "@/middleware/auth";
 import { requireAdmin } from "@/middleware/auth";
 import { auditMiddleware } from "@/middleware/audit";
-import { updateOnboardingBody } from "@/validators/schemas";
+import { updateOnboardingBody, saveOnboardingProgressBody } from "@/validators/schemas";
 
 const router = express.Router();
 
@@ -15,6 +15,17 @@ router.put(
   authMiddleware,
   validateBody(updateOnboardingBody),
   BookingController.updateOnboarding
+);
+router.put(
+  "/:id/onboarding/progress",
+  authMiddleware,
+  validateBody(saveOnboardingProgressBody),
+  BookingController.saveProgress
+);
+router.get(
+  "/:id/onboarding/progress",
+  authMiddleware,
+  BookingController.getProgress
 );
 
 export default router;

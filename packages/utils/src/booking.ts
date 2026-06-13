@@ -38,6 +38,7 @@ export interface BookingState {
   travelers: Traveler[];
   common: CommonDetails;
   onboardingComplete?: boolean;
+  onboardingStep?: number;
   paymentStatus?: "paid" | "pending" | "cod" | "refunded";
   paymentMethod?: "razorpay" | "cod";
   bookingId?: string;

@@ -43,7 +43,7 @@ export function createApp(): Express {
           callback(null, true);
           return;
         }
-        callback(new Error("Origin is not allowed by CORS"));
+        callback(null, false);
       },
     })
   );

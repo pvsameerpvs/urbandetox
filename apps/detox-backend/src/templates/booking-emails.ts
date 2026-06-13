@@ -407,9 +407,7 @@ export function refundFailedAdminTemplate(data: {
     </div>
   `;
 
-  return {
-    html: baseTemplate("Refund Attempt Failed — Urban Detox", htmlContent),
-    text: `URGENT: REFUND ATTEMPT FAILED
+  const textContent = `URGENT: REFUND ATTEMPT FAILED
 
 Customer: ${data.fullName}
 Email: ${data.email || "—"}
@@ -417,6 +415,84 @@ Trip: ${data.packageTitle}
 Departure Code: ${data.departureCode}
 Refund Amount: ${data.refundAmount}
 
-Review the payment in Razorpay before retrying.`,
+Review the payment in Razorpay before retrying.`;
+
+  return {
+    html: baseTemplate("Refund Attempt Failed — Urban Detox", htmlContent),
+    text: textContent,
+  };
+}
+
+export function onboardingReminderTemplate(data: {
+  fullName: string;
+  departureCode: string;
+  packageTitle: string;
+  destinationName: string;
+  step: number;
+  totalSteps: number;
+  stepLabel: string;
+}): EmailContent {
+  const firstName = escapeHtml(data.fullName.split(" ")[0] || "Traveler");
+  const onboardingUrl = `https://urbandetox.in/book/${data.departureCode}/onboarding?step=${data.step}`;
+
+  const htmlContent = `
+    <h2>Finish your onboarding, ${firstName}!</h2>
+    <p>You're almost there! Complete your trip details so we can prepare everything for your Urban Detox experience.</p>
+
+    <div class="badge">Onboarding Incomplete</div>
+
+    <div class="details">
+      <div class="details-row">
+        <span class="details-label">Trip</span>
+        <span class="details-value">${escapeHtml(data.packageTitle)}</span>
+      </div>
+      <div class="details-row">
+        <span class="details-label">Destination</span>
+        <span class="details-value">${escapeHtml(data.destinationName)}</span>
+      </div>
+      <div class="details-row">
+        <span class="details-label">Departure Code</span>
+        <span class="details-value">${escapeHtml(data.departureCode)}</span>
+      </div>
+      <div class="details-row">
+        <span class="details-label">Progress</span>
+        <span class="details-value">Step ${data.step} of ${data.totalSteps} — ${escapeHtml(data.stepLabel)}</span>
+      </div>
+    </div>
+
+    <p style="text-align:center;">
+      <a href="${onboardingUrl}" class="cta">Continue Onboarding</a>
+    </p>
+
+    <p style="font-size:13px; color:#78716c; margin-top:16px;">This link will take you directly to where you left off. No need to re-enter your previous details.</p>
+
+    <div class="divider"></div>
+    <p style="font-size:13px; color:#78716c;">Need help? Reply to this email or WhatsApp us at <a href="https://wa.me/919876543210" style="color:#78716c;">+91-98765-43210</a>.</p>
+  `;
+
+  const textContent = `Finish your onboarding, ${data.fullName.split(" ")[0] || "Traveler"}!
+
+You're almost there! Complete your trip details so we can prepare everything for your Urban Detox experience.
+
+ONBOARDING INCOMPLETE
+
+Trip: ${data.packageTitle}
+Destination: ${data.destinationName}
+Departure Code: ${data.departureCode}
+Progress: Step ${data.step} of ${data.totalSteps} — ${data.stepLabel}
+
+Continue here: ${onboardingUrl}
+
+This link will take you directly to where you left off. No need to re-enter your previous details.
+
+Need help? Reply to this email or WhatsApp us at +91-98765-43210.
+
+Urban Detox - Bangalore, India
+hello@urbandetox.in | https://urbandetox.in
+`;
+
+  return {
+    html: baseTemplate("Finish Your Onboarding — Urban Detox", htmlContent),
+    text: textContent,
   };
 }

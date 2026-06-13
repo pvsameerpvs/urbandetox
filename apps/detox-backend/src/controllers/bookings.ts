@@ -181,6 +181,25 @@ export const BookingController = {
     });
     res.json(booking);
   },
+
+  async saveProgress(req: Request, res: Response) {
+    const booking = await BookingService.saveProgress({
+      userId: req.user!.id,
+      bookingId: String(req.params.id),
+      step: req.body.step,
+      travelers: req.body.travelers,
+      common: req.body.common,
+    });
+    res.json(booking);
+  },
+
+  async getProgress(req: Request, res: Response) {
+    const progress = await BookingService.getProgress({
+      userId: req.user!.id,
+      bookingId: String(req.params.id),
+    });
+    res.json(progress);
+  },
 };
 
 function computeTripStatus(startDate: string | null) {

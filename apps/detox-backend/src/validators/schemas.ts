@@ -165,6 +165,16 @@ export const updateOnboardingBody = z.object({
   }).strict(),
 }).strict();
 
+export const saveOnboardingProgressBody = z.object({
+  step: z.number().int().min(1).max(4),
+  travelers: z.array(onboardingTraveler).min(1).max(20),
+  common: z.object({
+    groupNote: z.string().max(2000),
+    modeOfArrival: z.string().max(255),
+    needsTravelHelp: z.boolean(),
+  }).strict(),
+}).strict();
+
 // ─── Contact ──────────────────────────────────────
 export const contactFormBody = z.object({
   name: z.string().min(2).max(255),
