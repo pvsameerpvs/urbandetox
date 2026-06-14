@@ -22,6 +22,7 @@ export const PaymentController = {
       amountPaise: session.totalPaise,
       currency: session.currency,
       keyId: ENV.RAZORPAY_KEY_ID,
+      razorpayMode: ENV.RAZORPAY_MODE,
       expiresAt: session.expiresAt,
       status: session.status,
     });
@@ -124,9 +125,14 @@ export const RazorpayWebhookController = {
       return;
     }
 
-    const payload = JSON.parse(rawBody.toString("utf8")) as {
-      event?: string;
-    };
+    let payload: { event?: string };
+    try {
+      payload = JSON.parse(rawBody.toString("utf8")) as { event?: string };
+    } catch {
+      res.status(400).json({ error: "Webhook payload is not valid JSON" });
+      return;
+    }
+
     if (!payload.event) {
       res.status(400).json({ error: "Webhook event is missing" });
       return;

@@ -472,6 +472,38 @@ async function reconcileRefund(refund: RazorpayRefund) {
 }
 
 export const PaymentService = {
+  async expireStaleSeatHolds() {
+    const staleHolds = await db
+      .select({
+        id: seatHolds.id,
+        departureCode: seatHolds.departureCode,
+      })
+      .from(seatHolds)
+      .where(
+        and(
+          eq(seatHolds.status, "active"),
+          lte(seatHolds.expiresAt, new Date())
+        )
+      );
+
+    const departureCodes = [...new Set(staleHolds.map((hold) => hold.departureCode))];
+    for (const departureCode of departureCodes) {
+      await db.transaction(async (tx) => {
+        const [departure] = await tx
+          .select()
+          .from(departures)
+          .where(eq(departures.code, departureCode))
+          .for("update");
+
+        if (departure) {
+          await releaseExpiredHolds(tx, departure);
+        }
+      });
+    }
+
+    return staleHolds.length;
+  },
+
   async createCheckout(input: {
     idempotencyKey: string;
     user: { id: string; email: string; fullName?: string | null };
@@ -563,6 +595,14 @@ export const PaymentService = {
           userId: session.userId,
         },
       });
+
+      if (
+        order.amount !== session.totalPaise ||
+        order.currency !== session.currency ||
+        order.status !== "created"
+      ) {
+        throw new Error("Razorpay order details do not match checkout");
+      }
 
       const [updated] = await db
         .update(checkoutSessions)
@@ -785,41 +825,44 @@ export const PaymentService = {
   },
 
   async handleWebhook(eventId: string, event: string, payload: unknown) {
-    const [processed] = await db
-      .select()
-      .from(webhookEvents)
-      .where(eq(webhookEvents.eventId, eventId));
-    if (processed) return;
-
-    const body = payload as {
-      payload?: {
-        payment?: { entity?: RazorpayPayment };
-        refund?: { entity?: RazorpayRefund };
-      };
-    };
-
-    if (event === "payment.captured" || event === "order.paid") {
-      const paymentId = body.payload?.payment?.entity?.id;
-      if (paymentId) {
-        const payment = await RazorpayService.fetchPayment(paymentId);
-        await finalizeCapturedPayment(payment, false);
-      }
-    } else if (event === "payment.failed") {
-      const failed = body.payload?.payment?.entity;
-      if (failed) await recordFailedPayment(failed);
-    } else if (
-      event === "refund.created" ||
-      event === "refund.processed" ||
-      event === "refund.failed"
-    ) {
-      const refund = body.payload?.refund?.entity;
-      if (refund) await reconcileRefund(refund);
-    }
-
-    await db
+    const [claimed] = await db
       .insert(webhookEvents)
       .values({ eventId, eventType: event })
-      .onConflictDoNothing();
+      .onConflictDoNothing()
+      .returning({ eventId: webhookEvents.eventId });
+    if (!claimed) return;
+
+    try {
+      const body = payload as {
+        payload?: {
+          payment?: { entity?: RazorpayPayment };
+          refund?: { entity?: RazorpayRefund };
+        };
+      };
+
+      if (event === "payment.captured" || event === "order.paid") {
+        const paymentId = body.payload?.payment?.entity?.id;
+        if (paymentId) {
+          const payment = await RazorpayService.fetchPayment(paymentId);
+          await finalizeCapturedPayment(payment, false);
+        }
+      } else if (event === "payment.failed") {
+        const failed = body.payload?.payment?.entity;
+        if (failed) await recordFailedPayment(failed);
+      } else if (
+        event === "refund.created" ||
+        event === "refund.processed" ||
+        event === "refund.failed"
+      ) {
+        const refund = body.payload?.refund?.entity;
+        if (refund) await reconcileRefund(refund);
+      }
+    } catch (error) {
+      await db
+        .delete(webhookEvents)
+        .where(eq(webhookEvents.eventId, eventId));
+      throw error;
+    }
   },
 
   async createRefund(input: {

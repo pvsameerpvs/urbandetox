@@ -199,6 +199,7 @@ export async function createCheckoutSession(payload: {
   amountPaise: number;
   currency: string;
   keyId: string;
+  razorpayMode: "test" | "live";
   expiresAt: string;
   status: string;
 }> {

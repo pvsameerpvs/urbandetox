@@ -147,10 +147,6 @@ export async function fetchBookings<T = unknown>(): Promise<T[]> {
   return api("/api/bookings");
 }
 
-export async function createBooking<T = unknown>(data: T): Promise<T> {
-  return api("/api/bookings", { method: "POST", body: JSON.stringify(data) });
-}
-
 // ─── FAQs ──────────────────────────────────────────
 export async function fetchFaqs<T = unknown>(): Promise<T[]> {
   return api("/api/faqs");

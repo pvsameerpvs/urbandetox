@@ -181,8 +181,9 @@ export const seatHolds = pgTable("seat_holds", {
 
 export const bookings = pgTable("bookings", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id").references(() => users.id),
+  userId: uuid("user_id").notNull().references(() => users.id),
   checkoutSessionId: uuid("checkout_session_id")
+    .notNull()
     .unique()
     .references(() => checkoutSessions.id),
   departureCode: varchar("departure_code", { length: 50 }).notNull(),

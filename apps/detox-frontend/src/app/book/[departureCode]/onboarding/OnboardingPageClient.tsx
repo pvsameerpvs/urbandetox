@@ -19,9 +19,9 @@ import { slideVariants } from "@/lib/animations";
 import { type Traveler, type CommonDetails, type Departure, type Package, type Destination } from "@urbandetox/utils";
 import { useBooking } from "@/hooks/use-booking";
 import { formatDateRange } from "@urbandetox/utils";
-import { updateBookingOnboarding, saveOnboardingProgress, fetchOnboardingProgress } from "@/lib/api";
+import { updateBookingOnboarding, saveOnboardingProgress, fetchOnboardingProgress, fetchMyBookings } from "@/lib/api";
 import { onboardingFormSchema, type OnboardingFormValues, getStepFieldPaths } from "@/lib/onboarding-schema";
-import { Users, Utensils, PhoneCall, FileCheck } from "lucide-react";
+import { Users, Utensils, PhoneCall, FileCheck, Loader2 } from "lucide-react";
 import { Card, CardContent } from "@urbandetox/ui";
 
 const steps = [
@@ -81,6 +81,8 @@ export function OnboardingPageClient({ code, departure, pkg, dest }: OnboardingP
   const [direction, setDirection] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [bookingId, setBookingId] = useState<string | null>(null);
+  const [resolvingBooking, setResolvingBooking] = useState(true);
   const prevStep = useRef(step);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
@@ -97,11 +99,52 @@ export function OnboardingPageClient({ code, departure, pkg, dest }: OnboardingP
     });
   }, [stepParam, initialStepDone]);
 
+  const persistProgress = useCallback(async () => {
+    if (!bookingId) return;
+    const values = form.getValues();
+    try {
+      await saveOnboardingProgress(bookingId, {
+        step,
+        travelers: values.travelers,
+        common: {
+          groupNote: values.groupNote,
+          modeOfArrival: values.modeOfArrival,
+          needsTravelHelp: values.needsTravelHelp,
+        },
+      });
+    } catch {
+      // silent — saves are fire-and-forget
+    }
+  }, [bookingId, step, form]);
+
   useEffect(() => {
-    if (!booking?.bookingId || loadedFromServer) return;
+    if (booking?.bookingId) {
+      setBookingId(booking.bookingId);
+      setResolvingBooking(false);
+      return;
+    }
+    if (!resolvingBooking) return;
     (async () => {
       try {
-        const server = await fetchOnboardingProgress(booking.bookingId!);
+        const data = await fetchMyBookings();
+        const found = (data as Array<{ id: string; bookingCode: string }>)
+          .find((b) => b.bookingCode === code);
+        if (found) {
+          setBookingId(found.id);
+          save({ bookingId: found.id });
+        }
+      } catch {
+        // No bookings found — user can't submit onboarding
+      }
+      setResolvingBooking(false);
+    })();
+  }, [booking?.bookingId, code, save, resolvingBooking]);
+
+  useEffect(() => {
+    if (!bookingId || loadedFromServer) return;
+    (async () => {
+      try {
+        const server = await fetchOnboardingProgress(bookingId);
         if (server.travelers.length > 0) {
           setTravelers(server.travelers);
           setCommon(server.common);
@@ -121,25 +164,7 @@ export function OnboardingPageClient({ code, departure, pkg, dest }: OnboardingP
       }
       setLoadedFromServer(true);
     })();
-  }, [booking?.bookingId, loadedFromServer, stepParam, form]);
-
-  const persistProgress = useCallback(async () => {
-    if (!booking?.bookingId) return;
-    const values = form.getValues();
-    try {
-      await saveOnboardingProgress(booking.bookingId, {
-        step,
-        travelers: values.travelers,
-        common: {
-          groupNote: values.groupNote,
-          modeOfArrival: values.modeOfArrival,
-          needsTravelHelp: values.needsTravelHelp,
-        },
-      });
-    } catch {
-      // silent — saves are fire-and-forget
-    }
-  }, [booking, step, form]);
+  }, [bookingId, loadedFromServer, stepParam, form]);
 
   useEffect(() => {
     if (prevStep.current !== step) {
@@ -194,7 +219,7 @@ export function OnboardingPageClient({ code, departure, pkg, dest }: OnboardingP
   const handleSubmit = form.handleSubmit(async (data) => {
     setSubmitting(true);
     try {
-      if (!booking?.bookingId) {
+      if (!bookingId) {
         throw new Error("A paid or reserved booking is required");
       }
       const onboardingCommon: CommonDetails = {
@@ -202,7 +227,7 @@ export function OnboardingPageClient({ code, departure, pkg, dest }: OnboardingP
         modeOfArrival: data.modeOfArrival,
         needsTravelHelp: data.needsTravelHelp,
       };
-      await updateBookingOnboarding(booking.bookingId, {
+      await updateBookingOnboarding(bookingId, {
         travelers: data.travelers,
         common: onboardingCommon,
       });
@@ -238,7 +263,14 @@ export function OnboardingPageClient({ code, departure, pkg, dest }: OnboardingP
             <div className="lg:col-span-3">
               <OnboardingSubmitted isVisible={submitted} />
               <AnimatePresence mode="wait" custom={direction}>
-                {!submitted && (
+                {resolvingBooking ? (
+                  <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
+                    <CardContent className="p-10 flex flex-col items-center justify-center text-center">
+                      <Loader2 className="h-6 w-6 animate-spin text-brand mb-3" />
+                      <p className="text-sm text-muted-foreground">Looking up your booking...</p>
+                    </CardContent>
+                  </Card>
+                ) : !submitted && (
                   <motion.div key={step} custom={direction} variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.35, ease: "easeOut" }}>
                     <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
                       <CardContent className="p-4 sm:p-5 md:p-6">

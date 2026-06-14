@@ -5,11 +5,26 @@ import cron from "node-cron";
 import { createApp } from "@/app";
 import { ENV } from "@/config/env";
 import { sendOnboardingReminders } from "@/cron/onboarding-reminder";
+import { PaymentService } from "@/services/payments";
 
 const app = createApp();
 
-// Every 30 minutes, check for stale onboarding and send reminders
+// Production-only background maintenance.
 if (ENV.NODE_ENV === "production") {
+  const expireSeatHolds = () => {
+    PaymentService.expireStaleSeatHolds()
+      .then((released) => {
+        if (released > 0) {
+          console.log(`[Cron] Released ${released} expired payment seat hold(s)`);
+        }
+      })
+      .catch((err) => console.error("[Cron] Seat hold cleanup failed:", err));
+  };
+
+  expireSeatHolds();
+  cron.schedule("* * * * *", expireSeatHolds);
+  console.log("[Cron] Payment seat hold cleanup scheduled (every minute)");
+
   cron.schedule("*/30 * * * *", () => {
     sendOnboardingReminders().catch((err) =>
       console.error("[Cron] Onboarding reminder failed:", err)

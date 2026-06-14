@@ -13,35 +13,35 @@ import {
 
 const router = express.Router();
 
+// Protect the whole payments surface by default. The webhook is registered
+// separately in app.ts because Razorpay authenticates it with a signature.
+router.use(rateLimitPresets.standard);
+router.use(authMiddleware);
+
 router.post(
   "/checkout-sessions",
   rateLimitPresets.strict,
-  authMiddleware,
   validateBody(createCheckoutBody),
   PaymentController.createCheckout
 );
 router.post(
   "/verify",
   rateLimitPresets.strict,
-  authMiddleware,
   validateBody(verifyPaymentBody),
   PaymentController.verify
 );
 router.get(
   "/checkout-sessions/:id/status",
-  authMiddleware,
   PaymentController.status
 );
 router.post(
   "/pay-on-arrival",
   rateLimitPresets.strict,
-  authMiddleware,
   validateBody(payOnArrivalBody),
   PaymentController.payOnArrival
 );
 router.post(
   "/:paymentId/refunds",
-  authMiddleware,
   requireAdmin,
   auditMiddleware,
   validateBody(refundPaymentBody),

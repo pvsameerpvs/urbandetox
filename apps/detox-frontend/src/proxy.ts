@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from "next/server";
 const PROTECTED_PREFIXES = ["/profile", "/my-detox", "/book"];
 const PUBLIC_ONLY = ["/login"];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -50,6 +50,9 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|auth/callback|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).)",
+    "/book/:path*",
+    "/profile/:path*",
+    "/my-detox/:path*",
+    "/login",
   ],
 };

@@ -8,23 +8,23 @@ import { updateOnboardingBody, saveOnboardingProgressBody } from "@/validators/s
 
 const router = express.Router();
 
-router.get("/", authMiddleware, requireAdmin, auditMiddleware, BookingController.list);
-router.get("/me", authMiddleware, BookingController.myBookings);
+// Booking data and mutations must never be reachable without a verified user.
+router.use(authMiddleware);
+
+router.get("/", requireAdmin, auditMiddleware, BookingController.list);
+router.get("/me", BookingController.myBookings);
 router.put(
   "/:id/onboarding",
-  authMiddleware,
   validateBody(updateOnboardingBody),
   BookingController.updateOnboarding
 );
 router.put(
   "/:id/onboarding/progress",
-  authMiddleware,
   validateBody(saveOnboardingProgressBody),
   BookingController.saveProgress
 );
 router.get(
   "/:id/onboarding/progress",
-  authMiddleware,
   BookingController.getProgress
 );
 

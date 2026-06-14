@@ -64,6 +64,20 @@
       "when": 1781175600000,
       "tag": "0008_email_delivery_events",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1781438400000,
+      "tag": "0009_require_booking_users",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1781442000000,
+      "tag": "0010_require_booking_checkout",
+      "breakpoints": true
     }
   ]
 }

@@ -95,16 +95,6 @@ export const testimonialListQuery = z.object({
   limit: z.string().regex(/^\d+$/).optional(),
 });
 
-// ─── Bookings ──────────────────────────────────────
-export const createBookingBody = z.object({
-  departureCode: z.string().min(1).max(50),
-  fullName: z.string().min(2).max(255),
-  phone: z.string().min(5).max(50),
-  email: z.string().optional(),
-  travelers: z.number().int().min(1).max(50).optional(),
-  details: z.any().optional(),
-});
-
 const checkoutCustomer = z.object({
   name: z.string().trim().min(2).max(255),
   phone: z.string().trim().min(5).max(50),

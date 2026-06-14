@@ -8,7 +8,7 @@ import Link from "next/link";
 import { Progress } from "@/components/ui/progress";
 import { format, parseISO } from "date-fns";
 import { cn, safeImageUrl } from "@urbandetox/utils";
-import { Calendar, MapPin, CheckCircle2, AlertCircle, ArrowRight, X } from "lucide-react";
+import { Calendar, MapPin, CheckCircle2, AlertCircle, ArrowRight, X, Wallet } from "lucide-react";
 import { motion } from "framer-motion";
 import { Card, CardContent, Badge, Button } from "@urbandetox/ui"
 
@@ -20,7 +20,7 @@ export interface Trip {
   endDate: string;
   status: "upcoming" | "completed" | "cancelled";
   onboardingStatus: "pending" | "completed";
-  paymentStatus: "paid" | "pending";
+  paymentStatus: "paid" | "pending" | "cod";
   image: string;
   bookingCode: string;
   travelers: number;
@@ -29,7 +29,7 @@ export interface Trip {
 function getTripProgress(trip: Trip): number {
   if (trip.status === "completed") return 100;
   if (trip.onboardingStatus === "completed") return 75;
-  if (trip.paymentStatus === "paid") return 50;
+  if (trip.paymentStatus === "paid" || trip.paymentStatus === "cod") return 50;
   return 25;
 }
 
@@ -85,9 +85,15 @@ export function TripCard({ trip, index }: TripCardProps) {
                   </div>
                   <Progress value={progress} className="h-2" />
                   <div className="flex items-center gap-3 mt-2">
-                    <span className={cn("text-[11px] inline-flex items-center gap-1", trip.paymentStatus === "paid" ? "text-emerald-600" : "text-muted-foreground")}>
-                      <CheckCircle2 className="h-3 w-3" /> Paid
-                    </span>
+                    {trip.paymentStatus === "cod" ? (
+                      <span className="text-[11px] inline-flex items-center gap-1 text-amber-600">
+                        <Wallet className="h-3 w-3" /> Pay on Arrival
+                      </span>
+                    ) : (
+                      <span className={cn("text-[11px] inline-flex items-center gap-1", trip.paymentStatus === "paid" ? "text-emerald-600" : "text-muted-foreground")}>
+                        <CheckCircle2 className="h-3 w-3" /> Paid
+                      </span>
+                    )}
                     <span className={cn("text-[11px] inline-flex items-center gap-1", trip.onboardingStatus === "completed" ? "text-emerald-600" : "text-amber-600")}>
                       {trip.onboardingStatus === "completed" ? <CheckCircle2 className="h-3 w-3" /> : <AlertCircle className="h-3 w-3" />}
                       {trip.onboardingStatus === "completed" ? "Onboarding done" : "Onboarding pending"}
