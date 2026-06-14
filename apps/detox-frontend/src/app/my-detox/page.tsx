@@ -34,6 +34,10 @@ export default function MyDetoxPage() {
   const email = authUser?.email || profile.personal.email || "";
   const initials = displayName.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
 
+  const handleCancel = (bookingId: string) => {
+    setTrips((prev) => prev.filter((t) => t.id !== bookingId));
+  };
+
   if (!isLoggedIn) {
     return (
       <main className="min-h-screen bg-white">
@@ -96,11 +100,11 @@ export default function MyDetoxPage() {
               <div className="space-y-4">
                 <h2 className="text-lg font-bold">Upcoming Trips</h2>
                 {upcoming.map((trip, index) => (
-                  <TripCard key={trip.id} trip={trip} index={index} />
+                  <TripCard key={trip.id} trip={trip} index={index} onCancel={handleCancel} />
                 ))}
               </div>
             )}
-            <PastTripsSection trips={trips} />
+            <PastTripsSection trips={trips} onCancel={handleCancel} />
             <div className="rounded-2xl bg-secondary/[0.03] border border-border/40 p-6 sm:p-8 text-center">
               <h3 className="text-lg font-bold mb-2">Ready for another reset?</h3>
               <p className="text-sm text-muted-foreground mb-4">Browse upcoming detoxes and find your next date.</p>

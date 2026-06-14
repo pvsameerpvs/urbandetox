@@ -173,19 +173,15 @@ export async function fetchGoogleReviews(): Promise<GoogleReviewsResponse> {
 
 // ── Bookings ──────────────────────────────────────
 export async function fetchMyBookings(): Promise<unknown[]> {
-  const { createClient } = await import("@/lib/supabase/client");
-  const supabase = createClient();
-  const { data } = await supabase.auth.getSession();
-  const token = data.session?.access_token;
+  return authApi("/api/bookings/me");
+}
 
-  const res = await fetch(`${API_BASE}/api/bookings/me`, {
-    headers: {
-      "Content-Type": "application/json",
-      ...(token && { Authorization: `Bearer ${token}` }),
-    },
+export async function cancelMyBooking(
+  bookingId: string
+): Promise<{ status: string }> {
+  return authApi(`/api/bookings/${encodeURIComponent(bookingId)}/cancel`, {
+    method: "POST",
   });
-  if (!res.ok) throw new Error(`API error: ${res.status}`);
-  return res.json();
 }
 
 export async function createCheckoutSession(payload: {

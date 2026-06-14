@@ -27,5 +27,6 @@ router.get(
   "/:id/onboarding/progress",
   BookingController.getProgress
 );
+router.post("/:id/cancel", BookingController.cancel);
 
 export default router;

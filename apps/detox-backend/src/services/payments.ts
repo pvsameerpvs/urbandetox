@@ -28,7 +28,7 @@ const CURRENCY = "INR";
 
 type DbTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
-function getDepartureStatus(
+export function getDepartureStatus(
   previous: typeof departures.$inferSelect.status,
   seatsLeft: number
 ) {

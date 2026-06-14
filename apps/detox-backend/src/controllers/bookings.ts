@@ -78,6 +78,14 @@ export const BookingController = {
     res.json(booking);
   },
 
+  async cancel(req: Request, res: Response) {
+    const result = await BookingService.cancel({
+      userId: req.user!.id,
+      bookingId: String(req.params.id),
+    });
+    res.json(result);
+  },
+
   async getProgress(req: Request, res: Response) {
     const progress = await BookingService.getProgress({
       userId: req.user!.id,
