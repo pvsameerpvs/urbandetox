@@ -26,10 +26,13 @@ export const BookingController = {
         details: bookings.details,
         createdAt: bookings.createdAt,
         packageTitle: packages.title,
+        packageSlug: packages.slug,
         destinationName: destinations.name,
+        destinationSlug: destinations.slug,
         startDate: departures.startDate,
         endDate: departures.endDate,
         coverImage: packages.coverImage,
+        gallery: packages.gallery,
       })
       .from(bookings)
       .leftJoin(departures, eq(bookings.departureCode, departures.code))
@@ -40,7 +43,9 @@ export const BookingController = {
     const enriched = rows.map((r) => ({
       id: r.id,
       packageTitle: r.packageTitle || "Unknown Package",
+      packageSlug: r.packageSlug || "",
       destination: r.destinationName || "Unknown",
+      destinationSlug: r.destinationSlug || "",
       startDate: r.startDate || "",
       endDate: r.endDate || "",
       status:
@@ -50,6 +55,7 @@ export const BookingController = {
       onboardingStatus: r.details?.onboardingComplete ? "completed" : "pending",
       paymentStatus: r.paymentStatus === "paid" ? "paid" : r.paymentStatus === "cod" ? "cod" : "pending",
       image: safeImageUrl(r.coverImage),
+      gallery: (r.gallery || []).filter(Boolean) as string[],
       bookingCode: r.departureCode,
       travelers: r.travelers,
     }));

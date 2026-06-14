@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const API_TARGET = process.env.NEXT_PUBLIC_API_URL || "https://api.urbandetox.in";
+
 const nextConfig = {
   transpilePackages: ["@urbandetox/ui", "@urbandetox/utils"],
   images: {
@@ -15,7 +17,7 @@ const nextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "https://api.urbandetox.in/api/:path*",
+        destination: `${API_TARGET}/api/:path*`,
       },
     ];
   },

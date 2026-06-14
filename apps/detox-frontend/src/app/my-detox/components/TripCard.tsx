@@ -9,21 +9,25 @@ import { useState } from "react";
 import { Progress } from "@/components/ui/progress";
 import { format, parseISO } from "date-fns";
 import { cn, safeImageUrl } from "@urbandetox/utils";
-import { Calendar, MapPin, CheckCircle2, AlertCircle, ArrowRight, X, Wallet, Loader2 } from "lucide-react";
+import { Calendar, MapPin, CheckCircle2, AlertCircle, ArrowRight, X, Wallet, Loader2, ImageIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { Card, CardContent, Badge, Button, Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@urbandetox/ui"
 import { cancelMyBooking } from "@/lib/api";
+import { MemoriesLightbox } from "./MemoriesLightbox";
 
 export interface Trip {
   id: string;
   packageTitle: string;
+  packageSlug: string;
   destination: string;
+  destinationSlug: string;
   startDate: string;
   endDate: string;
   status: "upcoming" | "completed" | "cancelled";
   onboardingStatus: "pending" | "completed";
   paymentStatus: "paid" | "pending" | "cod";
   image: string;
+  gallery: string[];
   bookingCode: string;
   travelers: number;
 }
@@ -44,6 +48,7 @@ interface TripCardProps {
 export function TripCard({ trip, index, onCancel }: TripCardProps) {
   const progress = getTripProgress(trip);
   const isUpcoming = trip.status === "upcoming";
+  const [memoriesOpen, setMemoriesOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [cancelling, setCancelling] = useState(false);
 
@@ -130,7 +135,21 @@ export function TripCard({ trip, index, onCancel }: TripCardProps) {
                   <Link href={`/book/${trip.bookingCode}`}>View Details</Link>
                 </Button>
               )}
-              {!isUpcoming && <Button size="sm" variant="outline" className="rounded-xl border-border/60 h-9 px-4 text-xs font-medium">View Memories</Button>}
+              {!isUpcoming && (
+                <>
+                  <Button size="sm" variant="outline" className="rounded-xl border-border/60 h-9 px-4 text-xs font-medium" onClick={() => setMemoriesOpen(true)}>
+                    <ImageIcon className="mr-1.5 h-3.5 w-3.5" /> View Memories
+                  </Button>
+                  <MemoriesLightbox
+                    open={memoriesOpen}
+                    onClose={() => setMemoriesOpen(false)}
+                    images={trip.gallery}
+                    title={trip.packageTitle}
+                    packageSlug={trip.packageSlug}
+                    destinationSlug={trip.destinationSlug}
+                  />
+                </>
+              )}
               {isUpcoming && (
                 <Button size="sm" variant="ghost" className="rounded-xl h-9 px-3 text-xs text-muted-foreground hover:text-destructive hover:bg-destructive/10" onClick={() => setCancelOpen(true)}>
                   <X className="mr-1 h-3.5 w-3.5" /> Cancel
