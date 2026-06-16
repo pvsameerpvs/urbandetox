@@ -27,6 +27,15 @@ const HOLD_MINUTES = 10;
 const CURRENCY = "INR";
 
 type DbTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
+type CheckoutRequestInput = {
+  idempotencyKey: string;
+  user: { id: string; email: string; fullName?: string | null };
+  departureCode: string;
+  travelerCount: number;
+  customerName: string;
+  customerPhone: string;
+  customerEmail?: string;
+};
 
 export function getDepartureStatus(
   previous: typeof departures.$inferSelect.status,
@@ -160,6 +169,24 @@ function calculateAmount(
   return { subtotalPaise, gstPaise, totalPaise: subtotalPaise + gstPaise };
 }
 
+function assertIdempotentCheckoutMatches(
+  existing: typeof checkoutSessions.$inferSelect,
+  input: CheckoutRequestInput
+) {
+  const customerEmail = input.customerEmail || input.user.email;
+  const matches =
+    existing.userId === input.user.id &&
+    existing.departureCode === input.departureCode &&
+    existing.travelerCount === input.travelerCount &&
+    existing.customerName === input.customerName &&
+    existing.customerPhone === input.customerPhone &&
+    existing.customerEmail === customerEmail;
+
+  if (!matches) {
+    throw new Error("Idempotency key was already used for a different checkout");
+  }
+}
+
 async function finalizeCapturedPayment(
   payment: RazorpayPayment,
   signatureVerified: boolean
@@ -187,37 +214,42 @@ async function finalizeCapturedPayment(
       .where(eq(bookings.checkoutSessionId, session.id));
 
     if (existingBooking) {
-      await tx
-        .insert(payments)
-        .values({
-          checkoutSessionId: session.id,
-          bookingId: existingBooking.id,
-          razorpayOrderId: payment.order_id || session.razorpayOrderId || "",
-          razorpayPaymentId: payment.id,
-          amountPaise: payment.amount,
-          amountRefundedPaise: payment.amount_refunded,
-          currency: payment.currency,
-          status: payment.status,
-          method: payment.method,
-          signatureVerified,
-        })
-        .onConflictDoUpdate({
-          target: payments.razorpayPaymentId,
-          set: {
+      if (existingBooking.paymentStatus !== "refunded") {
+        await tx
+          .insert(payments)
+          .values({
+            checkoutSessionId: session.id,
             bookingId: existingBooking.id,
-            status: payment.status,
+            razorpayOrderId: payment.order_id || session.razorpayOrderId || "",
+            razorpayPaymentId: payment.id,
+            amountPaise: payment.amount,
             amountRefundedPaise: payment.amount_refunded,
-            updatedAt: new Date(),
-            ...(signatureVerified && { signatureVerified: true }),
-          },
-        });
+            currency: payment.currency,
+            status: payment.status,
+            method: payment.method,
+            signatureVerified,
+          })
+          .onConflictDoUpdate({
+            target: payments.razorpayPaymentId,
+            set: {
+              bookingId: existingBooking.id,
+              status: payment.status,
+              amountRefundedPaise: payment.amount_refunded,
+              updatedAt: new Date(),
+              ...(signatureVerified && { signatureVerified: true }),
+            },
+          });
+      }
       return {
         status:
           existingBooking.status === "payment_review"
             ? ("payment_review" as const)
+            : existingBooking.status === "canceled"
+              ? ("canceled" as const)
             : ("paid" as const),
         booking: existingBooking,
         session,
+        notifyBooking: existingBooking.status !== "canceled",
       };
     }
 
@@ -273,7 +305,12 @@ async function finalizeCapturedPayment(
         .update(checkoutSessions)
         .set({ status: "payment_review", updatedAt: new Date() })
         .where(eq(checkoutSessions.id, session.id));
-      return { status: "payment_review" as const, booking, session };
+      return {
+        status: "payment_review" as const,
+        booking,
+        session,
+        notifyBooking: true,
+      };
     }
 
     const [booking] = await tx
@@ -327,11 +364,14 @@ async function finalizeCapturedPayment(
       .set({ status: "paid", updatedAt: new Date() })
       .where(eq(checkoutSessions.id, session.id));
 
-    return { status: "paid" as const, booking, session };
+    return { status: "paid" as const, booking, session, notifyBooking: true };
   });
 
-  await sendBookingNotifications(result.booking.id);
-  return result;
+  if (result.notifyBooking) {
+    await sendBookingNotifications(result.booking.id);
+  }
+  const { notifyBooking: _, ...response } = result;
+  return response;
 }
 
 async function recordFailedPayment(payment: RazorpayPayment) {
@@ -421,13 +461,17 @@ async function reconcileRefund(refund: RazorpayRefund) {
         .from(bookings)
         .where(eq(bookings.id, payment.bookingId!))
         .for("update");
-      if (!booking || booking.status === "canceled") return;
+      if (!booking || booking.paymentStatus === "refunded") return;
 
-      const [departure] = await tx
-        .select()
-        .from(departures)
-        .where(eq(departures.code, booking.departureCode))
-        .for("update");
+      const shouldRestoreSeats =
+        booking.status !== "canceled" && booking.status !== "payment_review";
+      const [departure] = shouldRestoreSeats
+        ? await tx
+            .select()
+            .from(departures)
+            .where(eq(departures.code, booking.departureCode))
+            .for("update")
+        : [];
 
       await tx
         .update(bookings)
@@ -438,7 +482,7 @@ async function reconcileRefund(refund: RazorpayRefund) {
         })
         .where(eq(bookings.id, booking.id));
 
-      if (departure) {
+      if (departure && shouldRestoreSeats) {
         const seatsLeft = Math.min(
           departure.seatsTotal,
           Number(departure.seatsLeft) + booking.travelers
@@ -504,15 +548,7 @@ export const PaymentService = {
     return staleHolds.length;
   },
 
-  async createCheckout(input: {
-    idempotencyKey: string;
-    user: { id: string; email: string; fullName?: string | null };
-    departureCode: string;
-    travelerCount: number;
-    customerName: string;
-    customerPhone: string;
-    customerEmail?: string;
-  }) {
+  async createCheckout(input: CheckoutRequestInput) {
     if (!ENV.RAZORPAY_KEY_ID || !ENV.RAZORPAY_KEY_SECRET) {
       throw new Error("Razorpay is not configured");
     }
@@ -524,8 +560,9 @@ export const PaymentService = {
       .where(eq(checkoutSessions.idempotencyKey, input.idempotencyKey));
 
     if (existing) {
-      if (existing.userId !== input.user.id) {
-        throw new Error("Invalid idempotency key");
+      assertIdempotentCheckoutMatches(existing, input);
+      if (existing.status === "cod_reserved") {
+        throw new Error("Idempotency key was already used for Pay on Arrival");
       }
       return existing;
     }
@@ -712,13 +749,17 @@ export const PaymentService = {
     if (!session) throw new Error("Checkout session not found");
 
     const [booking] = await db
-      .select({ id: bookings.id })
+      .select({ id: bookings.id, status: bookings.status })
       .from(bookings)
       .where(eq(bookings.checkoutSessionId, session.id));
 
+    if (booking?.status === "canceled") {
+      return { ...session, status: "canceled", bookingId: booking.id };
+    }
+
     if (
       session.expiresAt <= new Date() &&
-      !["paid", "payment_review", "expired"].includes(session.status)
+      !["paid", "payment_review", "expired", "canceled"].includes(session.status)
     ) {
       await releaseHoldForSession(session.id, "expired");
       await db
@@ -731,15 +772,7 @@ export const PaymentService = {
     return { ...session, bookingId: booking?.id };
   },
 
-  async createPayOnArrival(input: {
-    idempotencyKey: string;
-    user: { id: string; email: string; fullName?: string | null };
-    departureCode: string;
-    travelerCount: number;
-    customerName: string;
-    customerPhone: string;
-    customerEmail?: string;
-  }) {
+  async createPayOnArrival(input: CheckoutRequestInput) {
     await ensureUser(input.user);
 
     const [existingSession] = await db
@@ -747,15 +780,19 @@ export const PaymentService = {
       .from(checkoutSessions)
       .where(eq(checkoutSessions.idempotencyKey, input.idempotencyKey));
     if (existingSession) {
-      if (existingSession.userId !== input.user.id) {
-        throw new Error("Invalid idempotency key");
-      }
+      assertIdempotentCheckoutMatches(existingSession, input);
       const [existingBooking] = await db
         .select()
         .from(bookings)
         .where(eq(bookings.checkoutSessionId, existingSession.id));
       if (!existingBooking) {
         throw new Error("Pay on Arrival reservation is still processing");
+      }
+      if (existingBooking.details?.paymentMethod !== "cod") {
+        throw new Error("Idempotency key was already used for Razorpay checkout");
+      }
+      if (existingBooking.status === "canceled") {
+        throw new Error("Pay on Arrival booking is canceled; start a new checkout");
       }
       await sendBookingNotifications(existingBooking.id);
       return existingBooking;
@@ -844,7 +881,9 @@ export const PaymentService = {
         const paymentId = body.payload?.payment?.entity?.id;
         if (paymentId) {
           const payment = await RazorpayService.fetchPayment(paymentId);
-          await finalizeCapturedPayment(payment, false);
+          if (payment.status === "captured" && payment.captured) {
+            await finalizeCapturedPayment(payment, false);
+          }
         }
       } else if (event === "payment.failed") {
         const failed = body.payload?.payment?.entity;
@@ -874,7 +913,26 @@ export const PaymentService = {
       .select()
       .from(payments)
       .where(eq(payments.razorpayPaymentId, input.razorpayPaymentId));
-    if (!payment || payment.status !== "captured") {
+    if (!payment) {
+      throw new Error("Payment not found");
+    }
+
+    const [existingRefund] = await db
+      .select()
+      .from(refunds)
+      .where(eq(refunds.idempotencyKey, input.idempotencyKey));
+    if (existingRefund) {
+      if (
+        existingRefund.paymentId !== payment.id ||
+        (input.amountPaise !== undefined &&
+          input.amountPaise !== existingRefund.amountPaise)
+      ) {
+        throw new Error("Idempotency key was already used for a different refund");
+      }
+      return existingRefund;
+    }
+
+    if (payment.status !== "captured") {
       throw new Error("Only captured payments can be refunded");
     }
 

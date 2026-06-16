@@ -11,7 +11,6 @@ import {
   startOfWeek,
 } from "date-fns";
 import { cn } from "@urbandetox/utils";
-import type { Departure } from "@urbandetox/utils";
 import {
   WEEKDAYS,
   WEEK_STARTS_ON,

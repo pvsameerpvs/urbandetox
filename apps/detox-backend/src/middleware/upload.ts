@@ -1,7 +1,7 @@
 import multer from "multer";
 import { MAX_FILE_SIZE_MB, ALLOWED_FILE_TYPES } from "@/services/constants";
 
-export const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
+const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 const upload = multer({
   storage: multer.memoryStorage(),

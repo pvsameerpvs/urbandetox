@@ -1,4 +1,4 @@
-export type RazorpayMode = "test" | "live" | "unconfigured";
+type RazorpayMode = "test" | "live" | "unconfigured";
 
 function detectRazorpayMode(keyId: string): RazorpayMode {
   if (!keyId) return "unconfigured";
@@ -9,6 +9,10 @@ function detectRazorpayMode(keyId: string): RazorpayMode {
 
 const razorpayKeyId = process.env.RAZORPAY_KEY_ID || "";
 const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET || "";
+const resendApiKey = process.env.RESEND_API_KEY || "";
+const resendWebhookSecret = process.env.RESEND_WEBHOOK_SECRET || "";
+const fromEmail = process.env.FROM_EMAIL || "";
+const adminEmail = process.env.ADMIN_EMAIL || "";
 
 export const ENV = {
   PORT: Number(process.env.PORT) || 4000,
@@ -27,7 +31,11 @@ export const ENV = {
   RAZORPAY_KEY_SECRET: razorpayKeySecret,
   RAZORPAY_MODE: detectRazorpayMode(razorpayKeyId),
   RAZORPAY_WEBHOOK_SECRET: process.env.RAZORPAY_WEBHOOK_SECRET || "",
-  RESEND_WEBHOOK_SECRET: process.env.RESEND_WEBHOOK_SECRET || "",
+  ALLOW_RAZORPAY_TEST_MODE: process.env.ALLOW_RAZORPAY_TEST_MODE === "true",
+  RESEND_API_KEY: resendApiKey,
+  RESEND_WEBHOOK_SECRET: resendWebhookSecret,
+  FROM_EMAIL: fromEmail || "hello@urbandetox.in",
+  ADMIN_EMAIL: adminEmail || "hello@urbandetox.in",
   CORS_ORIGINS:
     process.env.CORS_ORIGINS ||
     "http://localhost:3000,http://localhost:3001,https://urbandetox.in,https://www.urbandetox.in,https://beta.urbandetox.in,https://admin.urbandetox.in",
@@ -64,9 +72,22 @@ if (
 if (
   ENV.NODE_ENV === "production" &&
   ENV.RAZORPAY_MODE === "test" &&
-  process.env.ALLOW_RAZORPAY_TEST_MODE !== "true"
+  !ENV.ALLOW_RAZORPAY_TEST_MODE
 ) {
   throw new Error(
     "Razorpay Test Mode is blocked in production unless ALLOW_RAZORPAY_TEST_MODE=true"
+  );
+}
+
+if (ENV.RESEND_API_KEY && !ENV.RESEND_API_KEY.startsWith("re_")) {
+  throw new Error("RESEND_API_KEY must start with re_");
+}
+
+if (
+  ENV.NODE_ENV === "production" &&
+  (!resendApiKey || !resendWebhookSecret || !fromEmail || !adminEmail)
+) {
+  throw new Error(
+    "RESEND_API_KEY, RESEND_WEBHOOK_SECRET, FROM_EMAIL, and ADMIN_EMAIL must be set in production"
   );
 }

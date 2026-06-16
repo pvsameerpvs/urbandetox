@@ -37,10 +37,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
-
-  useEffect(() => {
     if (isPublicPath) return; // already initialized as authenticated
 
     let mounted = true;

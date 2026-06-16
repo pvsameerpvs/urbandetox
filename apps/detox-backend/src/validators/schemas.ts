@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 // ─── Shared ──────────────────────────────────────
-export const slugSchema = z.string().min(1).max(255);
-export const uuidSchema = z.string().uuid();
+const slugSchema = z.string().min(1).max(255);
+const uuidSchema = z.string().uuid();
 
 // ─── Destinations ────────────────────────────────
 export const destinationSlugParam = z.object({

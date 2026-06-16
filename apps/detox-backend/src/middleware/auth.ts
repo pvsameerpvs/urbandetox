@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { supabaseAdmin } from "@/lib/supabase";
 
-export type UserRole = "admin" | "authenticated";
+type UserRole = "admin" | "authenticated";
 
-export interface AuthUser {
+interface AuthUser {
   id: string;
   email: string;
   role: UserRole;

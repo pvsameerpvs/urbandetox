@@ -10,7 +10,7 @@ import { PaymentService } from "@/services/payments";
 const app = createApp();
 
 // Expire stale seat holds every minute (runs in all environments so dev
-// testing of seat-hold expiry works without waiting 10 minutes).
+// testing of seat-hold expiry works without waiting 10 minutes).
 const expireSeatHolds = () => {
   PaymentService.expireStaleSeatHolds()
     .then((released) => {

@@ -6,7 +6,7 @@ import { BookingService } from "@/services/bookings";
 import { safeImageUrl } from "@urbandetox/utils";
 
 export const BookingController = {
-  async list(req: Request, res: Response) {
+  async list(_req: Request, res: Response) {
     res.json(await BookingService.getAll());
   },
 

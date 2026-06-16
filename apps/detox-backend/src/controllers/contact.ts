@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { ENV } from "@/config/env";
 import { sendEmail } from "@/services/email";
 import {
   contactAutoReplyTemplate,
@@ -29,7 +30,7 @@ export const ContactController = {
       sentAt,
     });
     await sendEmail({
-      to: process.env.ADMIN_EMAIL || "hello@urbandetox.in",
+      to: ENV.ADMIN_EMAIL,
       subject: `Contact Form: ${subject} — ${name}`,
       replyTo: email,
       html: adminForward.html,

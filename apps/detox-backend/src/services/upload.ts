@@ -54,8 +54,6 @@ const ALLOWED_ROOT_FOLDERS = [
   "general",
 ] as const;
 
-export type RootFolder = (typeof ALLOWED_ROOT_FOLDERS)[number];
-
 const ALLOWED_MIME_TYPES = [
   "image/jpeg",
   "image/png",
@@ -66,7 +64,7 @@ const ALLOWED_MIME_TYPES = [
 
 const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
-export interface UploadResult {
+interface UploadResult {
   url: string;
   key: string;
 }
@@ -81,7 +79,7 @@ export function isValidFolder(folder: string): boolean {
   );
 }
 
-export function validateFile(file: Express.Multer.File): void {
+function validateFile(file: Express.Multer.File): void {
   if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
     throw new Error(
       `Invalid file type. Allowed: ${ALLOWED_MIME_TYPES.map((t) => t.replace("image/", "")).join(", ")}`
@@ -98,7 +96,7 @@ export function validateFile(file: Express.Multer.File): void {
  * Generate a unique R2 object key under the requested folder/subpath.
  * Example: "packages/itinerary/uuid.webp"
  */
-export function generateKey(
+function generateKey(
   folder: string,
   originalName: string
 ): string {

@@ -63,6 +63,16 @@ export const PaymentController = {
       return;
     }
 
+    if (result.status === "canceled") {
+      res.status(409).json({
+        status: result.status,
+        bookingId: result.booking.id,
+        checkoutSessionId: result.session.id,
+        message: "This booking was canceled. Start a new checkout to book again.",
+      });
+      return;
+    }
+
     res.json({
       status: result.status,
       bookingId: result.booking.id,

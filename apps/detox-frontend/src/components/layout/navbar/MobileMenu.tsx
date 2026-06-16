@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   Menu,
   X,
@@ -41,11 +41,6 @@ export function MobileMenu({ isLightMode }: MobileMenuProps) {
   const [open, setOpen] = useState(false);
   const { profile, authUser, isLoggedIn, logout, isHydrated } = useUserProfile();
   const router = useRouter();
-  const pathname = usePathname();
-
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
 
   const initials = profile.personal.fullName
     .split(" ")

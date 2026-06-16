@@ -1,6 +1,6 @@
 import { desc, eq } from "drizzle-orm";
 import { db } from "@/db";
-import { bookings, payments, departures } from "@/db/schema";
+import { bookings, checkoutSessions, payments, departures } from "@/db/schema";
 import { getDepartureStatus, PaymentService } from "@/services/payments";
 
 export const BookingService = {
@@ -120,22 +120,57 @@ export const BookingService = {
       throw new Error("Booking cannot be cancelled in its current state");
     }
 
-    await db.transaction(async (tx) => {
-      const [departure] = await tx
+    if (booking.paymentStatus === "paid") {
+      const [paymentRecord] = await db
         .select()
-        .from(departures)
-        .where(eq(departures.code, booking.departureCode))
+        .from(payments)
+        .where(eq(payments.checkoutSessionId, booking.checkoutSessionId));
+
+      if (!paymentRecord || paymentRecord.status !== "captured") {
+        throw new Error("Captured payment not found; cancellation requires support");
+      }
+
+      await PaymentService.createRefund({
+        razorpayPaymentId: paymentRecord.razorpayPaymentId,
+        idempotencyKey: `cancel-${booking.id}`,
+      });
+    }
+
+    await db.transaction(async (tx) => {
+      const [currentBooking] = await tx
+        .select()
+        .from(bookings)
+        .where(eq(bookings.id, booking.id))
         .for("update");
+
+      if (!currentBooking || currentBooking.status === "canceled") return;
+      if (!cancellableStates.includes(currentBooking.status)) {
+        throw new Error("Booking cannot be cancelled in its current state");
+      }
+
+      const shouldRestoreSeats = currentBooking.status !== "payment_review";
+      const [departure] = shouldRestoreSeats
+        ? await tx
+            .select()
+            .from(departures)
+            .where(eq(departures.code, currentBooking.departureCode))
+            .for("update")
+        : [];
 
       await tx
         .update(bookings)
         .set({ status: "canceled", updatedAt: new Date() })
-        .where(eq(bookings.id, booking.id));
+        .where(eq(bookings.id, currentBooking.id));
 
-      if (departure) {
+      await tx
+        .update(checkoutSessions)
+        .set({ status: "canceled", updatedAt: new Date() })
+        .where(eq(checkoutSessions.id, currentBooking.checkoutSessionId));
+
+      if (departure && shouldRestoreSeats) {
         const seatsLeft = Math.min(
           departure.seatsTotal,
-          Number(departure.seatsLeft) + booking.travelers
+          Number(departure.seatsLeft) + currentBooking.travelers
         );
         await tx
           .update(departures)
@@ -147,28 +182,6 @@ export const BookingService = {
           .where(eq(departures.id, departure.id));
       }
     });
-
-    // Best-effort refund for paid bookings
-    if (booking.paymentStatus === "paid" || booking.paymentStatus === "cod") {
-      try {
-        const [paymentRecord] = await db
-          .select()
-          .from(payments)
-          .where(eq(payments.checkoutSessionId, booking.checkoutSessionId));
-
-        if (
-          paymentRecord &&
-          paymentRecord.status === "captured"
-        ) {
-          await PaymentService.createRefund({
-            razorpayPaymentId: paymentRecord.razorpayPaymentId,
-            idempotencyKey: `cancel-${booking.id}-${Date.now()}`,
-          });
-        }
-      } catch {
-        // Refund is best-effort — admin can process manually
-      }
-    }
 
     return { status: "canceled" };
   },

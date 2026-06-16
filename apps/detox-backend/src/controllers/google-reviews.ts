@@ -22,7 +22,7 @@ interface GoogleApiResponse {
 }
 
 export const GoogleReviewsController = {
-  async list(req: Request, res: Response) {
+  async list(_req: Request, res: Response) {
     const { GOOGLE_PLACES_API_KEY, GOOGLE_PLACE_ID } = ENV;
 
     if (!GOOGLE_PLACES_API_KEY || !GOOGLE_PLACE_ID) {
@@ -63,7 +63,7 @@ export const GoogleReviewsController = {
         total: result.user_ratings_total || 0,
         url: result.url || "",
       });
-    } catch (error) {
+    } catch {
       res.status(500).json({
         error: "Failed to fetch Google reviews",
         reviews: [],

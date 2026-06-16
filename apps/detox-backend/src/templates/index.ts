@@ -1,4 +1,3 @@
-export { type EmailContent, baseTemplate, escapeHtml } from "./email-layout";
 export {
   bookingConfirmationTemplate,
   bookingAdminAlertTemplate,

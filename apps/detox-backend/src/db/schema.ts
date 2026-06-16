@@ -282,19 +282,3 @@ export const siteSettings = pgTable("site_settings", {
   config: jsonb("config").notNull(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
-
-export type User = typeof users.$inferSelect;
-export type Destination = typeof destinations.$inferSelect;
-export type Package = typeof packages.$inferSelect;
-export type Departure = typeof departures.$inferSelect;
-export type GuideArticle = typeof guides.$inferSelect;
-export type FaqItem = typeof faqs.$inferSelect;
-export type Testimonial = typeof testimonials.$inferSelect;
-export type SeasonalTag = typeof seasonalTags.$inferSelect;
-export type BookingRecord = typeof bookings.$inferSelect;
-export type CheckoutSession = typeof checkoutSessions.$inferSelect;
-export type SeatHold = typeof seatHolds.$inferSelect;
-export type PaymentRecord = typeof payments.$inferSelect;
-export type RefundRecord = typeof refunds.$inferSelect;
-export type EmailDeliveryEvent = typeof emailDeliveryEvents.$inferSelect;
-export type SiteSettingsRecord = typeof siteSettings.$inferSelect;

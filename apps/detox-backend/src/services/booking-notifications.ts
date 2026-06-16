@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 import { formatPrice } from "@urbandetox/utils";
+import { ENV } from "@/config/env";
 import { db } from "@/db";
 import {
   bookings,
@@ -126,7 +127,7 @@ export async function sendBookingNotifications(bookingId: string) {
         });
 
     await sendEmail({
-      to: process.env.ADMIN_EMAIL || "hello@urbandetox.in",
+      to: ENV.ADMIN_EMAIL,
       subject: isPaymentReview
         ? `Urgent: Paid booking needs review — ${booking.departureCode}`
         : `New Booking: ${booking.departureCode} — ${booking.fullName}`,
@@ -189,7 +190,7 @@ export async function sendBookingRefundNotifications(bookingId: string) {
 
     const adminEmail = bookingRefundedAdminTemplate(data);
     await sendEmail({
-      to: process.env.ADMIN_EMAIL || "hello@urbandetox.in",
+      to: ENV.ADMIN_EMAIL,
       subject: `Booking fully refunded — ${booking.departureCode}`,
       ...(booking.email && { replyTo: booking.email }),
       html: adminEmail.html,
@@ -289,7 +290,7 @@ export async function sendRefundUpdateNotification(input: {
     if (input.status === "failed") {
       const adminEmail = refundFailedAdminTemplate(data);
       await sendEmail({
-        to: process.env.ADMIN_EMAIL || "hello@urbandetox.in",
+        to: ENV.ADMIN_EMAIL,
         subject: `Urgent: refund failed — ${booking.departureCode}`,
         ...(booking.email && { replyTo: booking.email }),
         html: adminEmail.html,

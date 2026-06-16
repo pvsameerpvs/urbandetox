@@ -23,6 +23,8 @@ import type { Departure, Package, Destination } from "@urbandetox/utils";
 
 type PaymentMethod = "razorpay" | "cod";
 type PaymentStatus = "idle" | "processing" | "success" | "review" | "uncertain" | "failure";
+const FAILED_CHECKOUT_STATUSES = ["payment_failed", "expired", "order_failed", "canceled"];
+const RESETTABLE_CHECKOUT_STATUSES = ["expired", "order_failed", "canceled"];
 
 interface RazorpaySuccessResponse {
   razorpay_payment_id: string;
@@ -101,7 +103,7 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
       if (checkout.status === "payment_review" && checkout.bookingId) {
         return { bookingId: checkout.bookingId, status: "payment_review" as const };
       }
-      if (["payment_failed", "expired", "order_failed"].includes(checkout.status)) {
+      if (FAILED_CHECKOUT_STATUSES.includes(checkout.status)) {
         throw new Error(`Checkout entered ${checkout.status}`);
       }
       await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -163,8 +165,14 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
             });
             return;
           }
-          if (["payment_failed", "expired", "order_failed"].includes(checkout.status)) {
-            save({ paymentConfirmationPending: false });
+          if (FAILED_CHECKOUT_STATUSES.includes(checkout.status)) {
+            save({
+              paymentConfirmationPending: false,
+              ...(RESETTABLE_CHECKOUT_STATUSES.includes(checkout.status) && {
+                checkoutIdempotencyKey: undefined,
+                checkoutSessionId: undefined,
+              }),
+            });
             setStatus("failure");
             return;
           }
@@ -258,8 +266,11 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
         });
         return;
       }
-      if (["expired", "order_failed"].includes(checkout.status)) {
-        save({ checkoutIdempotencyKey: undefined });
+      if (RESETTABLE_CHECKOUT_STATUSES.includes(checkout.status)) {
+        save({
+          checkoutIdempotencyKey: undefined,
+          checkoutSessionId: undefined,
+        });
         throw new Error("The previous checkout expired. Please try again.");
       }
       if (!checkout.razorpayOrderId) {

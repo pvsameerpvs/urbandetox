@@ -1,13 +1,10 @@
 import { Resend, type WebhookEventPayload } from "resend";
 import { ENV } from "@/config/env";
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const FROM_EMAIL = process.env.FROM_EMAIL || "hello@urbandetox.in";
-
-const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
+const resend = ENV.RESEND_API_KEY ? new Resend(ENV.RESEND_API_KEY) : null;
 const webhookVerifier = resend || new Resend();
 
-export interface EmailPayload {
+interface EmailPayload {
   to: string | string[];
   subject: string;
   html: string;
@@ -25,7 +22,7 @@ export async function sendEmail(payload: EmailPayload): Promise<boolean> {
   try {
     const { error } = await resend.emails.send(
       {
-        from: FROM_EMAIL,
+        from: ENV.FROM_EMAIL,
         to: payload.to,
         subject: payload.subject,
         html: payload.html,

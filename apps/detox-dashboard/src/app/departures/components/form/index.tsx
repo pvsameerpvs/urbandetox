@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm, FormProvider } from "react-hook-form";
+import { useForm, FormProvider, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@urbandetox/ui";
 import {
@@ -60,7 +60,11 @@ export function DepartureForm({
     },
   });
 
-  const selectedPkg = packages.find((p) => p.slug === form.watch("packageSlug"));
+  const selectedPackageSlug = useWatch({
+    control: form.control,
+    name: "packageSlug",
+  });
+  const selectedPkg = packages.find((p) => p.slug === selectedPackageSlug);
 
   return (
     <FormProvider {...form}>

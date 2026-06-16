@@ -8,7 +8,6 @@ import {
   fetchTestimonials,
   fetchGoogleReviews,
 } from "@/lib/api";
-import type { Destination, Package, Departure } from "@urbandetox/utils";
 import { initialSeasonalTags } from "@urbandetox/utils";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { BestDestinationsSection } from "@/components/sections/BestDestinationsSection";

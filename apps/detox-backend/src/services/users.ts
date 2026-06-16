@@ -2,7 +2,7 @@ import { eq, count, ilike, or, and, desc, asc, inArray } from "drizzle-orm";
 import { db } from "@/db";
 import { users, bookings } from "@/db/schema";
 
-export interface ListUsersFilters {
+interface ListUsersFilters {
   search?: string;
   role?: "admin" | "authenticated";
   sortBy?: "createdAt" | "fullName" | "email";
@@ -11,7 +11,7 @@ export interface ListUsersFilters {
   pageSize?: number;
 }
 
-export interface UserWithBookingsCount {
+interface UserWithBookingsCount {
   id: string;
   email: string;
   fullName: string | null;
@@ -25,7 +25,7 @@ export interface UserWithBookingsCount {
   bookingsCount: number;
 }
 
-export interface PaginatedUsersResult {
+interface PaginatedUsersResult {
   data: UserWithBookingsCount[];
   meta: {
     page: number;

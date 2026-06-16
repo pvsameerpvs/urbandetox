@@ -1,7 +1,7 @@
-export const BRAND_COLOR = "#C6F06B";
-export const BRAND_DARK = "#1c1917";
-export const BRAND_MUTED = "#78716c";
-export const BRAND_BG = "#fafaf9";
+const BRAND_COLOR = "#C6F06B";
+const BRAND_DARK = "#1c1917";
+const BRAND_MUTED = "#78716c";
+const BRAND_BG = "#fafaf9";
 
 export function escapeHtml(str: string): string {
   return str

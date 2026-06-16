@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm, FormProvider } from "react-hook-form";
+import { useForm, FormProvider, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Input, Textarea } from "@urbandetox/ui";
@@ -66,7 +66,7 @@ export function DestinationForm({ mode, initialData, slugValue, onSubmit, submit
     },
   });
 
-  const watchedName = form.watch("name");
+  const watchedName = useWatch({ control: form.control, name: "name" });
   const displaySlug = mode === "create" ? generateSlug(watchedName) : slugValue;
 
   return (

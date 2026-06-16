@@ -1,8 +1,8 @@
 "use client";
 
 import { format } from "date-fns";
-import { CalendarDays, Users, Banknote, Radio } from "lucide-react";
-import { cn, formatPrice } from "@urbandetox/utils";
+import { CalendarDays, Users, Radio } from "lucide-react";
+import { cn } from "@urbandetox/utils";
 import { Badge } from "@urbandetox/ui";
 
 interface DateInfoPanelProps {

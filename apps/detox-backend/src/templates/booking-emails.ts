@@ -1,5 +1,12 @@
 import { baseTemplate, escapeHtml, type EmailContent } from "./email-layout";
 
+function paymentStatusLabel(paymentStatus: string) {
+  if (paymentStatus === "paid") return "Paid";
+  if (paymentStatus === "cod") return "Pay on Arrival";
+  if (paymentStatus === "refunded") return "Refunded";
+  return "Pending";
+}
+
 export function bookingConfirmationTemplate(data: {
   fullName: string;
   departureCode: string;
@@ -13,6 +20,13 @@ export function bookingConfirmationTemplate(data: {
   totalPrice?: string;
 }): EmailContent {
   const firstName = escapeHtml(data.fullName.split(" ")[0] || "Traveler");
+  const paymentLabel = paymentStatusLabel(data.paymentStatus);
+  const paymentNextStep =
+    data.paymentStatus === "cod"
+      ? "Your payment is due on arrival. Our team will confirm the payment details before departure."
+      : data.paymentStatus === "paid"
+        ? "Your payment is complete. No additional payment is required for this booking."
+        : "If your payment is still pending, we will share the payment link via WhatsApp.";
 
   const htmlContent = `
     <h2>Your detox is confirmed, ${firstName}!</h2>
@@ -43,7 +57,7 @@ export function bookingConfirmationTemplate(data: {
       </div>
       <div class="details-row">
         <span class="details-label">Payment</span>
-        <span class="details-value">${data.paymentStatus === "paid" ? "Paid" : "Pending"}${data.paymentMethod ? ` (${escapeHtml(data.paymentMethod)})` : ""}</span>
+        <span class="details-value">${paymentLabel}${data.paymentMethod ? ` (${escapeHtml(data.paymentMethod)})` : ""}</span>
       </div>
       ${data.totalPrice ? `
       <div class="details-row">
@@ -54,7 +68,7 @@ export function bookingConfirmationTemplate(data: {
 
     <p><strong>What happens next?</strong></p>
     <p style="margin-bottom:8px;">1. Our team will reach out to you within 24 hours with the final itinerary and packing list.</p>
-    <p style="margin-bottom:8px;">2. If your payment is still pending, we will share the payment link via WhatsApp.</p>
+    <p style="margin-bottom:8px;">2. ${paymentNextStep}</p>
     <p style="margin-bottom:8px;">3. You will receive a reminder 48 hours before departure with meeting point details.</p>
 
     <div class="divider"></div>
@@ -72,11 +86,11 @@ Destination: ${data.destinationName}
 Dates: ${data.startDate} - ${data.endDate}
 Travelers: ${data.travelers}
 Departure Code: ${data.departureCode}
-Payment: ${data.paymentStatus === "paid" ? "Paid" : "Pending"}${data.paymentMethod ? ` (${data.paymentMethod})` : ""}
+Payment: ${paymentLabel}${data.paymentMethod ? ` (${data.paymentMethod})` : ""}
 ${data.totalPrice ? `Total: ${data.totalPrice}\n` : ""}
 What happens next?
 1. Our team will reach out to you within 24 hours with the final itinerary and packing list.
-2. If your payment is still pending, we will share the payment link via WhatsApp.
+2. ${paymentNextStep}
 3. You will receive a reminder 48 hours before departure with meeting point details.
 
 Questions? Reply to this email or WhatsApp us at +91-98765-43210.
@@ -106,6 +120,7 @@ export function bookingAdminAlertTemplate(data: {
   totalPrice?: string;
   bookedAt: string;
 }): EmailContent {
+  const paymentLabel = paymentStatusLabel(data.paymentStatus);
   const htmlContent = `
     <h2>New Booking Alert</h2>
     <p>A new booking has just been submitted on the website.</p>
@@ -145,7 +160,7 @@ export function bookingAdminAlertTemplate(data: {
       </div>
       <div class="details-row">
         <span class="details-label">Payment</span>
-        <span class="details-value">${data.paymentStatus === "paid" ? "Paid" : "Pending"}${data.paymentMethod ? ` (${escapeHtml(data.paymentMethod)})` : ""}</span>
+        <span class="details-value">${paymentLabel}${data.paymentMethod ? ` (${escapeHtml(data.paymentMethod)})` : ""}</span>
       </div>
       ${data.totalPrice ? `
       <div class="details-row">
@@ -173,7 +188,7 @@ Trip: ${data.packageTitle || "—"}
 Destination: ${data.destinationName || "—"}
 Dates: ${data.startDate || "—"} - ${data.endDate || "—"}
 Travelers: ${data.travelers}
-Payment: ${data.paymentStatus === "paid" ? "Paid" : "Pending"}${data.paymentMethod ? ` (${data.paymentMethod})` : ""}
+Payment: ${paymentLabel}${data.paymentMethod ? ` (${data.paymentMethod})` : ""}
 ${data.totalPrice ? `Total: ${data.totalPrice}\n` : ""}Booked At: ${data.bookedAt}
 
 Please follow up within 24 hours. If payment is pending, send the payment link via WhatsApp.

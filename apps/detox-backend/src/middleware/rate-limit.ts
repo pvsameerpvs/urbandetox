@@ -39,11 +39,10 @@ class RateLimitStore {
 const globalStore = new RateLimitStore();
 setInterval(() => globalStore.cleanup(), 60000).unref();
 
-export interface RateLimitOptions {
+interface RateLimitOptions {
   maxRequests: number;
   windowMs: number;
   keyGenerator?: (req: Request) => string;
-  skipSuccessfulRequests?: boolean;
 }
 
 const defaultKeyGenerator = (req: Request) => {
@@ -51,7 +50,7 @@ const defaultKeyGenerator = (req: Request) => {
   return `${identity}:${req.method}:${req.path}`;
 };
 
-export function rateLimit(options: RateLimitOptions) {
+function rateLimit(options: RateLimitOptions) {
   const { maxRequests, windowMs, keyGenerator = defaultKeyGenerator } = options;
 
   return (req: Request, res: Response, next: NextFunction) => {

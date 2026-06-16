@@ -81,8 +81,10 @@ export function OnboardingPageClient({ code, departure, pkg, dest }: OnboardingP
   const [direction, setDirection] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [bookingId, setBookingId] = useState<string | null>(null);
-  const [resolvingBooking, setResolvingBooking] = useState(true);
+  const [resolvedBookingId, setResolvedBookingId] = useState<string | null>(null);
+  const [bookingLookupComplete, setBookingLookupComplete] = useState(false);
+  const bookingId = booking?.bookingId ?? resolvedBookingId;
+  const resolvingBooking = !bookingId && !bookingLookupComplete;
   const prevStep = useRef(step);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
@@ -118,27 +120,30 @@ export function OnboardingPageClient({ code, departure, pkg, dest }: OnboardingP
   }, [bookingId, step, form]);
 
   useEffect(() => {
-    if (booking?.bookingId) {
-      setBookingId(booking.bookingId);
-      setResolvingBooking(false);
-      return;
-    }
-    if (!resolvingBooking) return;
-    (async () => {
+    if (bookingId || bookingLookupComplete) return;
+
+    let active = true;
+    const resolveBooking = async () => {
       try {
         const data = await fetchMyBookings();
         const found = (data as Array<{ id: string; bookingCode: string }>)
           .find((b) => b.bookingCode === code);
-        if (found) {
-          setBookingId(found.id);
+        if (found && active) {
+          setResolvedBookingId(found.id);
           save({ bookingId: found.id });
         }
       } catch {
         // No bookings found — user can't submit onboarding
+      } finally {
+        if (active) setBookingLookupComplete(true);
       }
-      setResolvingBooking(false);
-    })();
-  }, [booking?.bookingId, code, save, resolvingBooking]);
+    };
+
+    void resolveBooking();
+    return () => {
+      active = false;
+    };
+  }, [bookingId, bookingLookupComplete, code, save]);
 
   useEffect(() => {
     if (!bookingId || loadedFromServer) return;
