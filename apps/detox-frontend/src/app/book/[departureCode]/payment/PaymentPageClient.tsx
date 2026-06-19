@@ -62,6 +62,7 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
 
   const [method, setMethod] = useState<PaymentMethod>("razorpay");
   const [status, setStatus] = useState<PaymentStatus>("idle");
+  const [errorMessage, setErrorMessage] = useState<string>();
   const [scriptReady, setScriptReady] = useState(false);
   const hydrated = useHydrated();
   const processingRef = useRef(false);
@@ -202,6 +203,7 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
     const current = load();
     const primary = current?.travelers[0];
     if (!current || !primary) {
+      setErrorMessage("Please go back and complete traveler details before payment.");
       setStatus("failure");
       processingRef.current = false;
       return;
@@ -213,6 +215,7 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
     }
 
     setStatus("processing");
+    setErrorMessage(undefined);
 
     try {
       const customer = {
@@ -334,7 +337,8 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
         processingRef.current = false;
       });
       razorpay.open();
-    } catch {
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Unable to start payment. Please try again.");
       setStatus("failure");
       processingRef.current = false;
     }
@@ -352,7 +356,10 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
         src="https://checkout.razorpay.com/v1/checkout.js"
         strategy="afterInteractive"
         onLoad={() => setScriptReady(true)}
-        onError={() => setStatus("failure")}
+        onError={() => {
+          setErrorMessage("Razorpay Checkout could not load. Please refresh and try again.");
+          setStatus("failure");
+        }}
       />
       <BookingHeader backHref={`/book/${code}`} backLabel="Back to Booking" stepLabel="Step 2 of 3" />
 
@@ -369,7 +376,7 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
             </div>
 
             <AnimatePresence mode="wait">
-              <PaymentStatusAlert status={status} />
+              <PaymentStatusAlert status={status} message={errorMessage} />
             </AnimatePresence>
 
             <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl overflow-hidden">

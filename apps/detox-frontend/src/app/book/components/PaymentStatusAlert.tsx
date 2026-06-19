@@ -8,9 +8,10 @@ type PaymentStatus = "idle" | "processing" | "success" | "review" | "uncertain" 
 
 interface PaymentStatusAlertProps {
   status: PaymentStatus;
+  message?: string;
 }
 
-export function PaymentStatusAlert({ status }: PaymentStatusAlertProps) {
+export function PaymentStatusAlert({ status, message }: PaymentStatusAlertProps) {
   if (status === "idle") return null;
 
   if (status === "success") {
@@ -120,7 +121,7 @@ export function PaymentStatusAlert({ status }: PaymentStatusAlertProps) {
           </div>
           <div>
             <p className="font-bold text-red-800">Payment failed</p>
-            <p className="text-sm text-red-700">Please try again or use a different method.</p>
+            <p className="text-sm text-red-700">{message || "Please try again or use a different method."}</p>
           </div>
         </CardContent>
       </Card>
