@@ -2,9 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-;
-;
-;
 import { useState } from "react";
 import { Progress } from "@/components/ui/progress";
 import { format, parseISO } from "date-fns";
@@ -24,6 +21,7 @@ export interface Trip {
   startDate: string;
   endDate: string;
   status: "upcoming" | "completed" | "cancelled";
+  bookingStatus?: string;
   onboardingStatus: "pending" | "completed";
   paymentStatus: "paid" | "pending" | "cod";
   image: string;
@@ -43,11 +41,15 @@ interface TripCardProps {
   trip: Trip;
   index: number;
   onCancel?: (bookingId: string) => void;
+  highlighted?: boolean;
 }
 
-export function TripCard({ trip, index, onCancel }: TripCardProps) {
+export function TripCard({ trip, index, onCancel, highlighted }: TripCardProps) {
   const progress = getTripProgress(trip);
   const isUpcoming = trip.status === "upcoming";
+  const isPaymentReview = trip.bookingStatus === "payment_review";
+  const canCompleteOnboarding =
+    isUpcoming && trip.onboardingStatus === "pending" && !isPaymentReview;
   const [memoriesOpen, setMemoriesOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [cancelling, setCancelling] = useState(false);
@@ -65,7 +67,7 @@ export function TripCard({ trip, index, onCancel }: TripCardProps) {
 
   return (
     <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: index * 0.1 }}>
-      <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-500">
+      <Card className={cn("border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-500", highlighted && "ring-2 ring-brand shadow-brand/15")}>
         <div className="grid grid-cols-1 md:grid-cols-5">
           <div className="relative h-48 sm:h-56 md:h-auto md:col-span-2 overflow-hidden">
             <Image src={safeImageUrl(trip.image)} alt={trip.packageTitle} fill className="object-cover" sizes="(max-width: 768px) 100vw, 40vw" />
@@ -74,9 +76,11 @@ export function TripCard({ trip, index, onCancel }: TripCardProps) {
               <Badge className={cn("border-0 text-xs font-medium backdrop-blur-sm", trip.status === "upcoming" ? "bg-brand text-brand-foreground" : trip.status === "cancelled" ? "bg-destructive/10 text-destructive" : "bg-white/90 text-foreground")}>
                 {trip.status === "upcoming" ? "Upcoming" : trip.status === "cancelled" ? "Cancelled" : "Completed"}
               </Badge>
-              {trip.onboardingStatus === "pending" && (
+              {isPaymentReview ? (
+                <Badge className="bg-amber-100 text-amber-700 border-0 text-[10px] font-medium">Payment Review</Badge>
+              ) : trip.onboardingStatus === "pending" ? (
                 <Badge className="bg-amber-100 text-amber-700 border-0 text-[10px] font-medium">Onboarding Pending</Badge>
-              )}
+              ) : null}
             </div>
           </div>
 
@@ -110,25 +114,40 @@ export function TripCard({ trip, index, onCancel }: TripCardProps) {
                       <span className="text-[11px] inline-flex items-center gap-1 text-amber-600">
                         <Wallet className="h-3 w-3" /> Pay on Arrival
                       </span>
+                    ) : isPaymentReview ? (
+                      <span className="text-[11px] inline-flex items-center gap-1 text-amber-600">
+                        <AlertCircle className="h-3 w-3" /> Payment review
+                      </span>
                     ) : (
                       <span className={cn("text-[11px] inline-flex items-center gap-1", trip.paymentStatus === "paid" ? "text-emerald-600" : "text-muted-foreground")}>
                         <CheckCircle2 className="h-3 w-3" /> Paid
                       </span>
                     )}
-                    <span className={cn("text-[11px] inline-flex items-center gap-1", trip.onboardingStatus === "completed" ? "text-emerald-600" : "text-amber-600")}>
-                      {trip.onboardingStatus === "completed" ? <CheckCircle2 className="h-3 w-3" /> : <AlertCircle className="h-3 w-3" />}
-                      {trip.onboardingStatus === "completed" ? "Onboarding done" : "Onboarding pending"}
-                    </span>
+                    {isPaymentReview ? (
+                      <span className="text-[11px] inline-flex items-center gap-1 text-muted-foreground">
+                        <AlertCircle className="h-3 w-3" /> Seat review
+                      </span>
+                    ) : (
+                      <span className={cn("text-[11px] inline-flex items-center gap-1", trip.onboardingStatus === "completed" ? "text-emerald-600" : "text-amber-600")}>
+                        {trip.onboardingStatus === "completed" ? <CheckCircle2 className="h-3 w-3" /> : <AlertCircle className="h-3 w-3" />}
+                        {trip.onboardingStatus === "completed" ? "Onboarding done" : "Onboarding pending"}
+                      </span>
+                    )}
                   </div>
                 </div>
               )}
             </div>
 
             <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-border/30">
-              {isUpcoming && trip.onboardingStatus === "pending" && (
+              {canCompleteOnboarding && (
                 <Button size="sm" className="rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-9 px-4 text-xs font-semibold shadow-sm" asChild>
                   <Link href={`/book/${trip.bookingCode}/onboarding`}>Complete Onboarding <ArrowRight className="ml-1.5 h-3.5 w-3.5" /></Link>
                 </Button>
+              )}
+              {isUpcoming && isPaymentReview && (
+                <span className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-amber-200 bg-amber-50 px-4 text-xs font-semibold text-amber-700">
+                  <AlertCircle className="h-3.5 w-3.5" /> Under review
+                </span>
               )}
               {isUpcoming && trip.onboardingStatus === "completed" && (
                 <Button size="sm" variant="outline" className="rounded-xl border-border/60 h-9 px-4 text-xs font-medium" asChild>

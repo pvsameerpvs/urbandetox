@@ -49,7 +49,7 @@ export function PackageSidebar({ startingPrice, nextDeparture, isSelected, itine
             <Separator />
             <Button className="w-full rounded-xl bg-[var(--button-lime)] text-[var(--button-lime-text)] hover:bg-[var(--button-lime-text)] hover:text-[var(--button-lime)] h-12 text-sm font-semibold shadow-lg shadow-[var(--button-lime)]/10" asChild>
               <Link href={nextDeparture ? `/book/${nextDeparture.code}` : `/detox`}>
-                Book This Detox <ArrowRight className="ml-2 h-4 w-4" />
+                {nextDeparture ? "Book This Detox" : "Explore Dates"} <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
             <Button variant="outline" className="w-full rounded-xl border-border/60 h-12 text-sm font-medium" asChild>

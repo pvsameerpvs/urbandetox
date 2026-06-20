@@ -4,11 +4,13 @@ import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarDays } from "lucide-react";
 import { Card, CardContent } from "@urbandetox/ui";
+import { getDepartureBookingUnavailableReason } from "@/lib/departure-availability";
 import { DateInfoPanel } from "./DateInfoPanel";
 import { DatePickerDay } from "./DatePickerDay";
+import { type AvailableDateOption } from "./date-options";
 
 interface DatePickerProps {
-  availableDates: Record<string, { status: string; seatsLeft: number; code: string; price: number; offerPrice?: number }>;
+  availableDates: Record<string, AvailableDateOption>;
   selectedDate: Date | undefined;
   onSelect: (date: Date | undefined) => void;
 }
@@ -35,7 +37,7 @@ export function DatePickerCard({ availableDates, selectedDate, onSelect }: DateP
               disabled={(date) => {
                 const key = format(date, "yyyy-MM-dd");
                 const dep = availableDates[key];
-                return !dep || dep.status === "full" || date < new Date();
+                return !dep || Boolean(getDepartureBookingUnavailableReason(dep));
               }}
               className="rounded-md border-0"
               components={{

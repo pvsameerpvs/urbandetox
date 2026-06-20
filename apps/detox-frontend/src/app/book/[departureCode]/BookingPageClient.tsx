@@ -11,8 +11,11 @@ import { TravelerList } from "./components/TravelerList";
 import { CommonDetailsCard } from "./components/CommonDetailsCard";
 import { BookingPriceSummary } from "./components/BookingPriceSummary";
 import { useUserProfile } from "@/lib/user-profile";
+import { fetchBookingNextStep } from "@/lib/api";
+import { getDepartureBookingUnavailableReason } from "@/lib/departure-availability";
 import { containerVariants, itemVariants } from "@/lib/animations";
 import { type Traveler, type CommonDetails, type Departure, type Package, type Destination } from "@urbandetox/utils";
+import { type AvailableDateOption } from "./components/date-options";
 import { createPrimaryTraveler, createCompanionTraveler, createDefaultCommon } from "@/lib/booking-factory";
 import { useBooking } from "@/hooks/use-booking";
 import { User, ChevronRight, Loader2 } from "lucide-react";
@@ -39,11 +42,21 @@ export function BookingPageClient({ code, departure, pkg, dest, allDepartures }:
   const [travelers, setTravelers] = useState<Traveler[]>([createPrimaryTraveler(profile.personal, profile.health)]);
   const [common, setCommon] = useState<CommonDetails>(createDefaultCommon());
   const [isProcessing, setIsProcessing] = useState(false);
+  const [flowError, setFlowError] = useState<string>();
 
-  const availableDates: Record<string, { status: string; seatsLeft: number; code: string; price: number; offerPrice?: number }> = {};
+  const availableDates: Record<string, AvailableDateOption> = {};
   allDepartures.forEach((dep) => {
     const date = parseISO(dep.startDate);
-    availableDates[format(date, "yyyy-MM-dd")] = { status: dep.status, seatsLeft: dep.seatsLeft, code: dep.code, price: dep.price, offerPrice: dep.offerPrice };
+    availableDates[format(date, "yyyy-MM-dd")] = {
+      status: dep.status,
+      seatsLeft: dep.seatsLeft,
+      code: dep.code,
+      price: dep.price,
+      offerPrice: dep.offerPrice,
+      startDate: dep.startDate,
+      endDate: dep.endDate,
+      tripStatus: dep.tripStatus,
+    };
   });
 
   const selectedDeparture = selectedDate ? availableDates[format(selectedDate, "yyyy-MM-dd")] : null;
@@ -55,12 +68,81 @@ export function BookingPageClient({ code, departure, pkg, dest, allDepartures }:
 
   const allTravelersValid = travelers.every((t) => t.name.trim().length > 2 && t.phone.trim().length > 5);
   const incompleteCount = travelers.filter((t) => t.name.trim().length <= 2 || t.phone.trim().length <= 5).length;
+  const unavailableReason = getDepartureBookingUnavailableReason(departure);
+  const canContinue = allTravelersValid && !isProcessing && !unavailableReason;
+  const mobileBlockingMessage = flowError || unavailableReason;
 
-  const handleSubmit = () => {
+  const buildCheckoutTravelers = (
+    customer: { name: string; phone: string; email?: string },
+    count: number
+  ) => [
+    createPrimaryTraveler(
+      {
+        fullName: customer.name,
+        phone: customer.phone,
+        email: customer.email || "",
+        dateOfBirth: "",
+        gender: "",
+      },
+      profile.health
+    ),
+    ...Array.from({ length: Math.max(0, count - 1) }, (_, index) =>
+      createCompanionTraveler(index)
+    ),
+  ];
+
+  const handleSubmit = async () => {
     if (!allTravelersValid || isProcessing) return;
+    if (unavailableReason) {
+      setFlowError(unavailableReason);
+      return;
+    }
     setIsProcessing(true);
-    save({ travelers, common });
-    window.location.href = `/book/${code}/payment`;
+    setFlowError(undefined);
+    try {
+      const nextStep = await fetchBookingNextStep(code);
+
+      if (nextStep.action === "complete_onboarding") {
+        save({
+          travelers: buildCheckoutTravelers(nextStep.customer, nextStep.travelerCount),
+          common,
+          bookingId: nextStep.bookingId,
+          onboardingStep: nextStep.onboardingStep,
+          paymentStatus: nextStep.paymentStatus,
+        });
+        window.location.href = `/book/${code}/onboarding?step=${nextStep.onboardingStep}`;
+        return;
+      }
+
+      if (nextStep.action === "view_booking") {
+        save({ travelers, common, bookingId: nextStep.bookingId });
+        window.location.href = `/my-detox?bookingId=${nextStep.bookingId}&notice=already-booked`;
+        return;
+      }
+
+      if (nextStep.action === "continue_payment") {
+        save({
+          travelers: buildCheckoutTravelers(nextStep.customer, nextStep.travelerCount),
+          common,
+          checkoutSessionId: nextStep.checkoutSessionId,
+          checkoutIdempotencyKey: nextStep.checkoutIdempotencyKey,
+          paymentStatus: "pending",
+          paymentConfirmationPending: false,
+        });
+        window.location.href = `/book/${code}/payment`;
+        return;
+      }
+
+      save({ travelers, common });
+      window.location.href = `/book/${code}/payment`;
+    } catch (error) {
+      setFlowError(
+        error instanceof Error
+          ? error.message
+          : "Unable to check your booking status. Please try again."
+      );
+      setIsProcessing(false);
+    }
   };
 
   const handleTravelerCountChange = (count: number) => {
@@ -72,6 +154,21 @@ export function BookingPageClient({ code, departure, pkg, dest, allDepartures }:
     }
   };
 
+  const handleDateSelect = (date: Date | undefined) => {
+    if (!date) {
+      setSelectedDate(undefined);
+      return;
+    }
+
+    const selected = availableDates[format(date, "yyyy-MM-dd")];
+    if (selected && selected.code !== code) {
+      window.location.href = `/book/${selected.code}`;
+      return;
+    }
+
+    setSelectedDate(date);
+  };
+
   return (
     <main className="min-h-screen bg-white pb-24 md:pb-0">
       <BookingHeader backHref={`/detox/${dest.slug}/${pkg.slug}`} backLabel="Back to Detox" stepLabel="Step 1 of 3" />
@@ -81,7 +178,7 @@ export function BookingPageClient({ code, departure, pkg, dest, allDepartures }:
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="lg:col-span-3 space-y-6 sm:space-y-8">
             <motion.div variants={itemVariants}>
-              <DatePickerCard availableDates={availableDates} selectedDate={selectedDate} onSelect={setSelectedDate} />
+              <DatePickerCard availableDates={availableDates} selectedDate={selectedDate} onSelect={handleDateSelect} />
             </motion.div>
 
             <motion.div variants={itemVariants}>
@@ -112,9 +209,11 @@ export function BookingPageClient({ code, departure, pkg, dest, allDepartures }:
             </motion.div>
 
             <div className="hidden lg:block">
-              <Button onClick={handleSubmit} disabled={!allTravelersValid || isProcessing} className="w-full rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-12 text-sm font-semibold shadow-lg shadow-brand/10 disabled:opacity-50">
-                {isProcessing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...</> : <>Continue to Payment <ChevronRight className="ml-2 h-4 w-4" /></>}
+              <Button onClick={handleSubmit} disabled={!canContinue} className="w-full rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-12 text-sm font-semibold shadow-lg shadow-brand/10 disabled:opacity-50">
+                {isProcessing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...</> : unavailableReason ? <>Booking Closed</> : <>Continue to Payment <ChevronRight className="ml-2 h-4 w-4" /></>}
               </Button>
+              {unavailableReason && !flowError && <p className="text-xs text-destructive text-center mt-2">{unavailableReason}</p>}
+              {flowError && !isProcessing && <p className="text-xs text-destructive text-center mt-2">{flowError}</p>}
               {!allTravelersValid && !isProcessing && <p className="text-xs text-amber-600 text-center mt-2">{incompleteCount} traveler{incompleteCount > 1 ? "s" : ""} need name and phone</p>}
             </div>
           </motion.div>
@@ -137,7 +236,12 @@ export function BookingPageClient({ code, departure, pkg, dest, allDepartures }:
         </div>
       </div>
 
-      <MobileBookingCTA total={grandTotal} label={allTravelersValid ? "Continue to Payment" : `Fill ${incompleteCount} traveler${incompleteCount > 1 ? "s" : ""}`} onClick={handleSubmit} isProcessing={isProcessing} disabled={!allTravelersValid} />
+      {mobileBlockingMessage && !isProcessing && (
+        <div className="fixed inset-x-4 bottom-24 z-40 rounded-xl border border-destructive/20 bg-white px-4 py-3 text-center text-xs text-destructive shadow-lg lg:hidden">
+          {mobileBlockingMessage}
+        </div>
+      )}
+      <MobileBookingCTA total={grandTotal} label={unavailableReason ? "Booking Closed" : allTravelersValid ? "Continue to Payment" : `Fill ${incompleteCount} traveler${incompleteCount > 1 ? "s" : ""}`} onClick={handleSubmit} isProcessing={isProcessing} disabled={!allTravelersValid || Boolean(unavailableReason)} />
     </main>
   );
 }

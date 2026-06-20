@@ -12,6 +12,7 @@ const router = express.Router();
 router.use(authMiddleware);
 
 router.get("/", requireAdmin, auditMiddleware, BookingController.list);
+router.get("/me/status", BookingController.myBookingStatus);
 router.get("/me", BookingController.myBookings);
 router.put(
   "/:id/onboarding",

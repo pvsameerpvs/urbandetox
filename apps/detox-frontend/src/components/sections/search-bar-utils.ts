@@ -7,6 +7,7 @@ import {
 } from "date-fns";
 import { cn } from "@urbandetox/utils";
 import type { Departure, Package } from "@urbandetox/utils";
+import { isDepartureBookable } from "@/lib/departure-availability";
 
 export type TripDateMap<T extends Departure = Departure> = Record<string, T[]>;
 
@@ -19,7 +20,7 @@ export function toDateKey(date: Date) {
 
 /** A trip is bookable if it has seats and is not full/closed. */
 export function isBookable(dep: Departure) {
-  return dep.status !== "full" && dep.status !== "closed" && dep.seatsLeft > 0;
+  return isDepartureBookable(dep);
 }
 
 /**
@@ -35,7 +36,7 @@ export function primaryTrip<T extends Departure>(trips: T[]): T | undefined {
 /** Build a map of every date → all trips running that day. */
 export function buildTripDateMap<T extends Departure>(departures: T[]): TripDateMap<T> {
   return departures.reduce<TripDateMap<T>>((map, dep) => {
-    if (dep.status === "closed") return map;
+    if (!isDepartureBookable(dep)) return map;
 
     eachDayOfInterval({
       start: parseISO(dep.startDate),

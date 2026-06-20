@@ -1,7 +1,10 @@
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, gt, inArray } from "drizzle-orm";
 import { db } from "@/db";
 import { bookings, checkoutSessions, payments, departures } from "@/db/schema";
 import { getDepartureStatus, PaymentService } from "@/services/payments";
+
+const ACTIVE_BOOKING_STATUSES = ["confirmed", "reserved_cod", "payment_review"];
+const ACTIVE_CHECKOUT_STATUSES = ["creating_order", "payment_pending", "processing"];
 
 export const BookingService = {
   async getAll() {
@@ -23,6 +26,107 @@ export const BookingService = {
 
   async getByUserId(userId: string) {
     return db.select().from(bookings).where(eq(bookings.userId, userId));
+  },
+
+  async getNextStep(input: { userId: string; departureCode: string }) {
+    const [booking] = await db
+      .select({
+        id: bookings.id,
+        status: bookings.status,
+        paymentStatus: bookings.paymentStatus,
+        fullName: bookings.fullName,
+        phone: bookings.phone,
+        email: bookings.email,
+        travelers: bookings.travelers,
+        details: bookings.details,
+      })
+      .from(bookings)
+      .where(
+        and(
+          eq(bookings.userId, input.userId),
+          eq(bookings.departureCode, input.departureCode),
+          inArray(bookings.status, ACTIVE_BOOKING_STATUSES)
+        )
+      )
+      .orderBy(desc(bookings.createdAt))
+      .limit(1);
+
+    if (booking) {
+      if (booking.status === "payment_review") {
+        return {
+          action: "view_booking" as const,
+          bookingId: booking.id,
+          bookingStatus: booking.status,
+          message: "Payment received. Your booking is under seat review.",
+        };
+      }
+
+      if (booking.details?.onboardingComplete) {
+        return {
+          action: "view_booking" as const,
+          bookingId: booking.id,
+          bookingStatus: booking.status,
+          message: "You already booked this detox. Here are your booking details.",
+        };
+      }
+
+      return {
+        action: "complete_onboarding" as const,
+        bookingId: booking.id,
+        bookingStatus: booking.status,
+        paymentStatus: booking.paymentStatus,
+        travelerCount: booking.travelers,
+        customer: {
+          name: booking.fullName,
+          phone: booking.phone,
+          email: booking.email || undefined,
+        },
+        onboardingStep: booking.details?.onboardingStep || 1,
+        message: "You already booked this detox. Complete your pending onboarding.",
+      };
+    }
+
+    const [checkout] = await db
+      .select({
+        id: checkoutSessions.id,
+        idempotencyKey: checkoutSessions.idempotencyKey,
+        travelerCount: checkoutSessions.travelerCount,
+        customerName: checkoutSessions.customerName,
+        customerPhone: checkoutSessions.customerPhone,
+        customerEmail: checkoutSessions.customerEmail,
+        expiresAt: checkoutSessions.expiresAt,
+        status: checkoutSessions.status,
+      })
+      .from(checkoutSessions)
+      .where(
+        and(
+          eq(checkoutSessions.userId, input.userId),
+          eq(checkoutSessions.departureCode, input.departureCode),
+          inArray(checkoutSessions.status, ACTIVE_CHECKOUT_STATUSES),
+          gt(checkoutSessions.expiresAt, new Date())
+        )
+      )
+      .orderBy(desc(checkoutSessions.createdAt))
+      .limit(1);
+
+    if (checkout) {
+      return {
+        action: "continue_payment" as const,
+        checkoutSessionId: checkout.id,
+        checkoutIdempotencyKey: checkout.idempotencyKey,
+        travelerCount: checkout.travelerCount,
+        customer: {
+          name: checkout.customerName,
+          phone: checkout.customerPhone,
+          email: checkout.customerEmail,
+        },
+        expiresAt: checkout.expiresAt,
+        checkoutStatus: checkout.status,
+        message: "You already started checkout. Complete payment to confirm your seat.",
+      };
+    }
+
+    return { action: "book" as const };
   },
 
   async updateOnboarding(input: {

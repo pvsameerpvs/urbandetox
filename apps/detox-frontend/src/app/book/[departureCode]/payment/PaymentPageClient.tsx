@@ -13,18 +13,21 @@ import { useBooking } from "@/hooks/use-booking";
 import {
   createCheckoutSession,
   createPayOnArrival,
+  fetchBookingNextStep,
   fetchCheckoutStatus,
   verifyRazorpayPayment,
 } from "@/lib/api";
+import { getDepartureBookingUnavailableReason } from "@/lib/departure-availability";
 import { formatPrice, formatDateRange } from "@urbandetox/utils";
-import { CreditCard, Wallet, Lock, Loader2, Shield } from "lucide-react";
+import { AlertCircle, CreditCard, Wallet, Lock, Loader2, Shield } from "lucide-react";
 import { Button, Card, CardContent, Separator } from "@urbandetox/ui"
-import type { Departure, Package, Destination } from "@urbandetox/utils";
+import type { CommonDetails, Departure, Destination, Package, Traveler } from "@urbandetox/utils";
 
 type PaymentMethod = "razorpay" | "cod";
 type PaymentStatus = "idle" | "processing" | "success" | "review" | "uncertain" | "failure";
 const FAILED_CHECKOUT_STATUSES = ["payment_failed", "expired", "order_failed", "canceled"];
 const RESETTABLE_CHECKOUT_STATUSES = ["expired", "order_failed", "canceled"];
+const DEFAULT_COMMON: CommonDetails = { groupNote: "", modeOfArrival: "", needsTravelHelp: false };
 
 interface RazorpaySuccessResponse {
   razorpay_payment_id: string;
@@ -64,6 +67,7 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
   const [status, setStatus] = useState<PaymentStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string>();
   const [scriptReady, setScriptReady] = useState(false);
+  const [checkingNextStep, setCheckingNextStep] = useState(true);
   const hydrated = useHydrated();
   const processingRef = useRef(false);
 
@@ -71,6 +75,50 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
   const subtotal = pricePerPerson * travelerCount;
   const gst = Math.round(subtotal * 0.05);
   const total = subtotal + gst;
+  const unavailableReason = getDepartureBookingUnavailableReason(departure);
+
+  const buildCheckoutTravelers = useCallback(
+    (
+      customer: { name: string; phone: string; email?: string },
+      count: number
+    ): Traveler[] => [
+      {
+        id: `t-${Date.now()}`,
+        type: "primary",
+        name: customer.name,
+        phone: customer.phone,
+        email: customer.email || "",
+        dateOfBirth: "",
+        gender: "",
+        foodPreference: "vegetarian",
+        allergies: "",
+        medicalConditions: "",
+        bloodGroup: "",
+        photoUrl: "",
+        emergencyName: "",
+        emergencyPhone: "",
+        emergencyRelation: "",
+      },
+      ...Array.from({ length: Math.max(0, count - 1) }, (_, index) => ({
+        id: `t-${Date.now()}-${index}`,
+        type: "companion" as const,
+        name: "",
+        phone: "",
+        email: "",
+        dateOfBirth: "",
+        gender: "",
+        foodPreference: "vegetarian",
+        allergies: "",
+        medicalConditions: "",
+        bloodGroup: "",
+        photoUrl: "",
+        emergencyName: "",
+        emergencyPhone: "",
+        emergencyRelation: "",
+      })),
+    ],
+    []
+  );
 
   const finish = useCallback(
     (patch: {
@@ -87,6 +135,60 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
     },
     [code, save]
   );
+
+  useEffect(() => {
+    if (!hydrated) return;
+
+    let active = true;
+    const routeToNextStep = async () => {
+      setCheckingNextStep(true);
+      try {
+        const nextStep = await fetchBookingNextStep(code);
+        if (!active) return;
+
+        if (nextStep.action === "complete_onboarding") {
+          const current = load();
+          save({
+            travelers: buildCheckoutTravelers(nextStep.customer, nextStep.travelerCount),
+            common: current?.common || DEFAULT_COMMON,
+            bookingId: nextStep.bookingId,
+            paymentStatus: nextStep.paymentStatus,
+            onboardingStep: nextStep.onboardingStep,
+          });
+          window.location.href = `/book/${code}/onboarding?step=${nextStep.onboardingStep}`;
+          return;
+        }
+
+        if (nextStep.action === "view_booking") {
+          save({ bookingId: nextStep.bookingId });
+          window.location.href = `/my-detox?bookingId=${nextStep.bookingId}&notice=already-booked`;
+          return;
+        }
+
+        if (nextStep.action === "continue_payment") {
+          const current = load();
+          save({
+            travelers: buildCheckoutTravelers(nextStep.customer, nextStep.travelerCount),
+            common: current?.common || DEFAULT_COMMON,
+            checkoutSessionId: nextStep.checkoutSessionId,
+            checkoutIdempotencyKey: nextStep.checkoutIdempotencyKey,
+            paymentStatus: "pending",
+            paymentConfirmationPending: false,
+          });
+          setTravelerCount(nextStep.travelerCount);
+        }
+      } catch {
+        // Keep the current page usable if the status lookup has a transient issue.
+      } finally {
+        if (active) setCheckingNextStep(false);
+      }
+    };
+
+    void routeToNextStep();
+    return () => {
+      active = false;
+    };
+  }, [buildCheckoutTravelers, code, hydrated, load, save]);
 
   const waitForCapturedPayment = async (checkoutSessionId: string) => {
     for (let attempt = 0; attempt < 12; attempt++) {
@@ -198,6 +300,11 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
 
   const handlePay = async () => {
     if (processingRef.current) return;
+    if (unavailableReason) {
+      setErrorMessage(unavailableReason);
+      setStatus("failure");
+      return;
+    }
     processingRef.current = true;
 
     const current = load();
@@ -379,6 +486,16 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
               <PaymentStatusAlert status={status} message={errorMessage} />
             </AnimatePresence>
 
+            {unavailableReason && (
+              <div className="flex items-start gap-3 rounded-2xl border border-destructive/15 bg-destructive/5 p-4 text-destructive">
+                <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
+                <div>
+                  <p className="text-sm font-bold">Booking closed</p>
+                  <p className="mt-0.5 text-sm text-destructive/80">{unavailableReason}</p>
+                </div>
+              </div>
+            )}
+
             <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl overflow-hidden">
               <CardContent className="p-4 sm:p-5 md:p-6 space-y-4">
                 <div className="flex items-center gap-3 mb-2">
@@ -403,8 +520,8 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
                   <p className="text-xs text-muted-foreground leading-relaxed">Razorpay securely processes your payment details. Urban Detox does not receive or store your card number, CVV, or UPI PIN.</p>
                 </div>
 
-                <Button className="w-full rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-12 text-sm font-semibold shadow-lg shadow-brand/10" onClick={handlePay} disabled={!hydrated || status === "processing" || status === "success" || status === "review" || status === "uncertain" || booking?.paymentConfirmationPending}>
-                  {!hydrated ? <span className="inline-flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Loading price...</span> : status === "processing" ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Preparing Checkout...</> : <><Lock className="mr-2 h-4 w-4" /> {method === "cod" ? "Reserve with Pay on Arrival" : `Pay ${formatPrice(total)} Securely`}</>}
+                <Button className="w-full rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-12 text-sm font-semibold shadow-lg shadow-brand/10" onClick={handlePay} disabled={Boolean(unavailableReason) || !hydrated || checkingNextStep || status === "processing" || status === "success" || status === "review" || status === "uncertain" || booking?.paymentConfirmationPending}>
+                  {!hydrated ? <span className="inline-flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Loading price...</span> : unavailableReason ? <><Lock className="mr-2 h-4 w-4" /> Booking Closed</> : checkingNextStep ? <span className="inline-flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Checking booking...</span> : status === "processing" ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Preparing Checkout...</> : <><Lock className="mr-2 h-4 w-4" /> {method === "cod" ? "Reserve with Pay on Arrival" : `Pay ${formatPrice(total)} Securely`}</>}
                 </Button>
 
                 <p className="text-xs text-muted-foreground text-center">By clicking Pay, you agree to our Terms of Service and Cancellation Policy.</p>
@@ -432,7 +549,7 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
         </div>
       </div>
 
-      <MobileBookingCTA total={hydrated ? total : 0} label={hydrated ? (method === "cod" ? "Reserve Now" : "Pay Now") : "Loading..."} onClick={handlePay} isProcessing={!hydrated || status === "processing"} disabled={!hydrated || status === "success" || status === "review" || status === "uncertain" || booking?.paymentConfirmationPending} />
+      <MobileBookingCTA total={hydrated ? total : 0} label={!hydrated ? "Loading..." : unavailableReason ? "Booking Closed" : checkingNextStep ? "Checking..." : method === "cod" ? "Reserve Now" : "Pay Now"} onClick={handlePay} isProcessing={!hydrated || checkingNextStep || status === "processing"} disabled={Boolean(unavailableReason) || !hydrated || checkingNextStep || status === "success" || status === "review" || status === "uncertain" || booking?.paymentConfirmationPending} />
     </main>
   );
 }

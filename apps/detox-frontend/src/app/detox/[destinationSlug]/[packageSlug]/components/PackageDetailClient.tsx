@@ -16,6 +16,7 @@ import { PackageSidebar } from "./PackageSidebar";
 import { MobilePackageCTA } from "./MobilePackageCTA";
 
 import { containerVariants } from "@/lib/animations";
+import { isDepartureBookable } from "@/lib/departure-availability";
 import type { Package, Departure, GuideArticle, Destination } from "@urbandetox/utils";
 
 interface PackageDetailClientProps {
@@ -31,20 +32,23 @@ export function PackageDetailClient({ pkg, dest, departures, guides, selectedDep
     ? departures.find((d) => d.code === selectedDepartureCode)
     : undefined;
 
-  const nonFullDepartures = departures.filter((d) => d.status !== "full");
+  const visibleDepartures = departures.filter(
+    (d) => isDepartureBookable(d) || d.code === selectedDep?.code
+  );
   const upcomingDepartures = (() => {
-    if (!selectedDep) return nonFullDepartures.slice(0, 4);
-    const list = nonFullDepartures.slice(0, 4);
+    if (!selectedDep) return visibleDepartures.slice(0, 4);
+    const list = visibleDepartures.slice(0, 4);
     if (!list.some((d) => d.code === selectedDep.code)) {
       list.unshift(selectedDep);
     }
     return list.slice(0, 5);
   })();
 
-  const bookableDepartures = departures.filter((d) => d.status !== "full" && d.status !== "closed");
-  const sidebarDeparture = (selectedDep && selectedDep.status !== "full" && selectedDep.status !== "closed")
+  const bookableDepartures = departures.filter(isDepartureBookable);
+  const sidebarDeparture = (selectedDep && isDepartureBookable(selectedDep))
     ? selectedDep
-    : (bookableDepartures[0] ?? departures[0]);
+    : (bookableDepartures[0] ?? null);
+  const selectedDepartureIsBookable = Boolean(selectedDep && isDepartureBookable(selectedDep));
 
   return (
     <main className="min-h-screen bg-white pb-24 md:pb-0">
@@ -81,7 +85,7 @@ export function PackageDetailClient({ pkg, dest, departures, guides, selectedDep
           <PackageSidebar
             startingPrice={pkg.startingPrice}
             nextDeparture={sidebarDeparture ? { startDate: sidebarDeparture.startDate, endDate: sidebarDeparture.endDate, seatsLeft: sidebarDeparture.seatsLeft, code: sidebarDeparture.code, price: sidebarDeparture.price, offerPrice: sidebarDeparture.offerPrice } : null}
-            isSelected={!!selectedDep && selectedDep.status !== "full" && selectedDep.status !== "closed"}
+            isSelected={selectedDepartureIsBookable}
             itineraryPdf={pkg.itineraryPdf}
           />
         </div>
@@ -89,8 +93,8 @@ export function PackageDetailClient({ pkg, dest, departures, guides, selectedDep
 
       <MobilePackageCTA
         startingPrice={pkg.startingPrice}
-        nextDepartureCode={sidebarDeparture?.code ?? null}
-        selectedDepartureCode={selectedDepartureCode}
+        nextDepartureCode={sidebarDeparture && isDepartureBookable(sidebarDeparture) ? sidebarDeparture.code : null}
+        selectedDepartureCode={selectedDepartureIsBookable ? selectedDepartureCode : undefined}
       />
     </main>
   );

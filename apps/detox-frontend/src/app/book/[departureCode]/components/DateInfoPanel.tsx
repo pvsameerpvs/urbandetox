@@ -4,14 +4,19 @@ import { format } from "date-fns";
 import { CalendarDays, Users, Radio } from "lucide-react";
 import { cn } from "@urbandetox/utils";
 import { Badge } from "@urbandetox/ui";
+import { getDepartureBookingUnavailableReason } from "@/lib/departure-availability";
+import { type AvailableDateOption } from "./date-options";
 
 interface DateInfoPanelProps {
-  availableDates: Record<string, { status: string; seatsLeft: number; code: string; price: number; offerPrice?: number }>;
+  availableDates: Record<string, AvailableDateOption>;
   selectedDate: Date | undefined;
 }
 
 export function DateInfoPanel({ availableDates, selectedDate }: DateInfoPanelProps) {
   const selectedDeparture = selectedDate ? availableDates[format(selectedDate, "yyyy-MM-dd")] : null;
+  const unavailableReason = selectedDeparture
+    ? getDepartureBookingUnavailableReason(selectedDeparture)
+    : null;
 
   return (
     <div className="p-5 sm:p-6 md:col-span-2 flex flex-col">
@@ -39,10 +44,15 @@ export function DateInfoPanel({ availableDates, selectedDate }: DateInfoPanelPro
               <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium">Status</p>
               <Badge className={cn(
                 "border-0 text-xs font-medium mt-0.5",
-                selectedDeparture.status === "open" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
+                unavailableReason
+                  ? "bg-red-100 text-red-700"
+                  : selectedDeparture.status === "open" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
               )}>
-                {selectedDeparture.status === "open" ? "Available" : "Filling Fast"}
+                {unavailableReason ? "Booking Closed" : selectedDeparture.status === "open" ? "Available" : "Filling Fast"}
               </Badge>
+              {unavailableReason && (
+                <p className="mt-1 text-xs text-muted-foreground">{unavailableReason}</p>
+              )}
             </div>
           </div>
 

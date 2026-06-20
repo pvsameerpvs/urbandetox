@@ -30,7 +30,7 @@ export function MobilePackageCTA({ startingPrice, nextDepartureCode, selectedDep
         </div>
         <Button className="rounded-xl bg-[var(--button-lime)] text-[var(--button-lime-text)] hover:bg-[var(--button-lime-text)] hover:text-[var(--button-lime)] h-11 px-6 text-sm font-semibold shadow-lg shadow-[var(--button-lime)]/10" asChild>
           <Link href={nextDepartureCode ? `/book/${nextDepartureCode}` : `/detox`}>
-            {selectedDepartureCode ? "Book Selected" : "Book Now"} <ArrowRight className="ml-1.5 h-4 w-4" />
+            {selectedDepartureCode ? "Book Selected" : nextDepartureCode ? "Book Now" : "Explore Dates"} <ArrowRight className="ml-1.5 h-4 w-4" />
           </Link>
         </Button>
       </div>

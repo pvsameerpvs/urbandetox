@@ -16,6 +16,19 @@ export default function MyDetoxPage() {
   const { profile, authUser, isLoggedIn } = useUserProfile();
   const [trips, setTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
+  const [highlightBookingId, setHighlightBookingId] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const bookingId = params.get("bookingId");
+    const noticeType = params.get("notice");
+
+    setHighlightBookingId(bookingId);
+    if (noticeType === "already-booked") {
+      setNotice("You already booked this detox. We brought you to your booking details.");
+    }
+  }, []);
 
   useEffect(() => {
     if (!isLoggedIn) return;
@@ -96,15 +109,20 @@ export default function MyDetoxPage() {
         ) : hasTrips ? (
           <div className="space-y-10">
             <TripStatsBar trips={trips} />
+            {notice && (
+              <div className="rounded-xl border border-brand/20 bg-brand/5 px-4 py-3 text-sm text-brand">
+                {notice}
+              </div>
+            )}
             {upcoming.length > 0 && (
               <div className="space-y-4">
                 <h2 className="text-lg font-bold">Upcoming Trips</h2>
                 {upcoming.map((trip, index) => (
-                  <TripCard key={trip.id} trip={trip} index={index} onCancel={handleCancel} />
+                  <TripCard key={trip.id} trip={trip} index={index} onCancel={handleCancel} highlighted={trip.id === highlightBookingId} />
                 ))}
               </div>
             )}
-            <PastTripsSection trips={trips} onCancel={handleCancel} />
+            <PastTripsSection trips={trips} onCancel={handleCancel} highlightedBookingId={highlightBookingId} />
             <div className="rounded-2xl bg-secondary/[0.03] border border-border/40 p-6 sm:p-8 text-center">
               <h3 className="text-lg font-bold mb-2">Ready for another reset?</h3>
               <p className="text-sm text-muted-foreground mb-4">Browse upcoming detoxes and find your next date.</p>

@@ -1,6 +1,7 @@
-import { and, eq, inArray, lte } from "drizzle-orm";
+import { and, eq, gt, inArray, lte } from "drizzle-orm";
 import { ENV } from "@/config/env";
 import { db } from "@/db";
+import { assertDepartureIsBookable } from "@/lib/departure-availability";
 import {
   bookings,
   checkoutSessions,
@@ -25,6 +26,8 @@ import {
 
 const HOLD_MINUTES = 10;
 const CURRENCY = "INR";
+const ACTIVE_BOOKING_STATUSES = ["confirmed", "reserved_cod", "payment_review"];
+const ACTIVE_CHECKOUT_STATUSES = ["creating_order", "payment_pending", "processing"];
 
 type DbTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
 type CheckoutRequestInput = {
@@ -64,6 +67,50 @@ async function ensureUser(input: {
   const [user] = await db.select().from(users).where(eq(users.id, input.id));
   if (!user) {
     throw new Error("Unable to create the authenticated customer profile");
+  }
+}
+
+async function assertNoDuplicateDetoxBooking(
+  tx: DbTransaction,
+  input: CheckoutRequestInput
+) {
+  const [existingBooking] = await tx
+    .select({
+      id: bookings.id,
+      status: bookings.status,
+      paymentStatus: bookings.paymentStatus,
+    })
+    .from(bookings)
+    .where(
+      and(
+        eq(bookings.userId, input.user.id),
+        eq(bookings.departureCode, input.departureCode),
+        inArray(bookings.status, ACTIVE_BOOKING_STATUSES)
+      )
+    )
+    .limit(1);
+
+  if (existingBooking) {
+    throw new Error("You already have a booking for this detox.");
+  }
+
+  const [activeCheckout] = await tx
+    .select({ id: checkoutSessions.id })
+    .from(checkoutSessions)
+    .where(
+      and(
+        eq(checkoutSessions.userId, input.user.id),
+        eq(checkoutSessions.departureCode, input.departureCode),
+        inArray(checkoutSessions.status, ACTIVE_CHECKOUT_STATUSES),
+        gt(checkoutSessions.expiresAt, new Date())
+      )
+    )
+    .limit(1);
+
+  if (activeCheckout) {
+    throw new Error(
+      "You already have an active checkout for this detox. Please complete it or wait for it to expire."
+    );
   }
 }
 
@@ -184,6 +231,21 @@ function assertIdempotentCheckoutMatches(
 
   if (!matches) {
     throw new Error("Idempotency key was already used for a different checkout");
+  }
+}
+
+async function assertActiveCheckoutStillBookable(
+  existing: typeof checkoutSessions.$inferSelect
+) {
+  if (!ACTIVE_CHECKOUT_STATUSES.includes(existing.status)) return;
+
+  const [departure] = await db
+    .select()
+    .from(departures)
+    .where(eq(departures.code, existing.departureCode));
+
+  if (departure) {
+    assertDepartureIsBookable(departure);
   }
 }
 
@@ -564,6 +626,7 @@ export const PaymentService = {
       if (existing.status === "cod_reserved") {
         throw new Error("Idempotency key was already used for Pay on Arrival");
       }
+      await assertActiveCheckoutStillBookable(existing);
       return existing;
     }
 
@@ -576,9 +639,11 @@ export const PaymentService = {
         .for("update");
 
       if (!departure) throw new Error("Departure not found");
-      if (departure.status === "closed") throw new Error("Departure is closed");
+      assertDepartureIsBookable(departure);
 
       const availableSeats = await releaseExpiredHolds(tx, departure);
+      await assertNoDuplicateDetoxBooking(tx, input);
+
       if (availableSeats < input.travelerCount) {
         throw new Error(`Only ${availableSeats} seats are available`);
       }
@@ -805,9 +870,11 @@ export const PaymentService = {
         .where(eq(departures.code, input.departureCode))
         .for("update");
       if (!departure) throw new Error("Departure not found");
-      if (departure.status === "closed") throw new Error("Departure is closed");
+      assertDepartureIsBookable(departure);
 
       const availableSeats = await releaseExpiredHolds(tx, departure);
+      await assertNoDuplicateDetoxBooking(tx, input);
+
       if (availableSeats < input.travelerCount) {
         throw new Error(`Only ${availableSeats} seats are available`);
       }

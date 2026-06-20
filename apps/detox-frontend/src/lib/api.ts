@@ -176,6 +176,43 @@ export async function fetchMyBookings(): Promise<unknown[]> {
   return authApi("/api/bookings/me");
 }
 
+export type BookingNextStep =
+  | { action: "book" }
+  | {
+      action: "continue_payment";
+      checkoutSessionId: string;
+      checkoutIdempotencyKey: string;
+      travelerCount: number;
+      customer: { name: string; phone: string; email?: string };
+      expiresAt: string;
+      checkoutStatus: string;
+      message: string;
+    }
+  | {
+      action: "complete_onboarding";
+      bookingId: string;
+      bookingStatus: string;
+      paymentStatus: "paid" | "cod" | "pending";
+      travelerCount: number;
+      customer: { name: string; phone: string; email?: string };
+      onboardingStep: number;
+      message: string;
+    }
+  | {
+      action: "view_booking";
+      bookingId: string;
+      bookingStatus: string;
+      message: string;
+    };
+
+export async function fetchBookingNextStep(
+  departureCode: string
+): Promise<BookingNextStep> {
+  return authApi(
+    `/api/bookings/me/status?departureCode=${encodeURIComponent(departureCode)}`
+  );
+}
+
 export async function cancelMyBooking(
   bookingId: string
 ): Promise<{ status: string }> {

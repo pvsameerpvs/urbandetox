@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent, Badge, Button } from "@urbandetox/ui";
 import { formatPrice, formatDateRange, formatTime } from "@urbandetox/utils";
 import type { Departure } from "@urbandetox/utils";
+import { getDepartureBookingUnavailableReason } from "@/lib/departure-availability";
 import { Calendar, Check, Clock } from "lucide-react";
 
 interface DeparturesSectionProps {
@@ -33,7 +34,8 @@ export function DeparturesSection({ departures, selectedCode }: DeparturesSectio
       ) : (
         <div className="space-y-3">
           {departures.map((dep) => {
-            const isFull = dep.status === "full";
+            const unavailableReason = getDepartureBookingUnavailableReason(dep);
+            const isBookable = !unavailableReason;
             const isFilling = dep.status === "filling";
             const isSelected = selectedCode === dep.code;
             return (
@@ -69,8 +71,11 @@ export function DeparturesSection({ departures, selectedCode }: DeparturesSectio
                           <Check className="h-3 w-3" /> Selected
                         </Badge>
                       )}
-                      {isFilling && !isSelected && <Badge className="bg-amber-100 text-amber-700 border-0 text-[10px] font-medium">Filling Fast</Badge>}
-                      {isFull && <Badge variant="secondary" className="text-[10px]">Full</Badge>}
+                      {unavailableReason ? (
+                        <Badge variant="secondary" className="text-[10px]">Booking Closed</Badge>
+                      ) : isFilling && !isSelected ? (
+                        <Badge className="bg-amber-100 text-amber-700 border-0 text-[10px] font-medium">Filling Fast</Badge>
+                      ) : null}
                     </div>
                     <div className="flex items-center gap-3 text-sm">
                       <span className="font-bold text-brand">{formatPrice(dep.offerPrice ?? dep.price)}</span>
@@ -79,15 +84,28 @@ export function DeparturesSection({ departures, selectedCode }: DeparturesSectio
                       )}
                       <span className="text-xs text-muted-foreground">· {dep.seatsLeft} seats left</span>
                     </div>
+                    {unavailableReason && (
+                      <p className="mt-1 text-xs text-muted-foreground">{unavailableReason}</p>
+                    )}
                   </div>
-                  <Button
-                    size="sm"
-                    className="rounded-xl bg-[var(--button-lime)] text-[var(--button-lime-text)] hover:bg-[var(--button-lime-text)] hover:text-[var(--button-lime)] h-10 px-5 text-xs font-semibold shrink-0"
-                    disabled={isFull}
-                    asChild
-                  >
-                    <Link href={`/book/${dep.code}`}>{isFull ? "Waitlist" : "Book This Detox"}</Link>
-                  </Button>
+                  {isBookable ? (
+                    <Button
+                      size="sm"
+                      className="rounded-xl bg-[var(--button-lime)] text-[var(--button-lime-text)] hover:bg-[var(--button-lime-text)] hover:text-[var(--button-lime)] h-10 px-5 text-xs font-semibold shrink-0"
+                      asChild
+                    >
+                      <Link href={`/book/${dep.code}`}>Book This Detox</Link>
+                    </Button>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="rounded-xl h-10 px-5 text-xs font-semibold shrink-0"
+                      disabled
+                    >
+                      Booking Closed
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             );

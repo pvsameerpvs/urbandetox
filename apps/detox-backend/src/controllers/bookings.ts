@@ -52,6 +52,7 @@ export const BookingController = {
         r.bookingStatus === "canceled"
           ? "cancelled"
           : computeTripStatus(r.startDate),
+      bookingStatus: r.bookingStatus,
       onboardingStatus: r.details?.onboardingComplete ? "completed" : "pending",
       paymentStatus: r.paymentStatus === "paid" ? "paid" : r.paymentStatus === "cod" ? "cod" : "pending",
       image: safeImageUrl(r.coverImage),
@@ -61,6 +62,20 @@ export const BookingController = {
     }));
 
     res.json(enriched);
+  },
+
+  async myBookingStatus(req: Request, res: Response) {
+    const departureCode = String(req.query.departureCode || "").trim();
+    if (!departureCode) {
+      res.status(400).json({ error: "departureCode is required" });
+      return;
+    }
+
+    const status = await BookingService.getNextStep({
+      userId: req.user!.id,
+      departureCode,
+    });
+    res.json(status);
   },
 
   async updateOnboarding(req: Request, res: Response) {

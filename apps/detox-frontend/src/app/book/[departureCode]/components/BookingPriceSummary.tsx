@@ -6,13 +6,14 @@ import { format } from "date-fns";
 import type { Package } from "@urbandetox/utils";
 import type { Destination } from "@urbandetox/utils";
 import type { Departure } from "@urbandetox/utils";
+import { type AvailableDateOption } from "./date-options";
 
 interface BookingPriceSummaryProps {
   pkg: Package;
   dest: Destination;
   departure: Departure;
   selectedDate: Date | undefined;
-  selectedDeparture: { status: string; seatsLeft: number; code: string; price: number; offerPrice?: number } | null;
+  selectedDeparture: AvailableDateOption | null;
   travelerCount: number;
   totalPrice: number;
   gst: number;

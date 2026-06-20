@@ -1,14 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { TripCard } from "./TripCard";
 import type { Trip } from "./TripCard";
 
-export function PastTripsSection({ trips, onCancel }: { trips: Trip[]; onCancel?: (bookingId: string) => void }) {
-  const [open, setOpen] = useState(false);
+export function PastTripsSection({ trips, onCancel, highlightedBookingId }: { trips: Trip[]; onCancel?: (bookingId: string) => void; highlightedBookingId?: string | null }) {
   const past = trips.filter((t) => t.status === "completed" || t.status === "cancelled");
+  const highlightedPast = past.some((trip) => trip.id === highlightedBookingId);
+  const [open, setOpen] = useState(highlightedPast);
+
+  useEffect(() => {
+    if (highlightedPast) setOpen(true);
+  }, [highlightedPast]);
+
   if (past.length === 0) return null;
 
   return (
@@ -21,7 +27,7 @@ export function PastTripsSection({ trips, onCancel }: { trips: Trip[]; onCancel?
         {open && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.3 }} className="space-y-4 overflow-hidden">
             {past.map((trip, index) => (
-              <TripCard key={trip.id} trip={trip} index={index} onCancel={onCancel} />
+              <TripCard key={trip.id} trip={trip} index={index} onCancel={onCancel} highlighted={trip.id === highlightedBookingId} />
             ))}
           </motion.div>
         )}

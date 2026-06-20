@@ -11,6 +11,13 @@ function paymentErrorResponse(message: string) {
 
   if (
     message === "Departure is closed" ||
+    message === "This departure date has already passed." ||
+    message === "This departure was cancelled." ||
+    message === "This departure was postponed." ||
+    message === "Booking is closed for this departure." ||
+    message === "This departure is full." ||
+    message === "You already have a booking for this detox." ||
+    message.startsWith("You already have an active checkout") ||
     message.startsWith("Only ") ||
     message.startsWith("Idempotency key was already used")
   ) {
