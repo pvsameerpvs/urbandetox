@@ -20,7 +20,7 @@ async function createUserAndSendWelcome(
       })
       .returning();
 
-    if (created.email) {
+    if (created?.email) {
       const welcome = welcomeEmailTemplate({
         fullName: created.fullName || "Traveler",
         email: created.email,
@@ -66,16 +66,19 @@ export const AuthController = {
 
     let [profile] = await db.select().from(users).where(eq(users.id, userId));
 
-    // Auto-create profile for new OAuth users on first /me call
     if (!profile) {
-      profile = await createUserAndSendWelcome(userId, email, {
-        fullName: req.user!.fullName || undefined,
-        avatarUrl: req.user!.avatarUrl || undefined,
-      });
+      try {
+        profile = await createUserAndSendWelcome(userId, email, {
+          fullName: req.user!.fullName || undefined,
+          avatarUrl: req.user!.avatarUrl || undefined,
+        });
+      } catch (err) {
+        console.error("[AuthController.me] Failed to create user profile:", err);
+      }
     }
 
     res.json({
-      ...profile,
+      ...(profile || {}),
       id: userId,
       email,
       role: req.user!.role,
