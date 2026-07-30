@@ -63,26 +63,35 @@ export const AuthController = {
   async me(req: Request, res: Response) {
     const userId = req.user!.id;
     const email = req.user!.email;
+    const role = req.user!.role;
+    const fullName = req.user!.fullName;
+    const avatarUrl = req.user!.avatarUrl;
 
-    let [profile] = await db.select().from(users).where(eq(users.id, userId));
+    try {
+      const [profile] = await db.select().from(users).where(eq(users.id, userId));
 
-    if (!profile) {
-      try {
-        profile = await createUserAndSendWelcome(userId, email, {
-          fullName: req.user!.fullName || undefined,
-          avatarUrl: req.user!.avatarUrl || undefined,
-        });
-      } catch (err) {
-        console.error("[AuthController.me] Failed to create user profile:", err);
+      if (profile) {
+        res.json({ ...profile, id: userId, email, role });
+        return;
       }
+    } catch (err) {
+      console.error("[AuthController.me] DB lookup failed:", err);
     }
 
-    res.json({
-      ...(profile || {}),
-      id: userId,
-      email,
-      role: req.user!.role,
-    });
+    // If DB lookup fails or user not found, try to create profile
+    try {
+      const profile = await createUserAndSendWelcome(userId, email, {
+        fullName: fullName || undefined,
+        avatarUrl: avatarUrl || undefined,
+      });
+      res.json({ ...profile, id: userId, email, role });
+      return;
+    } catch (err) {
+      console.error("[AuthController.me] Failed to create user profile:", err);
+    }
+
+    // Final fallback — always return auth data so the admin can access the dashboard
+    res.json({ id: userId, email, role });
   },
 
   async upsertProfile(req: Request, res: Response) {
