@@ -24,11 +24,13 @@ import { FinalCTASection } from "@/components/sections/FinalCTASection";
 
 export default async function Home() {
   const [destinations, packages, departures, guides, testimonials, googleReviews, seasonalTags, siteSettings] = await Promise.all([
-    fetchDestinations(),
-    fetchPackages(),
-    fetchUpcomingDepartures(50),
-    fetchFeaturedGuides(4),
-    fetchTestimonials(4),
+    // Every fetch degrades to empty so a partial API outage drops one section
+    // instead of replacing the whole homepage with an error screen.
+    fetchDestinations().catch(() => []),
+    fetchPackages().catch(() => []),
+    fetchUpcomingDepartures(50).catch(() => []),
+    fetchFeaturedGuides(4).catch(() => []),
+    fetchTestimonials(4).catch(() => []),
     fetchGoogleReviews().catch(() => ({ rating: 0, total: 0, url: "" })),
     fetchSeasonalTags().catch(() => []),
     fetchSiteSettings().catch(() => null),

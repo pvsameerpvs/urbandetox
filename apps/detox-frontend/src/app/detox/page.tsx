@@ -51,8 +51,8 @@ export default async function DetoxBrowsePage({ searchParams }: PageProps) {
   };
 
   const [destinations, packages] = await Promise.all([
-    fetchDestinations(),
-    fetchFilteredPackages(filters),
+    fetchDestinations().catch(() => []),
+    fetchFilteredPackages(filters).catch(() => []),
   ]);
 
   const durations = Array.from(new Set(packages.map((p) => p.duration)))
