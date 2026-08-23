@@ -285,3 +285,60 @@ export async function updateSiteSettings(
     body: JSON.stringify(data),
   });
 }
+
+// ─── Guide applications ──────────────────────────────
+export interface GuideApplication {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  city?: string | null;
+  destinations: string[];
+  languages: string[];
+  experienceYears?: number | null;
+  experience?: string | null;
+  about?: string | null;
+  instagram?: string | null;
+  status: string;
+  adminNotes?: string | null;
+  createdAt: string;
+}
+
+export async function fetchGuideApplications(status?: string) {
+  const qs = status && status !== "all" ? `?status=${encodeURIComponent(status)}` : "";
+  return api<{ applications: GuideApplication[]; counts: Record<string, number> }>(
+    `/api/guide-applications${qs}`
+  );
+}
+
+export async function updateGuideApplication(
+  id: string,
+  patch: { status?: string; adminNotes?: string }
+) {
+  return api<GuideApplication>(`/api/guide-applications/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(patch),
+  });
+}
+
+export async function deleteGuideApplication(id: string) {
+  await api(`/api/guide-applications/${id}`, { method: "DELETE" });
+}
+
+// ─── Booking share links ─────────────────────────────
+export async function issueBookingShareLink(bookingId: string, ttlDays?: number) {
+  return api<{ url: string; expiresAt: string; message: string }>(
+    `/api/bookings/${bookingId}/share-link`,
+    { method: "POST", body: JSON.stringify(ttlDays ? { ttlDays } : {}) }
+  );
+}
+
+export async function fetchBookingShareLinkStatus(bookingId: string) {
+  return api<{ active: boolean; expiresAt?: string; lastUsedAt?: string | null; useCount?: number }>(
+    `/api/bookings/${bookingId}/share-link`
+  );
+}
+
+export async function revokeBookingShareLink(bookingId: string) {
+  return api<{ revoked: number }>(`/api/bookings/${bookingId}/share-link`, { method: "DELETE" });
+}

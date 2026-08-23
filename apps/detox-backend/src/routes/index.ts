@@ -15,6 +15,8 @@ import settingsRoutes from "./settings";
 import uploadRoutes from "./uploads";
 import contactRoutes from "./contact";
 import paymentRoutes from "./payments";
+import guideApplicationRoutes from "./guide-applications";
+import bookingShareRoutes from "./booking-share";
 
 const router = express.Router();
 
@@ -38,5 +40,9 @@ router.use("/api/settings", settingsRoutes);
 router.use("/api/uploads", uploadRoutes);
 router.use("/api/contact", contactRoutes);
 router.use("/api/payments", paymentRoutes);
+router.use("/api/guide-applications", guideApplicationRoutes);
+// Public, token-authenticated traveller form. Mounted separately from
+// /api/bookings so it never inherits that router's authMiddleware.
+router.use("/api/booking-forms", bookingShareRoutes);
 
 export default router;

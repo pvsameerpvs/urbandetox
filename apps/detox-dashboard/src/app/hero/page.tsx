@@ -48,7 +48,10 @@ export default function HeroImagePage() {
 
   const handleUpload = useCallback((index: number, img: string) => {
     setImages((prev) => {
+      // Slots are dynamic, so an upload can land past the current end. Pad with
+      // empty strings rather than leaving array holes, which serialise as null.
       const next = [...prev];
+      while (next.length <= index) next.push("");
       next[index] = img;
       return next;
     });
@@ -249,7 +252,9 @@ export default function HeroImagePage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[0, 1, 2, 3, 4].map((i) => (
+          {/* Dynamic: always one empty slot past the last filled image, so the
+              gallery grows as photos are added instead of capping at five. */}
+          {Array.from({ length: Math.max(6, images.length + 1) }, (_, i) => i).map((i) => (
             <HeroSlot key={i} index={i} image={images[i] || ""} isActive={i === activeIndex} onSelect={() => handleSelect(i)} onDelete={() => handleDelete(i)} onUpload={(img) => handleUpload(i, img)} />
           ))}
         </div>

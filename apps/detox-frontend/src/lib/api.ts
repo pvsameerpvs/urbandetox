@@ -364,6 +364,68 @@ export async function fetchOnboardingProgress(bookingId: string): Promise<{
   return authApi(`/api/bookings/${encodeURIComponent(bookingId)}/onboarding/progress`);
 }
 
+// ── Guide applications ──────────────────────────────
+export async function submitGuideApplication(payload: {
+  fullName: string;
+  email: string;
+  phone: string;
+  city?: string;
+  destinations?: string[];
+  languages?: string[];
+  experienceYears?: number;
+  experience?: string;
+  about?: string;
+  instagram?: string;
+}): Promise<{ success: boolean; message: string }> {
+  const res = await fetch(`${API_BASE}/api/guide-applications`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error((body as { error?: string }).error || "Could not submit your application");
+  }
+  return body as { success: boolean; message: string };
+}
+
+// ── Shared traveller form (token based, no login) ────
+export async function fetchSharedForm(token: string) {
+  const res = await fetch(`${API_BASE}/api/booking-forms/${encodeURIComponent(token)}`, {
+    cache: "no-store",
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error((body as { error?: string }).error || "This link is not valid");
+  return body as {
+    bookingId: string;
+    departureCode: string;
+    travelerCount: number;
+    customer: { name: string; phone: string; email?: string | null };
+    departure: { code: string; startDate: string; endDate: string } | null;
+    travelers: import("@urbandetox/utils").Traveler[];
+    common: import("@urbandetox/utils").CommonDetails;
+    onboardingStep: number;
+    onboardingComplete: boolean;
+  };
+}
+
+export async function submitSharedForm(
+  token: string,
+  payload: {
+    travelers: import("@urbandetox/utils").Traveler[];
+    common: import("@urbandetox/utils").CommonDetails;
+  }
+): Promise<{ success: boolean; message: string }> {
+  const res = await fetch(`${API_BASE}/api/booking-forms/${encodeURIComponent(token)}/submit`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error((body as { error?: string }).error || "Could not save your details");
+  return body as { success: boolean; message: string };
+}
+
 // ── Contact ────────────────────────────────────────
 export async function submitContact(payload: {
   name: string;

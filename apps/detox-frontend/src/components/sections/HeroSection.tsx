@@ -14,14 +14,16 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ departures, availableDurations }: HeroSectionProps) {
-  const [heroImage, setHeroImage] = useState<string>("");
+  const [heroImages, setHeroImages] = useState<string[]>([]);
+  const [heroStart, setHeroStart] = useState(0);
   const [heroText, setHeroText] = useState<HeroText | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     fetchSiteSettings()
       .then((settings) => {
-        setHeroImage(settings.heroImages[settings.activeHeroIndex] || "");
+        setHeroImages(settings.heroImages.filter(Boolean));
+        setHeroStart(settings.activeHeroIndex || 0);
         setHeroText({
           badge: settings.heroBadge,
           headline1: settings.heroHeadline1,
@@ -32,7 +34,7 @@ export function HeroSection({ departures, availableDurations }: HeroSectionProps
         });
       })
       .catch(() => {
-        setHeroImage(getHeroImage());
+        setHeroImages([getHeroImage()].filter(Boolean));
         setHeroText(getHeroText());
       })
       .finally(() => setLoaded(true));
@@ -40,7 +42,7 @@ export function HeroSection({ departures, availableDurations }: HeroSectionProps
 
   return (
     <section className="relative z-10 mb-72 flex h-screen min-h-[760px] flex-col overflow-visible lg:mb-64">
-      <HeroBackground heroImage={heroImage} />
+      <HeroBackground images={heroImages} startIndex={heroStart} />
       {loaded && heroText ? <HeroTextContent heroText={heroText} /> : <HeroSkeleton />}
       <HeroSearchBar departures={departures} availableDurations={availableDurations} />
     </section>

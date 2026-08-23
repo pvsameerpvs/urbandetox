@@ -85,6 +85,20 @@
       "when": 1781528400000,
       "tag": "0011_content_taxonomy",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1781614800000,
+      "tag": "0012_guide_applications_and_share_links",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1781618400000,
+      "tag": "0013_guide_application_email_index",
+      "breakpoints": true
     }
   ]
 }

@@ -12,6 +12,7 @@ import {
   BookOpen,
   Tag,
   Users,
+  UserPlus,
   Settings,
   Image as ImageIcon,
 } from "lucide-react";
@@ -25,6 +26,7 @@ export const navItems = [
   { href: "/guides", label: "Guides", icon: BookOpen },
   { href: "/hero", label: "Hero Image", icon: ImageIcon },
   { href: "/seasonal-tags", label: "Seasonal Tags", icon: Tag },
+  { href: "/guide-applications", label: "Guide Applications", icon: UserPlus },
   { href: "/users", label: "Users", icon: Users },
 ];
 

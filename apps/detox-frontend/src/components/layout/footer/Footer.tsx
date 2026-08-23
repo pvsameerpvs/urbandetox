@@ -14,6 +14,7 @@ const COMPANY_LINKS = [
   { label: "Contact", href: "/contact" },
   { label: "Corporate Retreats", href: "/corporate-retreats" },
   { label: "University Trips", href: "/university-trips" },
+  { label: "Become a Guide", href: "/join-us" },
 ];
 
 const ACCOUNT_LINKS = [

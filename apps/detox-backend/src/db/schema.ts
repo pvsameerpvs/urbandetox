@@ -330,3 +330,41 @@ export const siteSettings = pgTable("site_settings", {
   config: jsonb("config").notNull(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
+
+export const guideApplications = pgTable("guide_applications", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  fullName: varchar("full_name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull(),
+  phone: varchar("phone", { length: 50 }).notNull(),
+  city: varchar("city", { length: 255 }),
+  /** Destination slugs the applicant wants to guide. */
+  destinations: jsonb("destinations").$type<string[]>().notNull().default([]),
+  /** Languages spoken, which is how guides get matched to a region. */
+  languages: jsonb("languages").$type<string[]>().notNull().default([]),
+  experienceYears: integer("experience_years"),
+  experience: text("experience"),
+  about: text("about"),
+  instagram: varchar("instagram", { length: 255 }),
+  resumeUrl: text("resume_url"),
+  photoUrl: text("photo_url"),
+  /** new | reviewing | shortlisted | rejected | hired */
+  status: varchar("status", { length: 20 }).notNull().default("new"),
+  adminNotes: text("admin_notes"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const bookingShareLinks = pgTable("booking_share_links", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  bookingId: uuid("booking_id")
+    .notNull()
+    .references(() => bookings.id, { onDelete: "cascade" }),
+  /** SHA-256 of the token. The token is returned once and never stored. */
+  tokenHash: varchar("token_hash", { length: 64 }).notNull().unique(),
+  createdBy: uuid("created_by").references(() => users.id),
+  expiresAt: timestamp("expires_at").notNull(),
+  revokedAt: timestamp("revoked_at"),
+  lastUsedAt: timestamp("last_used_at"),
+  useCount: integer("use_count").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});

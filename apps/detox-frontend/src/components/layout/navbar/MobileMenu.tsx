@@ -9,6 +9,7 @@ import {
   X,
   Compass,
   BookOpen,
+  UserPlus,
   Info,
   Phone,
   LogIn,
@@ -28,7 +29,8 @@ import {
 
 const navLinks = [
   { href: "/detox", label: "Explore Detox", icon: Compass, desc: "Browse all retreats" },
-  { href: "/guide", label: "Guide", icon: BookOpen, desc: "Travel stories & tips" },
+  { href: "/guide", label: "Travel Guide", icon: BookOpen, desc: "Travel stories & tips" },
+  { href: "/join-us", label: "Become a Guide", icon: UserPlus, desc: "Apply to guide our trips" },
   { href: "/about", label: "About", icon: Info, desc: "Who we are" },
   { href: "/contact", label: "Contact", icon: Phone, desc: "Get in touch" },
 ];

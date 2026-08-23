@@ -22,6 +22,7 @@ import { InfoBlock } from "./components/InfoBlock";
 import { PaymentInfoBlock } from "./components/PaymentInfoBlock";
 import { PaymentDetailsCard } from "./components/PaymentDetailsCard";
 import { TravelerDetailCard } from "./components/TravelerDetailCard";
+import { ShareLinkCard } from "./components/ShareLinkCard";
 import type { Package as PackageType, Destination, Departure } from "@urbandetox/utils";
 import type { BookingWithMeta } from "@/lib/bookings";
 
@@ -136,6 +137,12 @@ export default function BookingDetailPage() {
         travelerCount={booking.travelerCount}
         payment={booking.payment}
         bookingStatus={booking.bookingStatus}
+      />
+
+      <ShareLinkCard
+        bookingId={booking.id}
+        customerName={booking.bookedByName || booking.primaryName}
+        customerPhone={booking.bookedByPhone || booking.primaryPhone}
       />
 
       {/* Group Details */}

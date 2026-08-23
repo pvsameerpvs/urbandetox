@@ -225,3 +225,37 @@ export const contactFormBody = z.object({
   subject: z.string().min(1).max(255),
   message: z.string().min(5).max(5000),
 });
+
+// ─── Guide applications ──────────────────────────
+export const guideApplicationBody = z.object({
+  fullName: z.string().trim().min(2).max(255),
+  email: z.string().trim().email().max(255),
+  phone: z.string().trim().min(5).max(50),
+  city: z.string().trim().max(255).optional(),
+  destinations: z.array(z.string().max(255)).max(20).optional(),
+  languages: z.array(z.string().max(60)).max(15).optional(),
+  experienceYears: z.number().int().min(0).max(60).optional(),
+  experience: z.string().max(3000).optional(),
+  about: z.string().max(3000).optional(),
+  instagram: z.string().max(255).optional(),
+  resumeUrl: z.string().max(2000).optional(),
+  photoUrl: z.string().max(2000).optional(),
+}).strict();
+
+export const guideApplicationUpdateBody = z.object({
+  status: z.enum(["new", "reviewing", "shortlisted", "rejected", "hired"]).optional(),
+  adminNotes: z.string().max(3000).optional(),
+}).strict();
+
+export const guideApplicationListQuery = z.object({
+  status: z.enum(["new", "reviewing", "shortlisted", "rejected", "hired", "all"]).optional(),
+});
+
+// ─── Booking share links ─────────────────────────
+export const shareLinkBody = z.object({
+  ttlDays: z.number().int().min(1).max(60).optional(),
+}).strict();
+
+export const shareTokenParam = z.object({
+  token: z.string().min(20).max(200).regex(/^[A-Za-z0-9_-]+$/),
+});
