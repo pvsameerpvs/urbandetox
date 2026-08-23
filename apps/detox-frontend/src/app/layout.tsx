@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist_Mono } from "next/font/google";
 import { redHatDisplay, superbusyHeading, superbusyCta } from "@/lib/fonts";
 import "./globals.css";
-import { Navbar } from "@/components/layout/navbar";
+import { ConditionalNavbar } from "@/components/layout/ConditionalNavbar";
 import { ConditionalFooter } from "@/components/layout/ConditionalFooter";
 import { ClientProviders } from "@/components/providers";
 
@@ -32,7 +32,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ClientProviders>
-          <Navbar />
+          <ConditionalNavbar />
           <main className="flex-1">{children}</main>
           <ConditionalFooter />
         </ClientProviders>

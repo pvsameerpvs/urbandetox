@@ -138,6 +138,7 @@ interface UserProfileContextType {
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, fullName: string, phone: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
+  requestPasswordReset: (email: string) => Promise<void>;
   logout: () => Promise<void>;
   updatePersonal: (data: Partial<PersonalInfo>) => void;
   updateHealth: (data: Partial<HealthInfo>) => void;
@@ -346,6 +347,25 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
     if (error) throw error;
   }, [supabase]);
 
+  /**
+   * Sends Supabase's own reset email. The link in it lands on /reset-password,
+   * which must be present in the project's Auth redirect allowlist or Supabase
+   * refuses to send. Errors are swallowed by the caller on purpose: telling a
+   * stranger whether an address has an account here is an account-enumeration
+   * leak, so the UI says "check your inbox" either way.
+   */
+  const requestPasswordReset = useCallback(
+    async (email: string) => {
+      if (!supabase) throw new Error(SUPABASE_ENV_ERROR);
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+    },
+    [supabase]
+  );
+
   const logout = useCallback(async () => {
     if (supabase) {
       await supabase.auth.signOut();
@@ -427,6 +447,7 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
         login,
         signup,
         loginWithGoogle,
+        requestPasswordReset,
         logout,
         updatePersonal,
         updateHealth,

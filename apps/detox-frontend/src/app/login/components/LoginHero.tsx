@@ -3,31 +3,40 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin, Users, Star, ArrowRight, Quote } from "lucide-react";
+import type { Testimonial } from "@urbandetox/utils";
+import { Users, MapPin, UserRound, ArrowRight, Quote } from "lucide-react";
+import { LOGIN_IMAGE } from "../login-image";
 
-const stats = [
-  { icon: MapPin, label: "Detoxes", value: "12+" },
-  { icon: Users, label: "Travelers", value: "2,400+" },
-  { icon: Star, label: "Rating", value: "4.9" },
+/**
+ * Facts, not metrics. This panel used to show "12+ Detoxes", "2,400+ Travelers"
+ * and a "4.9" rating, none of which came from anywhere. Everything here is
+ * either a published policy or a positioning line we can stand behind.
+ */
+const FACTS = [
+  { icon: Users, label: "Group size", value: "10 max" },
+  { icon: MapPin, label: "Pickup", value: "Bengaluru" },
+  { icon: UserRound, label: "Travelling solo", value: "Most are" },
 ];
 
-const quotes = [
-  { text: "The Kodaikanal detox changed my sleep cycle in 3 days.", author: "Priya M.", trip: "Kodai 3-Day" },
-  { text: "Best offbeat experience. No crowds, just nature and calm.", author: "Rahul K.", trip: "North Kerala" },
-];
+const rise = (delay: number) => ({
+  initial: { opacity: 0, y: 16 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6, delay },
+});
 
-export function LoginHero() {
+export function LoginHero({ testimonials }: { testimonials: Testimonial[] }) {
   return (
-    <div className="relative hidden lg:flex lg:w-[48%] xl:w-[42%] flex-col justify-between h-[100dvh] overflow-hidden">
+    <div className="relative hidden lg:flex lg:w-[48%] xl:w-[42%] flex-col justify-between lg:sticky lg:top-0 h-[100dvh] overflow-hidden">
       <Image
-        src="https://images.unsplash.com/photo-1501555088652-021faa106b9b?q=80&w=2000&auto=format&fit=crop"
-        alt="Mountain retreat"
+        src={LOGIN_IMAGE}
+        alt="Two travellers at a viewpoint in Kodaikanal"
         fill
+        sizes="(min-width: 1280px) 42vw, 48vw"
         className="object-cover"
         priority
       />
-      <div className="absolute inset-0 bg-gradient-to-br from-sidebar-dark/85 via-sidebar-dark/50 to-sidebar-dark/75" />
-      <div className="absolute inset-0 bg-gradient-to-t from-sidebar-dark/90 via-transparent to-sidebar-dark/30" />
+      <div className="absolute inset-0 bg-gradient-to-br from-sidebar-dark/85 via-sidebar-dark/45 to-sidebar-dark/75" />
+      <div className="absolute inset-0 bg-gradient-to-t from-sidebar-dark/95 via-transparent to-sidebar-dark/40" />
 
       <div className="relative z-10 p-8 xl:p-10">
         <Link href="/" className="inline-block">
@@ -35,49 +44,54 @@ export function LoginHero() {
         </Link>
       </div>
 
-      <div className="relative z-10 p-8 xl:p-10 space-y-6">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}>
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand mb-2">Your Travel Partner</p>
+      <div className="relative z-10 p-8 xl:p-10 space-y-7">
+        <motion.div {...rise(0.2)}>
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-on-media mb-2">Small groups, south India</p>
           <h2 className="text-2xl xl:text-3xl font-bold text-white leading-tight mb-2">
-            Mindful escapes,<br /><span className="text-brand">curated for you</span>
+            Offbeat places,<br /><span className="text-brand-on-media">without the planning</span>
           </h2>
-          <p className="text-sm text-white/60 max-w-xs leading-relaxed">
-            Handpicked offbeat destinations, digital-detox itineraries, and zero planning stress.
+          <p className="text-sm text-white/70 max-w-xs leading-relaxed">
+            Ten people, places that are not on the usual list, and an itinerary someone else already sorted out.
           </p>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }} className="flex items-center gap-5">
-          {stats.map((s, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <div className="inline-flex items-center justify-center rounded-lg bg-white/10 backdrop-blur-sm h-8 w-8">
-                <s.icon className="h-3.5 w-3.5 text-brand" />
+        <motion.div {...rise(0.4)} className="flex items-center gap-5">
+          {FACTS.map((f) => (
+            <div key={f.label} className="flex items-center gap-2">
+              <div className="inline-flex items-center justify-center rounded-lg bg-white/10 backdrop-blur-sm h-8 w-8 shrink-0">
+                <f.icon className="h-3.5 w-3.5 text-brand-on-media" />
               </div>
               <div>
-                <p className="text-base font-bold text-white leading-none">{s.value}</p>
-                <p className="text-[10px] text-white/50 mt-0.5">{s.label}</p>
+                <p className="text-sm font-bold text-white leading-none">{f.value}</p>
+                <p className="text-[10px] text-white/60 mt-1">{f.label}</p>
               </div>
             </div>
           ))}
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.6 }} className="space-y-2.5">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/40">Traveler Stories</p>
-          {quotes.map((q, i) => (
-            <div key={i} className="flex items-start gap-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 p-3">
-              <div className="h-7 w-7 rounded-full bg-brand/20 flex items-center justify-center shrink-0 mt-0.5">
-                <Quote className="h-3 w-3 text-brand" />
+        {testimonials.length > 0 && (
+          <motion.div {...rise(0.6)} className="space-y-2.5">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/60">From people who went</p>
+            {testimonials.map((t) => (
+              <div key={t.id} className="flex items-start gap-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 p-3">
+                <div className="h-7 w-7 rounded-full bg-brand-on-media/20 flex items-center justify-center shrink-0 mt-0.5">
+                  <Quote className="h-3 w-3 text-brand-on-media" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm text-white/90 leading-snug line-clamp-3">&ldquo;{t.quote}&rdquo;</p>
+                  <p className="text-[11px] text-white/60 mt-1">
+                    {t.name}
+                    {t.location ? ` · ${t.location}` : ""}
+                  </p>
+                </div>
               </div>
-              <div className="min-w-0">
-                <p className="text-sm text-white/85 leading-snug">&ldquo;{q.text}&rdquo;</p>
-                <p className="text-[11px] text-white/40 mt-1">{q.author} · {q.trip}</p>
-              </div>
-            </div>
-          ))}
-        </motion.div>
+            ))}
+          </motion.div>
+        )}
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.8 }}>
-          <Link href="/detox" className="inline-flex items-center gap-1.5 text-sm text-brand hover:text-brand/80 font-semibold transition-colors group">
-            Explore detoxes <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+          <Link href="/detox" className="inline-flex items-center gap-1.5 text-sm text-brand-on-media hover:text-brand-on-media/80 font-semibold transition-colors group">
+            See where we go <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </motion.div>
       </div>
