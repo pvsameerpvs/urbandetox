@@ -5,7 +5,7 @@ function isAdmin(user: { app_metadata?: Record<string, unknown> }) {
   return user.app_metadata?.role === "admin";
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const response = NextResponse.next({
     request: { headers: request.headers },
   });
@@ -54,6 +54,13 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).)",
+    /**
+     * Everything except Next internals, metadata files and static assets.
+     *
+     * The trailing quantifier must be `.*`, not `.`. With a single `.` this
+     * pattern only matched one-character paths, so no admin route was ever
+     * guarded and the auth cookie was never refreshed.
+     */
+    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };
