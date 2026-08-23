@@ -46,7 +46,7 @@ export default async function DestinationPage({ params }: PageProps) {
   }
 
   return (
-    <main className="min-h-screen bg-white pb-20">
+    <div className="min-h-screen bg-white pb-20">
       <JsonLd
         id="ld-destination"
         nodes={[
@@ -62,6 +62,6 @@ export default async function DestinationPage({ params }: PageProps) {
       {packages.length > 0 && (
         <DestinationPackages destination={dest} packages={packages} upcoming={upcoming} />
       )}
-    </main>
+    </div>
   );
 }

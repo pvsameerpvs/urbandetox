@@ -34,7 +34,7 @@ export function GuideListingClient({ guides, categories, featured }: GuideListin
   const showFeatured = featured && !activeCategory && !searchQuery.trim();
 
   return (
-    <main className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white">
       <GuideHero resultCount={filtered.length} />
 
       <div className="relative z-10 mx-auto max-w-4xl w-full px-4 sm:px-6 lg:px-8 -mt-12 sm:-mt-16 pb-12 sm:pb-16">
@@ -97,6 +97,6 @@ export function GuideListingClient({ guides, categories, featured }: GuideListin
           )}
         </div>
       </section>
-    </main>
+    </div>
   );
 }

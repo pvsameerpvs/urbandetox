@@ -11,9 +11,11 @@ interface PackageSidebarProps {
   nextDeparture: { startDate: string; endDate: string; seatsLeft: number; code: string; price: number; offerPrice?: number } | null;
   isSelected?: boolean;
   itineraryPdf?: string;
+  /** The package's own cap, so this panel cannot contradict the page. */
+  groupSize?: string;
 }
 
-export function PackageSidebar({ packageTitle, startingPrice, nextDeparture, isSelected, itineraryPdf }: PackageSidebarProps) {
+export function PackageSidebar({ packageTitle, startingPrice, nextDeparture, isSelected, itineraryPdf, groupSize }: PackageSidebarProps) {
   return (
     <aside className="hidden lg:block">
       <div className="sticky top-24 space-y-4">
@@ -88,7 +90,11 @@ export function PackageSidebar({ packageTitle, startingPrice, nextDeparture, isS
             <h4 className="text-sm font-bold">Why book with us?</h4>
             <div className="space-y-2.5">
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Shield className="h-3.5 w-3.5 text-brand shrink-0" /> Only 10 travellers per trip
+                <Shield className="h-3.5 w-3.5 text-brand shrink-0" />{" "}
+                {/* Was hardcoded "Only 10 travellers per trip", which
+                    contradicted the group size shown higher up the page for any
+                    trip with a different cap. */}
+                {groupSize ? `Group of ${groupSize}` : "Small groups"}
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Heart className="h-3.5 w-3.5 text-brand shrink-0" /> Local homestays

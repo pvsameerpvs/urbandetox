@@ -270,7 +270,7 @@ export function OnboardingPageClient({ code, departure, pkg, dest }: OnboardingP
 
   return (
     <FormProvider {...form}>
-      <main className="min-h-screen bg-white pb-24 md:pb-0">
+      <div className="min-h-screen bg-white pb-24 md:pb-0">
         <BookingHeader backHref={`/book/${code}/success`} backLabel="Back to Booking" stepLabel={`Onboarding ${step} of ${steps.length}`} />
         <BookingHero image={departure.image || pkg.coverImage} title="Trip Onboarding" destination={dest.name} durationLabel={pkg.durationLabel} dates={formatDateRange(departure.startDate, departure.endDate)} subtitle={travelers.length > 1 ? "Review your group details and complete final check-in." : "Review your details and complete final check-in."} />
         <Stepper steps={steps} currentStep={step} />
@@ -337,7 +337,7 @@ export function OnboardingPageClient({ code, departure, pkg, dest }: OnboardingP
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </FormProvider>
   );
 }

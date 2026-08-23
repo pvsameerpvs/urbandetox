@@ -22,6 +22,14 @@ export function DetoxFilterBar({ durations, resultCount }: DetoxFilterBarProps) 
   const [pending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
 
+  /**
+   * The params the URL is heading towards. router.push runs inside a
+   * transition, so useSearchParams still reports the OLD query while the
+   * navigation is pending; building the next state from it meant a second
+   * filter toggle silently discarded the first.
+   */
+  const [pendingQs, setPendingQs] = useState<string | null>(null);
+
   const listOf = useCallback(
     (key: string) => (params.get(key) ?? "").split(",").filter(Boolean),
     [params]
@@ -30,19 +38,30 @@ export function DetoxFilterBar({ durations, resultCount }: DetoxFilterBarProps) 
   const push = useCallback(
     (next: URLSearchParams) => {
       const qs = next.toString();
+      setPendingQs(qs);
       startTransition(() => router.push(qs ? `/detox?${qs}` : "/detox", { scroll: false }));
     },
     [router]
   );
 
+  /**
+   * While the transition is in flight useSearchParams still reports the OLD
+   * query, so a second filter toggle built from it discarded the first. Outside
+   * that window the URL is authoritative, so no cleanup is needed.
+   */
+  const baseParams = useCallback(
+    () => new URLSearchParams(pending && pendingQs !== null ? pendingQs : params.toString()),
+    [params, pending, pendingQs]
+  );
+
   const setValue = useCallback(
     (key: string, values: string[]) => {
-      const next = new URLSearchParams(params.toString());
+      const next = baseParams();
       if (values.length) next.set(key, values.join(","));
       else next.delete(key);
       push(next);
     },
-    [params, push]
+    [baseParams, push]
   );
 
   const toggle = (key: string, value: string) => {
@@ -98,8 +117,14 @@ export function DetoxFilterBar({ durations, resultCount }: DetoxFilterBarProps) 
             <ChevronDown className={cn("h-4 w-4 transition-transform", open && "rotate-180")} />
           </button>
 
-          <p className="flex shrink-0 items-center gap-1.5 whitespace-nowrap text-xs text-muted-foreground">
-            {pending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+          {/* Filter changes were completely silent for screen readers: the
+              count updated with no live region and the spinner had no label. */}
+          <p
+            role="status"
+            aria-live="polite"
+            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap text-xs text-muted-foreground"
+          >
+            {pending && <Loader2 aria-label="Updating results" className="h-3.5 w-3.5 animate-spin" />}
             {resultCount} {resultCount === 1 ? "trip" : "trips"}
           </p>
         </div>

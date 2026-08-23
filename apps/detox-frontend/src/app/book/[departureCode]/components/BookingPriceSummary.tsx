@@ -21,8 +21,13 @@ interface BookingPriceSummaryProps {
 }
 
 export function BookingPriceSummary({ pkg, dest, departure, selectedDate, selectedDeparture, travelerCount, totalPrice, gst, grandTotal }: BookingPriceSummaryProps) {
-  const dates = selectedDate && selectedDeparture
-    ? formatDateRange(format(selectedDate, "yyyy-MM-dd"), format(selectedDate, "yyyy-MM-dd"))
+  /*
+   * The selected branch used to pass selectedDate as both the start and the
+   * end, so choosing a date on a 3-day trip collapsed the summary to a single
+   * day. The chosen departure already carries its own range.
+   */
+  const dates = selectedDeparture
+    ? formatDateRange(selectedDeparture.startDate, selectedDeparture.endDate)
     : formatDateRange(departure.startDate, departure.endDate);
 
   const availableSeatCount = selectedDeparture?.seatsLeft ?? departure.seatsLeft;

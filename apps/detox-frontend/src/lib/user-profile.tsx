@@ -13,6 +13,7 @@ import {
   createClient,
   isSupabaseConfigured,
 } from "@/lib/supabase/client";
+import { clearAllBookingState } from "@/lib/booking-storage";
 
 /* ─── Types ──────────────────────────────────── */
 
@@ -411,6 +412,8 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
       } catch {
         // Private browsing can refuse storage access; state is already reset.
       }
+      // In-progress bookings hold the same PII, keyed per departure.
+      clearAllBookingState();
     }
   }, [supabase]);
 

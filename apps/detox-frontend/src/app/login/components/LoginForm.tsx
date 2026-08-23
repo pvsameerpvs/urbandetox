@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,7 +18,17 @@ export function LoginForm() {
   const router = useRouter();
   const { login, signup, loginWithGoogle } = useUserProfile();
   const [tab, setTab] = useState<"login" | "signup">("login");
-  const [error, setError] = useState("");
+  const params = useSearchParams();
+  /**
+   * /auth/callback redirects here with ?error=auth_callback_failed when Google
+   * sign-in fails, and nothing read it, so the failure was completely silent:
+   * the visitor landed back on the form with no idea why.
+   */
+  const [error, setError] = useState(
+    params.get("error") === "auth_callback_failed"
+      ? params.get("error_detail") || "Google sign-in did not complete. Please try again."
+      : ""
+  );
   const busy = useRef(false);
 
   const form = useForm<LoginFormValues>({

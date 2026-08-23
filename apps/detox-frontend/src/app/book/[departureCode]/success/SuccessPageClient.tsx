@@ -30,12 +30,15 @@ export function SuccessPageClient({ departure, pkg, dest }: SuccessPageClientPro
   const [payLater, setPayLater] = useState(false);
 
   useEffect(() => {
-    const saved = loadBookingState(departure.code);
-    if (saved) {
+    // Deferred for the same reason as hooks/use-booking.ts.
+    const timer = window.setTimeout(() => {
+      const saved = loadBookingState(departure.code);
+      if (!saved) return;
       startTransition(() => setTravelerCount(saved.travelers.length));
-      // Pay on Arrival collects nothing now, so "Total Paid" would be a lie.
+      // Pay on Arrival collects nothing, so "Total Paid" would be a lie.
       setPayLater(saved.paymentStatus === "cod");
-    }
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [departure.code]);
 
   // Traveller details are optional now, so the card has to reflect what the
@@ -76,7 +79,7 @@ export function SuccessPageClient({ departure, pkg, dest }: SuccessPageClientPro
   const totalPaid = subtotal + gst;
 
   return (
-    <main className="min-h-screen bg-white py-10 sm:py-14">
+    <div className="min-h-screen bg-white py-10 sm:py-14">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <SuccessHero />
 
@@ -140,6 +143,6 @@ export function SuccessPageClient({ departure, pkg, dest }: SuccessPageClientPro
 
         <SuccessActions />
       </div>
-    </main>
+    </div>
   );
 }

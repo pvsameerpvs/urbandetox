@@ -8,13 +8,13 @@ import { CTASection } from "./components/CTASection";
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white">
       <AboutHero />
       <StatsBar />
       <StorySection />
       <Differentiators />
       <QuoteSection />
       <CTASection />
-    </main>
+    </div>
   );
 }

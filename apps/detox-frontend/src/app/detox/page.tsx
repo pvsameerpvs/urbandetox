@@ -118,9 +118,11 @@ export default async function DetoxBrowsePage({ searchParams }: PageProps) {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-8 flex items-center gap-3">
             <span className="h-px w-8 bg-brand/60" />
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
+            {/* Was a styled span, so the page jumped from its h1 straight to
+                seventeen h3 cards with no intermediate level. */}
+            <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
               Or Browse by Destination
-            </span>
+            </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {destinations.map((dest) => (

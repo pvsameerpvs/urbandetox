@@ -7,8 +7,11 @@ import { FaqsClient } from "./FaqsClient";
 export const dynamic = "force-dynamic";
 
 export default async function FaqsPage() {
-  const categories = await fetchFaqCategories();
-  const faqs = await fetchAllFaqs();
+  // Degrade per-list rather than taking the page to the error boundary.
+  const [categories, faqs] = await Promise.all([
+    fetchFaqCategories().catch(() => []),
+    fetchAllFaqs().catch(() => []),
+  ]);
 
   return (
     <>

@@ -30,11 +30,18 @@ export function OnboardingSidebar({ pkg, dest, departure, travelers, step, total
   const gst = Math.round(totalPrice * 0.05);
   const grandTotal = totalPrice + gst;
 
-  const priceLines = [
-    { label: `Price × ${travelerCount}`, value: formatPrice(totalPrice) },
-    { label: "GST (5%)", value: formatPrice(gst) },
-    { label: "Total", value: formatPrice(grandTotal), isTotal: true },
-  ];
+  /*
+   * travelers is empty until the booking loads, which showed "Price x 0" and a
+   * total of Rs 0 directly beside "Payment confirmed" on a paid booking.
+   * Suppress the breakdown until the count is real.
+   */
+  const priceLines = travelerCount > 0
+    ? [
+        { label: `Price × ${travelerCount}`, value: formatPrice(totalPrice) },
+        { label: "GST (5%)", value: formatPrice(gst) },
+        { label: "Total", value: formatPrice(grandTotal), isTotal: true },
+      ]
+    : [];
 
   return (
     <div className="sticky top-24 space-y-4">

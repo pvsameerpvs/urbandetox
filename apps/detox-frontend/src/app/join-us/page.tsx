@@ -20,7 +20,9 @@ const EXPECTATIONS = [
 ];
 
 export default async function JoinUsPage() {
-  const destinations = await fetchDestinations();
+  // The application form only needs this for its destination picker; an
+  // outage should not 500 the whole recruiting page.
+  const destinations = await fetchDestinations().catch(() => []);
 
   return (
     <div className="min-h-screen bg-background">

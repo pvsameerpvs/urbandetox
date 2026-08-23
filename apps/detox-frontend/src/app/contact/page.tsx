@@ -11,7 +11,7 @@ import { Card, CardContent } from "@urbandetox/ui"
 
 export default function ContactPage() {
   return (
-    <main className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white">
       <ContactHero />
       <ContactCards />
 
@@ -53,6 +53,6 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

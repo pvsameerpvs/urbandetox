@@ -150,8 +150,23 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
 
         if (nextStep.action === "complete_onboarding") {
           const current = load();
+          /*
+           * buildCheckoutTravelers rebuilds the array from just the lead
+           * customer and a count, so resuming a payment overwrote every
+           * companion name, food preference, medical note and emergency
+           * contact the visitor had already entered with blanks. Keep what is
+           * saved and only pad up to the count the server expects.
+           */
+          const rebuilt = buildCheckoutTravelers(nextStep.customer, nextStep.travelerCount);
+          const existing = current?.travelers ?? [];
+          const merged = rebuilt.map((fresh, i) => {
+            const saved = existing[i];
+            if (!saved) return fresh;
+            // Keep the saved row, but let the server's lead-customer identity win.
+            return i === 0 ? { ...saved, name: fresh.name || saved.name, phone: fresh.phone || saved.phone, email: fresh.email || saved.email } : saved;
+          });
           save({
-            travelers: buildCheckoutTravelers(nextStep.customer, nextStep.travelerCount),
+            travelers: merged,
             common: current?.common || DEFAULT_COMMON,
             bookingId: nextStep.bookingId,
             paymentStatus: nextStep.paymentStatus,
@@ -169,8 +184,23 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
 
         if (nextStep.action === "continue_payment") {
           const current = load();
+          /*
+           * buildCheckoutTravelers rebuilds the array from just the lead
+           * customer and a count, so resuming a payment overwrote every
+           * companion name, food preference, medical note and emergency
+           * contact the visitor had already entered with blanks. Keep what is
+           * saved and only pad up to the count the server expects.
+           */
+          const rebuilt = buildCheckoutTravelers(nextStep.customer, nextStep.travelerCount);
+          const existing = current?.travelers ?? [];
+          const merged = rebuilt.map((fresh, i) => {
+            const saved = existing[i];
+            if (!saved) return fresh;
+            // Keep the saved row, but let the server's lead-customer identity win.
+            return i === 0 ? { ...saved, name: fresh.name || saved.name, phone: fresh.phone || saved.phone, email: fresh.email || saved.email } : saved;
+          });
           save({
-            travelers: buildCheckoutTravelers(nextStep.customer, nextStep.travelerCount),
+            travelers: merged,
             common: current?.common || DEFAULT_COMMON,
             checkoutSessionId: nextStep.checkoutSessionId,
             checkoutIdempotencyKey: nextStep.checkoutIdempotencyKey,
@@ -460,7 +490,7 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
   ];
 
   return (
-    <main className="min-h-screen bg-white pb-24 md:pb-0">
+    <div className="min-h-screen bg-white pb-24 md:pb-0">
       <Script
         src="https://checkout.razorpay.com/v1/checkout.js"
         strategy="afterInteractive"
@@ -566,6 +596,6 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
       </div>
 
       <MobileBookingCTA total={hydrated ? total : 0} label={!hydrated ? "Loading..." : unavailableReason ? "Booking Closed" : checkingNextStep ? "Checking..." : method === "cod" ? "Reserve Now" : "Pay Now"} onClick={handlePay} isProcessing={!hydrated || checkingNextStep || status === "processing"} disabled={Boolean(unavailableReason) || !hydrated || checkingNextStep || status === "success" || status === "review" || status === "uncertain" || booking?.paymentConfirmationPending} />
-    </main>
+    </div>
   );
 }

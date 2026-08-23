@@ -57,16 +57,16 @@ export default function MyDetoxPage() {
 
   if (!isLoggedIn) {
     return (
-      <main className="min-h-screen bg-white">
+      <div className="min-h-screen bg-white">
         <div className="py-20 text-center text-muted-foreground text-sm">
           Please log in to view your trips.
         </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white">
       <div className="relative bg-sidebar-dark py-10 sm:py-14 overflow-hidden">
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `radial-gradient(circle, white 1px, transparent 1px)`, backgroundSize: "24px 24px" }} />
         <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
@@ -165,6 +165,6 @@ export default function MyDetoxPage() {
           <EmptyState />
         )}
       </div>
-    </main>
+    </div>
   );
 }

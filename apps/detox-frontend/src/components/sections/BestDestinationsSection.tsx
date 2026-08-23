@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 import { MapPin, ArrowRight, Compass, Images } from "lucide-react";
 import { cn, safeImageUrl } from "@urbandetox/utils";
 import type { Destination } from "@urbandetox/utils";
-import { Badge } from "@urbandetox/ui"
 
 /*
  * A hardcoded badge map used to live here, keyed on "kodaikanal",

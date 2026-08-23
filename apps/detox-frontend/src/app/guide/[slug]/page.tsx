@@ -32,7 +32,7 @@ export default async function GuideDetailPage({ params }: PageProps) {
     : [];
 
   return (
-    <main className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white">
       <JsonLd
         id="ld-guide"
         nodes={[
@@ -89,6 +89,6 @@ export default async function GuideDetailPage({ params }: PageProps) {
 
         <GuideCTA />
       </div>
-    </main>
+    </div>
   );
 }

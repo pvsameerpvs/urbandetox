@@ -14,6 +14,10 @@ interface PackageFAQsSectionProps {
 }
 
 export function PackageFAQsSection({ faqs }: PackageFAQsSectionProps) {
+  // Rendered its heading unconditionally, so a package with no FAQs showed a
+  // "Trip FAQs" section over nothing.
+  if (faqs.length === 0) return null;
+
   return (
     <motion.section initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
       <div className="flex items-center gap-3 mb-5">

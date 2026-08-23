@@ -19,7 +19,7 @@ export default async function LoginPage() {
   const testimonials = await fetchTestimonials(2).catch(() => []);
 
   return (
-    <main className="min-h-[100dvh] flex flex-col lg:flex-row bg-white">
+    <div className="min-h-[100dvh] flex flex-col lg:flex-row bg-white">
       <LoginHero testimonials={testimonials} />
 
       {/* Mobile band: same photo, just cropped short. */}
@@ -41,6 +41,6 @@ export default async function LoginPage() {
       <div className="flex-1 flex flex-col justify-center items-center px-5 py-10 sm:px-8 lg:px-10">
         <LoginForm />
       </div>
-    </main>
+    </div>
   );
 }

@@ -45,7 +45,7 @@ export function PackageDetailClient({ pkg, dest, departures, guides, selectedDep
   const selectedDepartureIsBookable = Boolean(selectedDep && isDepartureBookable(selectedDep));
 
   return (
-    <main className="min-h-screen bg-white pb-24 md:pb-0">
+    <div className="min-h-screen bg-white pb-24 md:pb-0">
       <PackageHero
         image={safeImageUrl(pkg.coverImage)}
         title={pkg.title}
@@ -83,6 +83,7 @@ export function PackageDetailClient({ pkg, dest, departures, guides, selectedDep
             nextDeparture={sidebarDeparture ? { startDate: sidebarDeparture.startDate, endDate: sidebarDeparture.endDate, seatsLeft: sidebarDeparture.seatsLeft, code: sidebarDeparture.code, price: sidebarDeparture.price, offerPrice: sidebarDeparture.offerPrice } : null}
             isSelected={selectedDepartureIsBookable}
             itineraryPdf={pkg.itineraryPdf}
+            groupSize={pkg.groupSize}
           />
         </div>
       </div>
@@ -92,6 +93,6 @@ export function PackageDetailClient({ pkg, dest, departures, guides, selectedDep
         nextDepartureCode={sidebarDeparture && isDepartureBookable(sidebarDeparture) ? sidebarDeparture.code : null}
         selectedDepartureCode={selectedDepartureIsBookable ? selectedDepartureCode : undefined}
       />
-    </main>
+    </div>
   );
 }

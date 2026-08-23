@@ -10,11 +10,11 @@ export const metadata = {
 /** Where Supabase's recovery email lands. Without this the reset link 404s. */
 export default function ResetPasswordPage() {
   return (
-    <main className="min-h-[100dvh] bg-white flex flex-col items-center justify-center px-5 py-12">
+    <div className="min-h-[100dvh] bg-white flex flex-col items-center justify-center px-5 py-12">
       <Link href="/" className="mb-8 inline-block">
         <Image src="/log-detox.png" alt="Urban Detox" width={140} height={42} className="h-10 w-auto object-contain" priority />
       </Link>
       <ResetPasswordForm />
-    </main>
+    </div>
   );
 }

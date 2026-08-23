@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { BookingHeader } from "../components/BookingHeader";
 import { BookingHero } from "../components/BookingHero";
@@ -36,13 +36,36 @@ export function BookingPageClient({ code, departure, pkg, dest, allDepartures }:
   const pricePerPerson = departure.offerPrice ?? departure.price;
   const maxSeats = departure.seatsLeft;
 
-  const { save } = useBooking(code);
+  const { save, load } = useBooking(code);
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(parseISO(departure.startDate));
   const [travelers, setTravelers] = useState<Traveler[]>([createPrimaryTraveler(profile.personal, profile.health)]);
   const [common, setCommon] = useState<CommonDetails>(createDefaultCommon());
   const [isProcessing, setIsProcessing] = useState(false);
   const [flowError, setFlowError] = useState<string>();
+
+  /**
+   * Rehydrate what was already entered. This never happened, so navigating
+   * back from payment reset the traveller form to a single blank primary and
+   * silently discarded every companion, health note and emergency contact.
+   * Done in an effect rather than a lazy initialiser because localStorage is
+   * not available during the server render.
+   */
+  const rehydrated = useRef(false);
+  useEffect(() => {
+    if (rehydrated.current) return;
+    rehydrated.current = true;
+    // Deferred to a task, matching hooks/use-booking.ts: localStorage is not
+    // available during the server render, and a synchronous setState in an
+    // effect body cascades an extra render pass.
+    const timer = window.setTimeout(() => {
+      const saved = load();
+      if (!saved) return;
+      if (saved.travelers?.length) setTravelers(saved.travelers);
+      if (saved.common) setCommon(saved.common);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [load]);
 
   const availableDates: Record<string, AvailableDateOption> = {};
   allDepartures.forEach((dep) => {
@@ -170,7 +193,7 @@ export function BookingPageClient({ code, departure, pkg, dest, allDepartures }:
   };
 
   return (
-    <main className="min-h-screen bg-white pb-24 md:pb-0">
+    <div className="min-h-screen bg-white pb-24 md:pb-0">
       <BookingHeader backHref={`/detox/${dest.slug}/${pkg.slug}`} backLabel="Back to Detox" stepLabel="Step 1 of 3" />
       <BookingHero image={departure.image || pkg.coverImage} title="Book Your Detox" destination={dest.name} durationLabel={pkg.durationLabel} subtitle={`${pkg.title} · Select a date and add your travelers`} />
 
@@ -242,6 +265,6 @@ export function BookingPageClient({ code, departure, pkg, dest, allDepartures }:
         </div>
       )}
       <MobileBookingCTA total={grandTotal} label={unavailableReason ? "Booking Closed" : allTravelersValid ? "Continue to Payment" : `Fill ${incompleteCount} traveler${incompleteCount > 1 ? "s" : ""}`} onClick={handleSubmit} isProcessing={isProcessing} disabled={!allTravelersValid || Boolean(unavailableReason)} />
-    </main>
+    </div>
   );
 }

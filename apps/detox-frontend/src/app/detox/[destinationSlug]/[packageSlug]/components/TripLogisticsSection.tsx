@@ -59,9 +59,13 @@ export function TripLogisticsSection({ pkg }: TripLogisticsSectionProps) {
       </h2>
 
       <div className="grid grid-cols-1 gap-5">
-        {rows.length > 0 && (
+        {/* Was gated on rows.length alone, so a package with a pickup map but
+            no other logistics rows passed the section-level check above (which
+            does account for hasMap) and then rendered an empty card. */}
+        {(rows.length > 0 || hasMap) && (
           <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
             <CardContent className="p-5 sm:p-6">
+              {rows.length > 0 && (
               <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {rows.map(({ icon: Icon, label, value }) => (
                   <div key={label} className="flex gap-3">
@@ -77,6 +81,7 @@ export function TripLogisticsSection({ pkg }: TripLogisticsSectionProps) {
                   </div>
                 ))}
               </dl>
+              )}
 
               <PickupMapBlock
                 mapImage={pkg.pickupMapImage}

@@ -32,7 +32,11 @@ export function FilterChipGroup<T extends string>({
               aria-pressed={active}
               onClick={() => onToggle(o.value)}
               className={cn(
-                "shrink-0 snap-start rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors",
+                // The chip stays visually compact (the filter bar was
+                // deliberately slimmed down), but a pseudo-element pushes the
+                // touch target to the 44px minimum.
+                "relative shrink-0 snap-start rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors",
+                "before:absolute before:left-0 before:right-0 before:top-1/2 before:h-11 before:-translate-y-1/2 before:content-['']",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40",
                 active
                   ? "border-brand bg-brand text-brand-foreground"
