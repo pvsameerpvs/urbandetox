@@ -147,8 +147,14 @@ export const guides = pgTable("guides", {
   excerpt: text("excerpt").notNull(),
   content: text("content").notNull(),
   image: text("image").notNull(),
+  /** Describes the photo. Without it the UI falls back to alt={title}. */
+  imageAlt: text("image_alt"),
+  seoTitle: varchar("seo_title", { length: 255 }),
+  seoDescription: text("seo_description"),
   relatedPackageSlugs: jsonb("related_package_slugs").$type<string[]>().default([]),
   featured: boolean("featured").notNull().default(false),
+  /** Freshness signal, and the sitemap's lastmod for guide URLs. */
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
 export const faqs = pgTable("faqs", {

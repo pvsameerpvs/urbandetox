@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { dbTitle } from "@/lib/metadata";
 import { notFound } from "next/navigation";
 import { fetchDestinationBySlug, fetchPackagesByDestination, fetchUpcomingDepartures } from "@/lib/api";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -21,7 +22,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const title = dest.seoTitle || `${dest.name} Detox Retreats | Urban Detox`;
+  // dbTitle returns { absolute } when the DB value already contains the brand,
+  // which every destination row does, so the root template does not double it.
+  const title = dbTitle(dest.seoTitle, `${dest.name} Detox Retreats`);
   const description = dest.seoDescription || dest.description;
 
   return {

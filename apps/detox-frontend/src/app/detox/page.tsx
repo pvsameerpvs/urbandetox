@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { routeSeo } from "@/lib/metadata";
 import { fetchDestinations, fetchFilteredPackages, fetchPackages, type PackageFilters } from "@/lib/api";
 import { filterPackagesByScope, internationalSlugs, parseScope } from "@/lib/trip-scope";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -12,9 +13,10 @@ import { DestinationBrowseCard } from "./components/DestinationBrowseCard";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Explore Detox | Offbeat Small-Group Trips | Urban Detox",
+  title: "Explore Detox | Offbeat Small-Group Trips",
   description:
     "Filter offbeat detox trips by who's going, landscape, effort, duration and budget. Small groups of 10, everything planned.",
+  ...routeSeo({ path: "/detox" }),
 };
 
 interface PageProps {

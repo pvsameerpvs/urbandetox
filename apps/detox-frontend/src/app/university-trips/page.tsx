@@ -5,6 +5,16 @@ import Link from "next/link";
 import { Check, GraduationCap, ArrowRight } from "lucide-react";
 import { Button, Card, CardContent, Separator } from "@urbandetox/ui"
 
+import type { Metadata } from "next";
+import { clamp, routeSeo } from "@/lib/metadata";
+
+/** Without this the route inherited the root title and had no canonical. */
+export const metadata: Metadata = {
+  title: "University Trips",
+  description: clamp("Guided group trips for university batches and student groups across South India, arranged as a private charter."),
+  ...routeSeo({ path: "/university-trips" }),
+};
+
 const features = [
   "Faculty oversight integration",
   "Curriculum-linked modules",

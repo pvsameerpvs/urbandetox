@@ -1,5 +1,7 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { fetchGuideBySlug, fetchRelatedGuides, fetchDestinationBySlug, fetchPackageBySlug } from "@/lib/api";
+import { clamp, dbTitle, routeSeo } from "@/lib/metadata";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildArticleNode } from "@/lib/seo/article";
 import { buildBreadcrumbNode } from "@/lib/seo/breadcrumb";
@@ -11,6 +13,28 @@ import { GuideCTA } from "./components/GuideCTA";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
+}
+
+/**
+ * Without this every guide URL inherited the root layout's title and
+ * description, so all nine looked identical to a crawler and to anyone pasting
+ * a link into WhatsApp. dbTitle marks a DB value absolute when it already
+ * carries the brand, so the root title.template cannot double-brand it.
+ */
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const guide = await fetchGuideBySlug(slug);
+  if (!guide) return { title: "Guide not found", robots: { index: false, follow: false } };
+
+  return {
+    title: dbTitle(guide.seoTitle, guide.title),
+    description: clamp(guide.seoDescription || guide.excerpt),
+    ...routeSeo({
+      path: `/guide/${guide.slug}`,
+      image: guide.image,
+      imageAlt: guide.imageAlt || guide.title,
+    }),
+  };
 }
 
 export default async function GuideDetailPage({ params }: PageProps) {

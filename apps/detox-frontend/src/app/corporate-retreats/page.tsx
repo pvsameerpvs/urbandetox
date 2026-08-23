@@ -5,6 +5,16 @@ import Link from "next/link";
 import { Check, Building2, ArrowRight } from "lucide-react";
 import { Button, Card, CardContent, Separator } from "@urbandetox/ui"
 
+import type { Metadata } from "next";
+import { clamp, routeSeo } from "@/lib/metadata";
+
+/** Without this the route inherited the root title and had no canonical. */
+export const metadata: Metadata = {
+  title: "Corporate Retreats",
+  description: clamp("Private offsites and team retreats in South India, booked as a whole group and arranged end to end."),
+  ...routeSeo({ path: "/corporate-retreats" }),
+};
+
 const inclusions = [
   "Custom itinerary design",
   "Dedicated trip lead",

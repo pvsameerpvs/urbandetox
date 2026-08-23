@@ -6,7 +6,7 @@ import { TermsContactCard } from "./components/TermsContactCard";
 import { INTRO, LAST_UPDATED, TERMS_SECTIONS } from "./terms-content";
 
 export const metadata: Metadata = {
-  title: "Terms & Conditions – Urban Detox Travel Policies",
+  title: "Terms & Conditions",
   description:
     "Read booking, payment, cancellation, privacy, safety, and refund policies for Urban Detox trips.",
   alternates: { canonical: "https://www.urbandetox.in/terms" },

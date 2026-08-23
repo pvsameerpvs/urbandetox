@@ -124,8 +124,12 @@ export interface GuideArticle {
   excerpt: string;
   content: string;
   image: string;
+  imageAlt?: string | null;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
   relatedPackageSlugs?: string[];
   featured?: boolean;
+  updatedAt?: string | null;
 }
 
 export interface Testimonial {

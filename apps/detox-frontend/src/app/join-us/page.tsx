@@ -6,7 +6,7 @@ import { GuideApplicationForm } from "./components/GuideApplicationForm";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Become a Guide | Work With Urban Detox",
+  title: "Become a Guide",
   description:
     "Apply to guide Urban Detox trips. Tell us the destinations you know and the languages you speak.",
 };
