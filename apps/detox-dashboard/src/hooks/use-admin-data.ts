@@ -46,15 +46,28 @@ import { useState, useEffect } from "react";
 function useApiFetch<T>(fetcher: () => Promise<T>, fallback: T) {
   const [data, setData] = useState<T>(fallback);
   const [loading, setLoading] = useState(true);
+  /**
+   * A failed fetch used to be logged and swallowed, leaving `data` at its
+   * fallback. Every list screen then rendered its empty state, so an API
+   * outage was indistinguishable from "nothing here yet" and an admin could
+   * reasonably think the records had been deleted.
+   */
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     fetcher()
       .then((result) => {
-        if (!cancelled) setData(result);
+        if (!cancelled) {
+          setData(result);
+          setError(null);
+        }
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.error("Dashboard API fetch failed:", err);
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Could not reach the API.");
+        }
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -65,5 +78,5 @@ function useApiFetch<T>(fetcher: () => Promise<T>, fallback: T) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { data, loading };
+  return { data, loading, error };
 }

@@ -12,6 +12,7 @@ import { ImageUpload } from "@/components/shared/ImageUpload";
 import { getDestinations, getPackages } from "@/lib/admin-data";
 import type { GuideArticle, Destination, Package } from "@urbandetox/utils";
 import { GUIDE_CATEGORIES } from "@urbandetox/utils";
+import { toast } from "sonner";
 
 interface GuideFormProps {
   initial?: GuideArticle;
@@ -44,6 +45,7 @@ export function GuideForm({ initial, onSave }: GuideFormProps) {
   const [image, setImage] = useState(initial?.image ?? "");
   const [featured, setFeatured] = useState(initial?.featured ?? false);
   const [relatedSlugs, setRelatedSlugs] = useState(initial?.relatedPackageSlugs?.join(", ") ?? "");
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
   const relatedPackages = destinationSlug
@@ -69,7 +71,22 @@ export function GuideForm({ initial, onSave }: GuideFormProps) {
       featured,
       relatedPackageSlugs: relatedSlugs.split(",").map((s) => s.trim()).filter(Boolean),
     };
-    await onSave(guide);
+    /**
+     * onSave hits the API and throws on a non-2xx. Without this catch the
+     * rejection was unhandled and the router.push never ran, so a failed save
+     * left the admin on a full form with no message, no spinner and no idea
+     * whether the guide had been written.
+     */
+    try {
+      setSaving(true);
+      await onSave(guide);
+    } catch (err) {
+      setSaving(false);
+      const message = err instanceof Error ? err.message : "Could not save the guide.";
+      setError(message);
+      toast.error(message);
+      return;
+    }
     router.push("/guides");
   }
 
@@ -173,7 +190,7 @@ export function GuideForm({ initial, onSave }: GuideFormProps) {
       </FormSection>
 
       <div className="flex items-center gap-3 pt-2">
-        <Button type="submit" className="rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-11 px-6 font-semibold">
+        <Button type="submit" disabled={saving} className="rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-11 px-6 font-semibold disabled:opacity-60">
           {initial ? "Save Changes" : "Create Guide"}
         </Button>
         <Button type="button" variant="outline" className="rounded-xl h-11 px-6" onClick={() => router.push("/guides")}>

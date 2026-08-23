@@ -19,7 +19,7 @@ import type { BookingWithMeta } from "@/lib/bookings";
 export default function PackageDetailPage() {
   const params = useParams();
   const slug = String(params.slug);
-  const { data: pkg } = useAdminPackage(slug);
+  const { data: pkg, loading: pkgLoading } = useAdminPackage(slug);
   const { data: allDepartures } = useAdminDepartures();
 
   const [dest, setDest] = useState<Destination | undefined>(undefined);
@@ -29,11 +29,21 @@ export default function PackageDetailPage() {
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  if (!pkg) notFound();
-
+  /*
+   * notFound() used to run here, above the effects, on the very first render.
+   * useAdminPackage starts at undefined and resolves asynchronously, so the
+   * check always fired and this screen was permanently a 404 — no package was
+   * ever openable. Calling it before the hooks below was also a conditional
+   * early return ahead of useEffect. Both are handled after the hooks now.
+   */
   useEffect(() => {
     async function load() {
-      if (!pkg) return;
+      if (!pkg) {
+        // Once the package fetch has settled and found nothing, stop showing
+        // the spinner so the not-found branch below can render.
+        if (!pkgLoading) setLoading(false);
+        return;
+      }
       const fetchedDest = await getDestinationBySlug(pkg.destinationSlug);
       setDest(fetchedDest);
 
@@ -64,15 +74,18 @@ export default function PackageDetailPage() {
     }
 
     load();
-  }, [pkg, slug, allDepartures]);
+  }, [pkg, pkgLoading, slug, allDepartures]);
 
-  if (loading) {
+  if (pkgLoading || loading) {
     return (
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="py-20 text-center text-muted-foreground">Loading...</div>
       </div>
     );
   }
+
+  // Only genuinely missing once the fetch has settled.
+  if (!pkg) notFound();
 
   const departures = allDepartures.filter((d) => d.packageSlug === slug);
 

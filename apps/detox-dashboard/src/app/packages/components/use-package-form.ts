@@ -121,7 +121,8 @@ export function usePackageForm(initialDestinationSlug: string, initialData?: Ini
     destinationSlug: initialData?.destinationSlug || initialDestinationSlug,
     duration: initialData?.duration || 2,
     startingPrice: initialData?.startingPrice || 0,
-    groupSize: initialData?.groupSize || "6 to 12",
+    // 10 is the published maximum, so the default cannot suggest 12.
+    groupSize: initialData?.groupSize || "6 to 10",
     style: initialData?.style || "",
     seasonalTag: initialData?.seasonalTag || firstTag,
     coverImage: initialData?.coverImage || "",

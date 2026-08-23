@@ -13,11 +13,18 @@ export default function EditDeparturePage() {
   const params = useParams();
   const router = useRouter();
   const id = String(params.id);
-  const { data: allDeps } = useAdminDepartures();
+  const { data: allDeps, loading } = useAdminDepartures();
   const { data: packages } = useAdminPackages();
   const { data: destinations } = useAdminDestinations();
   const dep = allDeps.find((d) => d.id === id);
 
+  if (loading) {
+    return <div className="py-20 text-center text-muted-foreground">Loading...</div>;
+  }
+
+  // The hook starts at its fallback and resolves asynchronously, so this
+  // not-found branch used to render on the very first paint, and stuck
+  // permanently if the fetch failed.
   if (!dep) {
     return (
       <div className="text-center py-20">

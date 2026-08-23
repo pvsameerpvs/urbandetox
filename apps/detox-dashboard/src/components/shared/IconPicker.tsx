@@ -108,6 +108,8 @@ export function IconPicker({ value, onChange, label = "Icon", error }: IconPicke
   const [pos, setPos] = useState<{ left: number; top: number; width: number }>({ left: 0, top: 0, width: 0 });
   const ref = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  /** The dropdown renders through a portal, so it is not inside `ref`. */
+  const panelRef = useRef<HTMLDivElement>(null);
 
   const selected = CURATED_ICONS.find((i) => i.name === value);
   const SelectedIcon = selected?.icon || Sun;
@@ -118,9 +120,13 @@ export function IconPicker({ value, onChange, label = "Icon", error }: IconPicke
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
+      const target = e.target as Node;
+      // The panel is portalled to document.body, so ref.contains(target) is
+      // false for every icon in the list. Without checking panelRef the
+      // mousedown closed the picker before the click could select anything.
+      const insideTrigger = ref.current?.contains(target);
+      const insidePanel = panelRef.current?.contains(target);
+      if (!insideTrigger && !insidePanel) setOpen(false);
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -139,6 +145,7 @@ export function IconPicker({ value, onChange, label = "Icon", error }: IconPicke
 
   const dropdown = (
     <div
+      ref={panelRef}
       className="fixed z-[100] bg-white rounded-xl border border-border shadow-xl shadow-black/10 overflow-hidden"
       style={{ left: pos.left, top: pos.top, width: pos.width }}
     >

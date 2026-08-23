@@ -9,7 +9,7 @@ import { getAdminGuides, deleteGuide } from "@/lib/guides";
 import { useAdminDestinations } from "@/hooks/use-admin-data";
 import { safeImageUrl } from "@urbandetox/utils";
 import type { GuideArticle } from "@urbandetox/utils";
-import { BookOpen, ExternalLink, Star, Eye, Pencil, Trash2, Plus } from "lucide-react";
+import { BookOpen, ExternalLink, Star, Pencil, Trash2, Plus } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -19,6 +19,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@urbandetox/ui";
+
+/** Public site origin. The dashboard has no /guide route of its own. */
+const PUBLIC_SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL || "https://beta.urbandetox.in"
+).replace(/\/+$/, "");
 
 export default function GuidesPage() {
   const [guides, setGuides] = useState<GuideArticle[]>([]);
@@ -106,22 +111,17 @@ export default function GuidesPage() {
                         </p>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
+                        {/* Was two links: a dashboard-relative /guide/<slug>
+                            labelled "View", which is a route this app does not
+                            have and so 404'd, plus a hardcoded apex-domain
+                            "Live". One link, one origin. */}
                         <Link
-                          href={`/guide/${guide.slug}`}
+                          href={`${PUBLIC_SITE_URL}/guide/${guide.slug}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 text-[10px] font-semibold text-brand hover:text-brand/80 transition-colors"
                         >
-                          <Eye className="h-3 w-3" /> View
-                        </Link>
-                        <span className="text-muted-foreground">|</span>
-                        <Link
-                          href={`https://urbandetox.in/guide/${guide.slug}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-[10px] font-semibold text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                          <ExternalLink className="h-3 w-3" /> Live
+                          <ExternalLink className="h-3 w-3" /> View live
                         </Link>
                       </div>
                     </div>

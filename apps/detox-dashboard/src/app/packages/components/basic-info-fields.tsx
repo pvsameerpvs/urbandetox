@@ -88,7 +88,7 @@ export function BasicInfoFields({ control, destinations }: BasicInfoFieldsProps)
           render={({ field, fieldState }) => (
             <div className="space-y-2">
               <label className="text-sm font-medium">Group Size</label>
-              <Input placeholder="6 to 12" className="h-11 rounded-xl" {...field} />
+              <Input placeholder="6 to 10" className="h-11 rounded-xl" {...field} />
               {fieldState.error && <p className="text-xs text-red-500">{fieldState.error.message}</p>}
             </div>
           )}

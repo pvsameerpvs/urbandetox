@@ -49,7 +49,12 @@ export function DepartureForm({
       startDate: initialData?.startDate ?? "",
       endDate: initialData?.endDate ?? "",
       price: initialData?.price ?? 0,
-      offerPrice: initialData?.offerPrice ?? 0,
+      /**
+       * Not 0. Every price display resolves `offerPrice ?? price`, and 0 is not
+       * nullish, so a new departure defaulting to 0 made the trip show as
+       * free everywhere. undefined means "no offer price".
+       */
+      offerPrice: initialData?.offerPrice ?? undefined,
       seatsTotal: initialData?.seatsTotal ?? 10,
       seatsLeft: initialData?.seatsLeft ?? 10,
       status: (initialData?.status as DepartureFormData["status"]) || "open",
@@ -211,7 +216,7 @@ function PricingFields({ control }: { control: import("react-hook-form").Control
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
       <NumberField control={control} name="price" label="Price (₹)" min={0} />
-      <NumberField control={control} name="offerPrice" label="Offer Price (₹)" min={0} />
+      <NumberField control={control} name="offerPrice" label="Offer Price (₹)" min={1} optional />
     </div>
   );
 }
@@ -230,11 +235,14 @@ function NumberField({
   name,
   label,
   min,
+  optional,
 }: {
   control: import("react-hook-form").Control<DepartureFormData>;
   name: "price" | "offerPrice" | "seatsTotal" | "seatsLeft";
   label: string;
   min: number;
+  /** When true an empty input means undefined rather than being coerced to min. */
+  optional?: boolean;
 }) {
   return (
     <FormField
@@ -249,7 +257,16 @@ function NumberField({
               className="h-11 rounded-xl"
               min={min}
               {...field}
-              onChange={(e) => field.onChange(parseInt(e.target.value) || min)}
+              value={field.value ?? ""}
+              onChange={(e) => {
+                const raw = e.target.value;
+                if (optional && raw.trim() === "") {
+                  field.onChange(undefined);
+                  return;
+                }
+                const n = parseInt(raw, 10);
+                field.onChange(Number.isFinite(n) ? n : optional ? undefined : min);
+              }}
             />
           </FormControl>
           <FormMessage />

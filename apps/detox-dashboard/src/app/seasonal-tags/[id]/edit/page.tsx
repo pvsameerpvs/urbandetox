@@ -35,7 +35,7 @@ export default function EditSeasonalTagPage() {
   const params = useParams();
   const router = useRouter();
   const id = String(params.id);
-  const { data: tags } = useAdminSeasonalTags();
+  const { data: tags, loading } = useAdminSeasonalTags();
   const tag = tags.find((t) => t.id === id);
 
   const form = useForm<FormData>({
@@ -59,6 +59,13 @@ export default function EditSeasonalTagPage() {
     }
   }, [tag, form]);
 
+  if (loading) {
+    return <div className="py-20 text-center text-muted-foreground">Loading...</div>;
+  }
+
+  // The hook starts at its fallback and resolves asynchronously, so this
+  // not-found branch used to render on the very first paint, and stuck
+  // permanently if the fetch failed.
   if (!tag) {
     return (
       <div className="text-center py-20">

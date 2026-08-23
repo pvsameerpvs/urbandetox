@@ -7,6 +7,14 @@ import { Badge } from "@urbandetox/ui";
 import { Input } from "@urbandetox/ui";
 import { Textarea } from "@urbandetox/ui";
 import { Card, CardContent } from "@urbandetox/ui";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@urbandetox/ui";
 import { fetchSiteSettings, updateSiteSettings } from "@/lib/api";
 import { getHeroImages, setHeroImages, getActiveHeroIndex, setActiveHeroIndex, getHeroText, setHeroText, DEFAULT_TEXT, type HeroText } from "@/lib/hero";
 import { toast } from "sonner";
@@ -99,6 +107,8 @@ export default function HeroImagePage() {
       toast.error("Server unreachable. Saved locally — will sync when reconnected.");
     }
   };
+
+  const [confirmReset, setConfirmReset] = useState(false);
 
   const handleReset = async () => {
     const defaults = {
@@ -265,10 +275,39 @@ export default function HeroImagePage() {
         <Button onClick={handleSave} className="rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-11 px-6 font-semibold shadow-lg shadow-brand/10">
           <Check className="mr-1.5 h-4 w-4" /> Save All Changes
         </Button>
-        <Button variant="outline" onClick={handleReset} className="rounded-xl h-11 px-6">
+        {/* This wiped every hero image and every line of hero copy on a single
+            click, with no confirmation and no undo. */}
+        <Button variant="outline" onClick={() => setConfirmReset(true)} className="rounded-xl h-11 px-6">
           <RotateCcw className="mr-1.5 h-4 w-4" /> Reset Everything
         </Button>
       </div>
+
+      <Dialog open={confirmReset} onOpenChange={setConfirmReset}>
+        <DialogContent className="rounded-2xl">
+          <DialogHeader>
+            <DialogTitle>Reset the whole homepage hero?</DialogTitle>
+            <DialogDescription>
+              This replaces all five hero images and every line of hero copy
+              (badge, both headlines, subheadline and both button labels) with
+              the built-in defaults. It cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" className="rounded-xl" onClick={() => setConfirmReset(false)}>
+              Keep what I have
+            </Button>
+            <Button
+              className="rounded-xl bg-destructive text-white hover:bg-destructive/90"
+              onClick={async () => {
+                setConfirmReset(false);
+                await handleReset();
+              }}
+            >
+              Reset everything
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

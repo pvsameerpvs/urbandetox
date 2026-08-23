@@ -7,7 +7,12 @@ export const departureFormSchema = z.object({
   startDate: z.string().min(1, "Start date is required"),
   endDate: z.string().min(1, "End date is required"),
   price: z.number().min(0, "Price must be 0 or more"),
-  offerPrice: z.number().min(0, "Offer price must be 0 or more"),
+  /**
+   * Optional. Price displays resolve `offerPrice ?? price`, so a stored 0
+   * renders the trip as free. Absent means "no discount"; 0 is not a way to
+   * say that.
+   */
+  offerPrice: z.number().min(1, "Leave blank if there is no offer price").optional(),
   seatsTotal: z.number().min(1, "Must have at least 1 seat"),
   seatsLeft: z.number().min(0, "Seats left cannot be negative"),
   status: z.enum(["open", "filling", "full", "closed"]),

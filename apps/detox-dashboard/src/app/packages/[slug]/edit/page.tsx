@@ -24,7 +24,7 @@ export default function EditPackagePage() {
   const params = useParams();
   const router = useRouter();
   const slug = String(params.slug);
-  const { data: pkg } = useAdminPackage(slug);
+  const { data: pkg, loading } = useAdminPackage(slug);
   const { data: destinations } = useAdminDestinations();
 
   const initialData = useMemo(() => ({
@@ -48,6 +48,13 @@ export default function EditPackagePage() {
 
   const f = usePackageForm(pkg?.destinationSlug || "", initialData);
 
+  if (loading) {
+    return <div className="py-20 text-center text-muted-foreground">Loading...</div>;
+  }
+
+  // The hook starts at its fallback and resolves asynchronously, so this
+  // not-found branch used to render on the very first paint, and stuck
+  // permanently if the fetch failed.
   if (!pkg) {
     return (
       <div className="text-center py-20">

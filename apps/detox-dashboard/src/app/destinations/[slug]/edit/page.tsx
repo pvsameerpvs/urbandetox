@@ -14,8 +14,15 @@ export default function EditDestinationPage() {
   const params = useParams();
   const router = useRouter();
   const slug = String(params.slug);
-  const { data: dest } = useAdminDestination(slug);
+  const { data: dest, loading } = useAdminDestination(slug);
 
+  if (loading) {
+    return <div className="py-20 text-center text-muted-foreground">Loading...</div>;
+  }
+
+  // The hook starts at its fallback and resolves asynchronously, so this
+  // not-found branch used to render on the very first paint, and stuck
+  // permanently if the fetch failed.
   if (!dest) {
     return (
       <div className="text-center py-20">
