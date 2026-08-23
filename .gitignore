@@ -97,3 +97,10 @@ coverage/
 .cache/
 temp/
 tmp/
+
+# Local source assets (originals live here, published copies live in R2)
+assets/
+apps/temp/
+
+# Local dev-server launch config (machine specific)
+.claude/launch.json
