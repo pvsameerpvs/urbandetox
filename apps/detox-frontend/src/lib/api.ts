@@ -1,3 +1,4 @@
+import { createClient } from "@/lib/supabase/client";
 import type {
   Destination,
   Package,
@@ -438,8 +439,24 @@ export async function uploadTravellerDocument(input: {
   if (input.token) qs.set("token", input.token);
   const fd = new FormData();
   fd.append("file", input.file);
+  /**
+   * Two authorised callers: a share-link holder (token in the query) and the
+   * signed-in booking owner. The owner path needs the Supabase bearer token,
+   * which this never sent, so uploading while logged in always failed
+   * authorisation. Content-Type is deliberately unset so the browser writes
+   * the multipart boundary.
+   */
+  const headers: Record<string, string> = {};
+  if (!input.token) {
+    const supabase = createClient();
+    const { data } = await supabase.auth.getSession();
+    if (data.session?.access_token) {
+      headers.Authorization = `Bearer ${data.session.access_token}`;
+    }
+  }
   const res = await fetch(`${API_BASE}/api/documents?${qs.toString()}`, {
     method: "POST",
+    headers,
     body: fd,
   });
   const body = await res.json().catch(() => ({}));

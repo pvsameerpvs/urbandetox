@@ -1,12 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 ;
 ;
 ;
 import { ProfileSectionHeader } from "../components/ProfileSectionHeader";
 import { useUserProfile } from "@/lib/user-profile";
-import { FileText, Upload, CheckCircle2, X, AlertCircle, Shield } from "lucide-react";
+import { FileText, CheckCircle2, AlertCircle, Shield } from "lucide-react";
 import { Card, CardContent, Button, Badge } from "@urbandetox/ui"
 
 const statusConfig = {
@@ -16,7 +17,7 @@ const statusConfig = {
 };
 
 export default function DocumentsPage() {
-  const { profile, updateDocumentStatus } = useUserProfile();
+  const { profile } = useUserProfile();
   const docs = profile.documents;
 
   return (
@@ -46,28 +47,24 @@ export default function DocumentsPage() {
                     <p className="text-[11px] text-muted-foreground/60 mt-1">{doc.hint}</p>
                   </div>
 
+                  {/*
+                    There used to be an "Upload" button here that took no file:
+                    it flipped a localStorage flag and then displayed "File
+                    ready", so a traveller could reasonably believe their
+                    Aadhaar was on record when nothing had been sent. Documents
+                    are held against a specific booking (see
+                    services/private-storage.ts, keyed by bookingId), so a
+                    profile page has nothing legitimate to upload to. It points
+                    at the trip instead, where the upload actually works.
+                  */}
                   <div className="flex items-center gap-2 shrink-0">
-                    {doc.status === "missing" && (
-                      <Button
-                        type="button"
-                        onClick={() => updateDocumentStatus(doc.id, "uploaded")}
-                        className="rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-10 px-4 text-xs font-semibold"
-                      >
-                        <Upload className="mr-1.5 h-3.5 w-3.5" /> Upload
-                      </Button>
-                    )}
-                    {doc.status === "uploaded" && (
-                      <>
-                        <Badge variant="outline" className="border-border/60 text-muted-foreground text-xs font-normal">File ready</Badge>
-                        <button
-                          type="button"
-                          onClick={() => updateDocumentStatus(doc.id, "missing")}
-                          className="p-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      </>
-                    )}
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="h-10 rounded-xl px-4 text-xs font-semibold"
+                    >
+                      <Link href="/my-detox">Add on your trip</Link>
+                    </Button>
                   </div>
                 </div>
               );

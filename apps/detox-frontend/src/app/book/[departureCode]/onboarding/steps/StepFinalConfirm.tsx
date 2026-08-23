@@ -1,18 +1,22 @@
 "use client";
 
 import { useFormContext } from "react-hook-form";
-import { MapPin, Camera, Upload } from "lucide-react";
-import type { CommonDetails } from "@urbandetox/utils";
-import { Label, Button, Checkbox, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@urbandetox/ui";
+import { MapPin } from "lucide-react";
+import type { CommonDetails, Traveler } from "@urbandetox/utils";
+import { TravellerDocuments } from "../components/TravellerDocuments";
+import { Label, Checkbox, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@urbandetox/ui";
 import type { OnboardingFormValues } from "@/lib/onboarding-schema";
 
 interface StepFinalConfirmProps {
   common: CommonDetails;
   onUpdate: (d: Partial<CommonDetails>) => void;
   travelerCount?: number;
+  travelers?: Traveler[];
+  bookingId?: string;
+  onUpdateTraveler?: (index: number, patch: Partial<Traveler>) => void;
 }
 
-export function StepFinalConfirm({ common, onUpdate, travelerCount = 1 }: StepFinalConfirmProps) {
+export function StepFinalConfirm({ common, onUpdate, travelerCount = 1, travelers = [], bookingId, onUpdateTraveler }: StepFinalConfirmProps) {
   const { formState, setValue, watch } = useFormContext<OnboardingFormValues>();
   const confirmed = watch("confirmed");
   const modeError = formState.errors.modeOfArrival?.message;
@@ -42,15 +46,22 @@ export function StepFinalConfirm({ common, onUpdate, travelerCount = 1 }: StepFi
         {modeError && <p className="text-red-500 text-xs mt-1">{modeError}</p>}
       </div>
 
-      <div className="space-y-2">
-        <Label className="text-sm font-semibold">Upload {travelerCount > 1 ? "Group" : "Your"} Photo (Optional)</Label>
-        <div className="rounded-xl border-2 border-dashed border-border/60 bg-secondary/20 p-5 sm:p-6 text-center hover:border-brand/40 hover:bg-brand/5 transition-colors cursor-pointer">
-          <Camera className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
-          <p className="text-sm font-medium mb-1">Upload {travelerCount > 1 ? "a group photo" : "your photo"}</p>
-          <p className="text-xs text-muted-foreground mb-2">Helps our guide recognize {travelerCount > 1 ? "your group" : "you"} at pickup</p>
-          <Button type="button" variant="outline" size="sm" className="rounded-full h-9"><Upload className="mr-1.5 h-3.5 w-3.5" /> Choose File</Button>
+      {onUpdateTraveler && travelers.length > 0 && (
+        <div className="space-y-2">
+          <Label className="text-sm font-semibold">
+            Photo and ID {travelerCount > 1 ? "for each traveller" : ""}
+          </Label>
+          <p className="text-xs text-muted-foreground">
+            Your guide uses the photo to find you at pickup. The ID is held
+            privately and is never shown publicly.
+          </p>
+          <TravellerDocuments
+            travelers={travelers}
+            bookingId={bookingId}
+            onUpdate={onUpdateTraveler}
+          />
         </div>
-      </div>
+      )}
 
       <div className="flex items-start gap-3 rounded-2xl bg-brand/5 border border-brand/10 p-4 sm:p-5">
         <Checkbox

@@ -10,7 +10,8 @@ interface DocumentUploadProps {
   hint?: string;
   kind: "photo" | "id";
   bookingId: string;
-  token: string;
+  /** Omitted for the signed-in booking owner; required for share-link access. */
+  token?: string;
   /** Storage path already saved for this document, if any. */
   value?: string;
   onUploaded: (storagePath: string) => void;

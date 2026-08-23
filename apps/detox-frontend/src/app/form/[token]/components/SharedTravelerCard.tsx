@@ -2,7 +2,7 @@
 
 import { Input, Label } from "@urbandetox/ui";
 import type { Traveler } from "@urbandetox/utils";
-import { DocumentUpload } from "./DocumentUpload";
+import { DocumentUpload } from "@/components/documents/DocumentUpload";
 
 const FOOD = ["vegetarian", "non-vegetarian", "vegan", "jain"];
 const GENDERS = ["Female", "Male", "Other", "Prefer not to say"];

@@ -291,7 +291,7 @@ export function OnboardingPageClient({ code, departure, pkg, dest }: OnboardingP
                         {step === 1 && <StepReviewTravelers travelers={travelers} onUpdate={updateTraveler} />}
                         {step === 2 && <StepHealthFood travelers={travelers} onUpdate={updateTraveler} />}
                         {step === 3 && <StepEmergencyContacts travelers={travelers} onUpdate={updateTraveler} common={{ groupNote: common.groupNote }} onUpdateCommon={(d) => updateCommon(d)} />}
-                        {step === 4 && <StepFinalConfirm common={common} onUpdate={(d) => updateCommon(d)} travelerCount={travelers.length} />}
+                        {step === 4 && <StepFinalConfirm common={common} onUpdate={(d) => updateCommon(d)} travelerCount={travelers.length} travelers={travelers} bookingId={bookingId ?? undefined} onUpdateTraveler={updateTraveler} />}
                         <OnboardingNavigation
                           step={step}
                           totalSteps={steps.length}
