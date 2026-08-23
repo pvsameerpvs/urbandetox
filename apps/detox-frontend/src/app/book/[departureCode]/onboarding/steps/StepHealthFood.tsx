@@ -21,9 +21,9 @@ export function StepHealthFood({ travelers, onUpdate }: StepHealthFoodProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Label className="text-sm font-semibold">Food Preference</Label>
-              <Select value={t.foodPreference} onValueChange={(v) => onUpdate(i, { foodPreference: v ?? "vegetarian" })}>
+              <Select value={t.foodPreference} onValueChange={(v) => onUpdate(i, { foodPreference: v ?? "" })}>
                 <SelectTrigger className="h-12 rounded-xl bg-white border-0 text-sm">
-                  <SelectValue />
+                  <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
                   {["vegetarian", "vegan", "non-vegetarian", "jain", "no-preference"].map((v) => (

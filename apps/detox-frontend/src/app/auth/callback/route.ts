@@ -16,11 +16,26 @@ function getOrigin(request: Request): string {
   return new URL(request.url).origin;
 }
 
+/**
+ * `next` arrives from the query string and used to be concatenated straight
+ * onto the origin. "next=@evil.com" produced
+ * "https://our.host@evil.com", which a URL parser reads as host evil.com, so
+ * the callback was an open redirect; "next=https://evil.com" produced an
+ * unparseable URL and a 500. Only accept a single-slash relative path.
+ */
+function safeNext(raw: string | null): string {
+  if (!raw) return "/profile";
+  if (!raw.startsWith("/")) return "/profile";
+  if (raw.startsWith("//")) return "/profile";
+  if (raw.includes("\\")) return "/profile";
+  return raw;
+}
+
 export async function GET(request: Request) {
   const origin = getOrigin(request);
   const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/profile";
+  const next = safeNext(searchParams.get("next"));
 
   // Supabase can redirect back here with its own error if provider config is wrong
   const supabaseError = searchParams.get("error_description") || searchParams.get("error");

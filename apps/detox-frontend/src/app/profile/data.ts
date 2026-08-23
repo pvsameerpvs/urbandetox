@@ -9,22 +9,19 @@ export const quickLinks = [
   { label: "Explore Detox", href: "/detox", icon: Compass, desc: "Browse all retreats" },
 ];
 
-export const recentBookings = [
-  {
-    id: "1",
-    title: "Kodaikanal Weekend Detox",
-    date: "2025-08-15",
-    status: "upcoming" as const,
-    destination: "Kodaikanal",
-  },
-  {
-    id: "2",
-    title: "North Kerala River Retreat",
-    date: "2025-06-10",
-    status: "completed" as const,
-    destination: "North Kerala",
-  },
-];
+/**
+ * Empty on purpose. This used to hold two invented bookings that rendered for
+ * every visitor, including one dated 2025-08-15 and labelled "upcoming". The
+ * page already has a correct empty state, and real bookings live on /my-detox,
+ * which fetches them. Do not seed sample rows here.
+ */
+export const recentBookings: {
+  id: string;
+  title: string;
+  date: string;
+  status: "upcoming" | "completed";
+  destination: string;
+}[] = [];
 
 export interface DocumentItem {
   id: string;

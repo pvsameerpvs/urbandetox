@@ -8,7 +8,9 @@ export const travelerSchema = z.object({
   email: z.string().default(""),
   dateOfBirth: z.string().default(""),
   gender: z.string().default(""),
-  foodPreference: z.string().default("vegetarian"),
+  // No default: an unanswered meal preference must stay unanswered rather
+  // than silently becoming "vegetarian" on the booking record.
+  foodPreference: z.string().default(""),
   allergies: z.string().default(""),
   medicalConditions: z.string().default(""),
   bloodGroup: z.string().default(""),

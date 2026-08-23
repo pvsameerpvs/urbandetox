@@ -6,11 +6,18 @@ import { Mountain, Users, MapPin, Sunrise } from "lucide-react";
 import { containerVariants, itemVariants } from "@/lib/animations";
 import { Card, CardContent } from "@urbandetox/ui"
 
+/**
+ * Facts, not metrics. This bar previously claimed "50+ Detoxes Hosted",
+ * "600+ Happy Travelers", "8 Destinations" and "3 Years Running", none of
+ * which came from anywhere and none of which match the records. Everything
+ * here is a published policy or a positioning line we can stand behind, so it
+ * cannot drift out of date or overstate the business.
+ */
 const stats = [
-  { label: "Detoxes Hosted", value: "50+", icon: Mountain },
-  { label: "Happy Travelers", value: "600+", icon: Users },
-  { label: "Destinations", value: "8", icon: MapPin },
-  { label: "Years Running", value: "3", icon: Sunrise },
+  { label: "Travellers per trip", value: "10 max", icon: Users },
+  { label: "Pickup", value: "Bengaluru", icon: MapPin },
+  { label: "Where we go", value: "South India", icon: Mountain },
+  { label: "Trips are", value: "Offbeat", icon: Sunrise },
 ];
 
 export function StatsBar() {

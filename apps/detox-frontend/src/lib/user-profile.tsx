@@ -70,11 +70,19 @@ export const defaultUserProfile: UserProfile = {
     dateOfBirth: "",
     gender: "",
   },
+  /**
+   * Deliberately empty. These used to default to vegetarian / "None" / "O+",
+   * and createPrimaryTraveler copied them straight onto the booking, so a
+   * traveller who never opened /profile/preferences was submitted as blood
+   * group O+ with no allergies and no medical conditions. Blood group is not
+   * even editable in the logged-in onboarding, so the invented value could
+   * never be corrected. Empty means "not provided", which is the truth.
+   */
   health: {
-    foodPreference: "vegetarian",
-    allergies: "None",
-    medicalConditions: "None",
-    bloodGroup: "O+",
+    foodPreference: "",
+    allergies: "",
+    medicalConditions: "",
+    bloodGroup: "",
   },
   emergencyContacts: [
     { name: "", phone: "", email: "", relation: "" },
@@ -372,6 +380,21 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
     }
     setAuthUser(null);
     setIsLoggedIn(false);
+    /**
+     * Signing out used to leave the profile in React state and in localStorage
+     * under a single shared key. On any shared device the next person to sign
+     * in inherited the previous user's name, phone, date of birth, medical
+     * notes and emergency contacts, and those values auto-filled onto their
+     * booking. Clear both.
+     */
+    setProfile(defaultUserProfile);
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch {
+        // Private browsing can refuse storage access; state is already reset.
+      }
+    }
   }, [supabase]);
 
   const updatePersonal = useCallback(

@@ -49,7 +49,6 @@ export default function ProfileDashboard() {
               <h2 className="text-xl sm:text-2xl font-bold">{profile.personal.fullName}</h2>
               <p className="text-sm text-muted-foreground">{profile.personal.email} · {profile.personal.phone}</p>
             </div>
-            <Badge className="bg-brand/10 text-brand border-0 text-xs font-medium">Member since 2024</Badge>
           </div>
         </CardContent>
       </Card>

@@ -96,9 +96,9 @@ export function TravelerCard({ traveler, index, isExpanded, onToggle, onUpdate }
           {/* Food Preference */}
           <div className="space-y-1.5">
             <Label className="text-sm font-semibold">Food Preference</Label>
-            <Select value={traveler.foodPreference} onValueChange={(v) => onUpdate({ foodPreference: v ?? "vegetarian" })}>
+            <Select value={traveler.foodPreference} onValueChange={(v) => onUpdate({ foodPreference: v ?? "" })}>
               <SelectTrigger className="h-12 rounded-xl bg-secondary/40 border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20">
-                <SelectValue />
+                <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
                 {["vegetarian", "vegan", "non-vegetarian", "jain", "no-preference"].map((v) => (

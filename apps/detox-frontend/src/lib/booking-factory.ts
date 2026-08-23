@@ -46,7 +46,7 @@ export function createCompanionTraveler(index: number = 0): Traveler {
     email: "",
     dateOfBirth: "",
     gender: "",
-    foodPreference: "vegetarian",
+    foodPreference: "",
     allergies: "",
     medicalConditions: "",
     bloodGroup: "",
