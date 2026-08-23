@@ -57,8 +57,8 @@ export default function DestinationsPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                 <div className="absolute bottom-3 left-3 right-3">
                   <div className="flex items-center gap-1.5 mb-1">
-                    <MapPin className="h-3.5 w-3.5 text-brand" />
-                    <span className="text-[10px] font-bold text-brand uppercase tracking-wider">{dest.region}</span>
+                    <MapPin className="h-3.5 w-3.5 text-brand-on-media" />
+                    <span className="text-[10px] font-bold text-brand-on-media uppercase tracking-wider">{dest.region}</span>
                   </div>
                   <h3 className="text-lg font-bold text-white">{dest.name}</h3>
                 </div>

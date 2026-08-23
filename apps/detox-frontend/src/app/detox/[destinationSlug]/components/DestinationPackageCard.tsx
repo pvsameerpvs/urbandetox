@@ -32,7 +32,7 @@ export function DestinationPackageCard({ pkg, destination, upcomingCount, nextDe
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent" />
           <div className="absolute top-3 left-3 right-3 flex items-start justify-between">
             <Badge className="bg-white/95 text-foreground shadow-sm font-medium text-xs backdrop-blur-sm">
               <MapPin className="mr-1 h-3 w-3" /> {destination.name}

@@ -42,7 +42,7 @@ export function AdminSidebar() {
         </div>
         <div>
           <p className="text-sm font-bold text-white">Urban Detox</p>
-          <p className="text-[10px] text-white/40 uppercase tracking-wider">Admin Panel</p>
+          <p className="text-[10px] text-white/60 uppercase tracking-wider">Admin Panel</p>
         </div>
       </div>
 
@@ -58,8 +58,8 @@ export function AdminSidebar() {
               className={cn(
                 "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
                 isActive
-                  ? "bg-brand/15 text-brand"
-                  : "text-white/50 hover:text-white/80 hover:bg-white/5"
+                  ? "bg-brand-on-media/15 text-brand-on-media"
+                  : "text-white/65 hover:text-white hover:bg-white/5"
               )}
             >
               <Icon className="h-4 w-4 shrink-0" />
@@ -77,7 +77,7 @@ export function AdminSidebar() {
       <div className="px-3 py-4 border-t border-white/5">
         <Link
           href="/settings"
-          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-white/50 hover:text-white/80 hover:bg-white/5 transition-colors"
+          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-white/65 hover:text-white hover:bg-white/5 transition-colors"
         >
           <Settings className="h-4 w-4 shrink-0" />
           Settings

@@ -33,16 +33,16 @@ export function DestinationBrowseCard({ destination, packageCount }: Destination
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/55 to-transparent" />
             <div className="absolute bottom-5 left-5 right-5">
               <div className="flex items-center gap-2 mb-2">
-                <MapPin className="h-4 w-4 text-brand" />
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand">{destination.region}</span>
+                <MapPin className="h-4 w-4 text-brand-on-media" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-on-media">{destination.region}</span>
               </div>
               <h3 className="text-xl sm:text-2xl font-bold text-white mb-1">{destination.name}</h3>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-white/70">{count} detox{count > 1 ? "es" : ""}</span>
-                <span className="text-sm font-semibold text-brand inline-flex items-center gap-1 group-hover:gap-2 transition-all">
+                <span className="text-sm font-semibold text-brand-on-media inline-flex items-center gap-1 group-hover:gap-2 transition-all">
                   Explore <ArrowRight className="h-4 w-4" />
                 </span>
               </div>

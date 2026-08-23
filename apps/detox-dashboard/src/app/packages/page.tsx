@@ -61,8 +61,8 @@ export default function PackagesPage() {
                 </div>
                 <div className="absolute bottom-2.5 left-2.5 right-2.5">
                   <div className="flex items-center gap-1.5">
-                    <MapPin className="h-3 w-3 text-brand" />
-                    <span className="text-[10px] font-bold text-brand">{dest?.name}</span>
+                    <MapPin className="h-3 w-3 text-brand-on-media" />
+                    <span className="text-[10px] font-bold text-brand-on-media">{dest?.name}</span>
                   </div>
                 </div>
               </div>

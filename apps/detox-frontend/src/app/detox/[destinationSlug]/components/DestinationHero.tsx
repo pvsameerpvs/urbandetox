@@ -34,8 +34,8 @@ export function DestinationHero({ destination, packageCount }: DestinationHeroPr
         </Link>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           <div className="flex items-center gap-2 mb-3">
-            <MapPin className="h-5 w-5 text-brand" />
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">{destination.region}</span>
+            <MapPin className="h-5 w-5 text-brand-on-media" />
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-on-media">{destination.region}</span>
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3">{destination.name}</h1>
           <p className="text-base sm:text-lg text-white/70 max-w-xl leading-relaxed mb-5">{destination.description}</p>

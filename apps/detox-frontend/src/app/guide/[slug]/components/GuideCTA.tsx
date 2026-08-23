@@ -30,7 +30,7 @@ export function GuideCTA() {
           <span className="h-px w-8 bg-white/40" />
         </div>
         <h3 className="text-2xl sm:text-3xl font-bold text-white mb-3 leading-tight">
-          Ready for your <span className="text-brand">reset?</span>
+          Ready for your <span className="text-brand-on-media">reset?</span>
         </h3>
         <p className="text-sm sm:text-base text-white/60 leading-relaxed max-w-md mx-auto mb-6">
           Browse upcoming detoxes, pick your destination, and step into curated offbeat escapes designed for real disconnection.

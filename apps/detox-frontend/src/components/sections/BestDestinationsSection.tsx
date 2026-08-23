@@ -53,7 +53,7 @@ function DestinationCard({
               sizes="(max-width: 640px) 100vw, 50vw"
               className="object-cover transition-transform duration-700 group-hover:scale-110"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/55 to-transparent" />
             <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
             <div className="absolute inset-0 p-5 sm:p-6 flex flex-col justify-between">
@@ -71,8 +71,8 @@ function DestinationCard({
 
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <MapPin className="h-3.5 w-3.5 text-brand" />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand">
+                  <MapPin className="h-3.5 w-3.5 text-brand-on-media" />
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-on-media">
                     {destination.region}
                   </span>
                 </div>
@@ -91,7 +91,7 @@ function DestinationCard({
                     <span className="hidden sm:inline">·</span>
                     <span className="hidden sm:inline">{destination.vibe}</span>
                   </div>
-                  <span className="inline-flex items-center gap-1 text-sm font-semibold text-brand group-hover:gap-2 transition-all">
+                  <span className="inline-flex items-center gap-1 text-sm font-semibold text-brand-on-media group-hover:gap-2 transition-all">
                     Explore <ArrowRight className="h-4 w-4" />
                   </span>
                 </div>

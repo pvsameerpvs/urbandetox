@@ -35,7 +35,7 @@ export function PackageHero({ image, title, subtitle, destinationName, durationL
                   <Clock className="mr-1 h-3 w-3" /> {durationLabel}
                 </Badge>
                 {seasonalTag && (
-                  <Badge className="bg-brand/20 text-brand border-0 text-xs font-medium backdrop-blur-sm">
+                  <Badge className="bg-brand-on-media/25 text-brand-on-media border-0 text-xs font-medium backdrop-blur-sm">
                     {seasonalTag}
                   </Badge>
                 )}

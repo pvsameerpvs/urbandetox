@@ -38,6 +38,7 @@
   --color-brand-foreground: var(--brand-foreground);
   --color-brand-muted: var(--brand-muted);
   --color-brand-accent: var(--brand-accent);
+  --color-brand-on-media: var(--brand-on-media);
   --color-sidebar-dark: var(--sidebar-dark);
   --color-footer: var(--footer);
   --color-footer-foreground: var(--footer-foreground);
@@ -87,6 +88,11 @@
   --brand-foreground: #ffffff;
   --brand-muted: #e8f0eb;
   --brand-accent: #d4a373;
+  /* Accent for text that sits on a photo or any dark scrim. The main brand
+     green is #2d4f3c, which lands at 1.5-2.1:1 over a darkened image and
+     simply disappears. This sage reads at 7.5:1 or better on the same ground
+     and stays recognisably brand. Never swap this for --brand on media. */
+  --brand-on-media: #a7c4b5;
   --sidebar-dark: #0a1628;
   --footer: #c9f269;
   --footer-foreground: #083c2f;
