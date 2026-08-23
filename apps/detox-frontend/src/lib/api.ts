@@ -88,6 +88,8 @@ export interface PackageFilters {
   duration?: number[];
   domestic?: boolean;
   weekend?: boolean;
+  /** BUDGET_BANDS values; the API ORs each band's range. */
+  budget?: string[];
   minPrice?: number;
   maxPrice?: number;
   seasonalTag?: string;
@@ -107,6 +109,7 @@ export function buildPackageQuery(filters: PackageFilters): string {
   addList("duration", filters.duration);
   if (filters.domestic !== undefined) p.set("domestic", String(filters.domestic));
   if (filters.weekend) p.set("weekend", "true");
+  if (filters.budget?.length) p.set("budget", filters.budget.join(","));
   if (filters.minPrice !== undefined) p.set("minPrice", String(filters.minPrice));
   if (filters.maxPrice !== undefined) p.set("maxPrice", String(filters.maxPrice));
   if (filters.seasonalTag) p.set("seasonalTag", filters.seasonalTag);

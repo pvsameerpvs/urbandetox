@@ -3,6 +3,7 @@ import { and, eq, gte, lte, or, ilike, sql, type SQL } from "drizzle-orm";
 import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import { db } from "@/db";
 import { packages } from "@/db/schema";
+import { BUDGET_BANDS } from "@urbandetox/utils";
 
 /** Comma-separated query value -> trimmed, non-empty list. */
 function list(value: unknown): string[] {
@@ -62,6 +63,27 @@ export const PackageController = {
     const durations = list(q.duration).map(Number).filter((n) => Number.isFinite(n));
     if (durations.length) {
       filters.push(or(...durations.map((d) => eq(packages.duration, d))) as SQL);
+    }
+
+    /**
+     * Budget arrives as one or more band values and each band becomes its own
+     * range, OR'd together. The page used to flatten them into a single
+     * min/max span client-side, so picking "Under 10,000" plus
+     * "15,000 - 25,000" searched 0 to 24,999 and returned every trip in the
+     * 10,000 to 15,000 band the visitor had explicitly not selected. Picking
+     * any band with an open top (above-25000, max null) dropped maxPrice
+     * altogether and silently disabled the filter while its pill still read
+     * as active.
+     */
+    const bandRanges = list(q.budget)
+      .map((v) => BUDGET_BANDS.find((b) => b.value === v))
+      .filter((b): b is (typeof BUDGET_BANDS)[number] => Boolean(b))
+      .map((b) => {
+        const lo = gte(packages.startingPrice, String(b.min));
+        return b.max === null ? lo : (and(lo, lte(packages.startingPrice, String(b.max))) as SQL);
+      });
+    if (bandRanges.length) {
+      filters.push(bandRanges.length === 1 ? bandRanges[0] : (or(...bandRanges) as SQL));
     }
 
     if (typeof q.minPrice === "string" && q.minPrice !== "") {

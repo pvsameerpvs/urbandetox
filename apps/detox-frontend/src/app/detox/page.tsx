@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { BUDGET_BANDS } from "@urbandetox/utils";
 import { fetchDestinations, fetchFilteredPackages, type PackageFilters } from "@/lib/api";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildTripCollectionNodes } from "@/lib/seo/collection";
@@ -27,15 +26,13 @@ const many = (v: string | string[] | undefined) =>
 export default async function DetoxBrowsePage({ searchParams }: PageProps) {
   const q = searchParams ? await searchParams : {};
 
-  // Budget arrives as a band value; translate it into the price range the API wants.
-  const bands = (many(q.budget) ?? [])
-    .map((v) => BUDGET_BANDS.find((b) => b.value === v))
-    .filter((b): b is (typeof BUDGET_BANDS)[number] => Boolean(b));
-  const minPrice = bands.length ? Math.min(...bands.map((b) => b.min)) : undefined;
-  const maxPrice =
-    bands.length && bands.every((b) => b.max !== null)
-      ? Math.max(...bands.map((b) => b.max as number))
-      : undefined;
+  /**
+   * Bands go to the API as bands. Flattening several into one min/max span was
+   * wrong: "Under 10,000" plus "15,000 - 25,000" became 0 to 24,999 and
+   * returned the middle band the visitor had excluded, and any band with an
+   * open top dropped the ceiling entirely. The controller ORs the ranges.
+   */
+  const budget = many(q.budget);
 
   const filters: PackageFilters = {
     audience: many(q.audience),
@@ -46,8 +43,7 @@ export default async function DetoxBrowsePage({ searchParams }: PageProps) {
     weekend: one(q.weekend) === "true",
     seasonalTag: one(q.seasonalTag),
     q: one(q.q),
-    minPrice,
-    maxPrice,
+    budget,
   };
 
   const [destinations, packages] = await Promise.all([

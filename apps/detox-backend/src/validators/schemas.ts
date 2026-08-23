@@ -105,6 +105,9 @@ export const packageListQuery = z.object({
   duration: z.string().max(50).optional(),
   domestic: z.enum(["true", "false"]).optional(),
   weekend: z.enum(["true", "false"]).optional(),
+  // Comma-separated BUDGET_BANDS values; unknown values are ignored by the
+  // controller rather than rejected, so a stale bookmark still returns results.
+  budget: z.string().optional(),
   minPrice: z.string().regex(/^\d+(\.\d+)?$/).optional(),
   maxPrice: z.string().regex(/^\d+(\.\d+)?$/).optional(),
   seasonalTag: z.string().max(100).optional(),
