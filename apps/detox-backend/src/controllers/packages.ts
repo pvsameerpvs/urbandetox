@@ -98,7 +98,14 @@ export const PackageController = {
   async getBySlug(req: Request, res: Response) {
     const slug = String(req.params.slug);
     const [pkg] = await db.select().from(packages).where(eq(packages.slug, slug));
-    if (!pkg) {
+    /**
+     * list() has always restricted public callers to live packages, but this
+     * did not, so a draft, sold_out or coming_soon trip was unreachable from
+     * any listing yet rendered as a normal bookable page on a direct link.
+     * status=all keeps the dashboard able to open drafts.
+     */
+    const unpublished = pkg && (pkg.status ?? "live") !== "live";
+    if (!pkg || (unpublished && req.query.status !== "all")) {
       res.status(404).json({ error: "Package not found" });
       return;
     }

@@ -27,12 +27,13 @@ async function api<T>(path: string, options?: RequestInit): Promise<T> {
 
 // ─── Destinations ────────────────────────────────────
 export async function fetchDestinations<T = unknown>(): Promise<T[]> {
-  return api("/api/destinations");
+  // status=all so the admin sees hidden and coming_soon rows, not just active.
+  return api("/api/destinations?status=all");
 }
 
 export async function fetchDestinationBySlug<T = unknown>(slug: string): Promise<T | undefined> {
   try {
-    return await api<T>(`/api/destinations/${slug}`);
+    return await api<T>(`/api/destinations/${slug}?status=all`);
   } catch {
     return undefined;
   }
@@ -58,7 +59,7 @@ export async function fetchPackages<T = unknown>(): Promise<T[]> {
 
 export async function fetchPackageBySlug<T = unknown>(slug: string): Promise<T | undefined> {
   try {
-    return await api<T>(`/api/packages/${slug}`);
+    return await api<T>(`/api/packages/${slug}?status=all`);
   } catch {
     return undefined;
   }
