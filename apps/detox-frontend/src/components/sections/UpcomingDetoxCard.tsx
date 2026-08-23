@@ -30,7 +30,11 @@ function formatCardDateRange(start: string, end: string): string {
 }
 
 export function UpcomingDetoxCard({ dep, pkg, dest }: UpcomingDetoxCardProps) {
-  const isFull = dep.status === "full";
+  /**
+   * This only tested status === "full", so a departure with seatsLeft at 0, or
+   * one marked closed, still rendered a live "View Details" CTA.
+   */
+  const isFull = dep.status === "full" || dep.status === "closed" || dep.seatsLeft <= 0;
   const seatsPercent = Math.max(0, Math.min(100, (dep.seatsLeft / dep.seatsTotal) * 100));
 
   return (
@@ -105,14 +109,16 @@ export function UpcomingDetoxCard({ dep, pkg, dest }: UpcomingDetoxCardProps) {
               className={cn(
                 "h-11 px-5 text-sm font-semibold rounded-xl transition-all duration-300",
                 isFull
-                  ? "bg-muted text-muted-foreground hover:bg-muted cursor-not-allowed"
+                  ? "bg-secondary text-foreground hover:bg-secondary/80"
                   : "bg-[var(--button-lime)] text-[var(--button-lime-text)] hover:bg-[var(--button-lime-text)] hover:text-[var(--button-lime)] shadow-lg shadow-[var(--button-lime)]/10"
               )}
-              disabled={isFull}
               asChild
             >
+              {/* `disabled` does nothing on an anchor, so the old button was
+                  never actually disabled, and "Waitlist" promised a feature
+                  that does not exist. Send people to the other dates instead. */}
               <Link href={isFull ? `/detox/${dest.slug}/${pkg.slug}` : `/detox/${dest.slug}/${pkg.slug}?departure=${dep.code}`}>
-                {isFull ? "Waitlist" : "View Details"}
+                {isFull ? "See other dates" : "View Details"}
                 <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
               </Link>
             </Button>

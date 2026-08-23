@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -41,6 +41,7 @@ interface MobileMenuProps {
 
 export function MobileMenu({ isLightMode }: MobileMenuProps) {
   const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const { profile, authUser, isLoggedIn, logout, isHydrated } = useUserProfile();
   const router = useRouter();
 
@@ -62,6 +63,23 @@ export function MobileMenu({ isLightMode }: MobileMenuProps) {
     };
   }, [open]);
 
+  /**
+   * Escape closes the menu, which was previously only dismissable by pointer:
+   * a keyboard user who opened it had no way to close it. Focus returns to the
+   * trigger so the tab position is not lost.
+   */
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+        triggerRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open]);
+
   const handleLogout = () => {
     logout();
     setOpen(false);
@@ -80,6 +98,7 @@ export function MobileMenu({ isLightMode }: MobileMenuProps) {
             : "text-white hover:bg-white/10"
         )}
         aria-label="Open menu"
+        ref={triggerRef}
       >
         <Menu className="h-6 w-6" />
       </button>
@@ -93,7 +112,17 @@ export function MobileMenu({ isLightMode }: MobileMenuProps) {
       )}
 
       {/* Slide Panel */}
+      {/*
+        The panel stays mounted so it can animate, and it used to stay
+        focusable and screen-reader-visible while closed, on every page
+        including desktop. `inert` takes it out of the tab order and the
+        accessibility tree without breaking the transform.
+      */}
       <div
+        role="dialog"
+        aria-modal={open}
+        aria-label="Site menu"
+        inert={!open}
         className={cn(
           "fixed top-0 right-0 z-[70] h-dvh w-80 max-w-[85vw] bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-out",
           open ? "translate-x-0" : "translate-x-full"

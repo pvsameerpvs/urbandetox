@@ -81,6 +81,7 @@ export function OnboardingPageClient({ code, departure, pkg, dest }: OnboardingP
   const [direction, setDirection] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [resolvedBookingId, setResolvedBookingId] = useState<string | null>(null);
   const [bookingLookupComplete, setBookingLookupComplete] = useState(false);
   const bookingId = booking?.bookingId ?? resolvedBookingId;
@@ -223,6 +224,7 @@ export function OnboardingPageClient({ code, departure, pkg, dest }: OnboardingP
 
   const handleSubmit = form.handleSubmit(async (data) => {
     setSubmitting(true);
+    setSubmitError(null);
     try {
       if (!bookingId) {
         throw new Error("A paid or reserved booking is required");
@@ -244,8 +246,18 @@ export function OnboardingPageClient({ code, departure, pkg, dest }: OnboardingP
         onboardingStep: 4,
       });
       setTimeout(() => { window.location.href = `/book/${code}/success`; }, 1500);
-    } catch {
+    } catch (err) {
+      /*
+       * This used to be a bare `catch { setSubmitting(false) }`. The spinner
+       * stopped and nothing else happened, so a failed submit was
+       * indistinguishable from a dead button, forever.
+       */
       setSubmitting(false);
+      setSubmitError(
+        err instanceof Error
+          ? err.message
+          : "We could not save your details. Please try again."
+      );
     }
   });
 
@@ -292,6 +304,11 @@ export function OnboardingPageClient({ code, departure, pkg, dest }: OnboardingP
                         {step === 2 && <StepHealthFood travelers={travelers} onUpdate={updateTraveler} />}
                         {step === 3 && <StepEmergencyContacts travelers={travelers} onUpdate={updateTraveler} common={{ groupNote: common.groupNote }} onUpdateCommon={(d) => updateCommon(d)} />}
                         {step === 4 && <StepFinalConfirm common={common} onUpdate={(d) => updateCommon(d)} travelerCount={travelers.length} travelers={travelers} bookingId={bookingId ?? undefined} onUpdateTraveler={updateTraveler} />}
+                        {submitError && (
+                          <div role="alert" className="mb-4 rounded-xl border border-red-100 bg-red-50 p-3 text-xs font-medium text-red-700">
+                            {submitError}
+                          </div>
+                        )}
                         <OnboardingNavigation
                           step={step}
                           totalSteps={steps.length}

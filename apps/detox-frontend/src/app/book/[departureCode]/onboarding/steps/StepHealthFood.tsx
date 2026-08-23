@@ -33,12 +33,14 @@ export function StepHealthFood({ travelers, onUpdate }: StepHealthFoodProps) {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-sm font-semibold">Allergies</Label>
-              <Input value={t.allergies} onChange={(e) => onUpdate(i, { allergies: e.target.value })} placeholder="None / Nuts" className="h-12 rounded-xl bg-white border-0 text-sm" />
+              <Label htmlFor={`allergies-${i}`} className="text-sm font-semibold">Allergies</Label>
+              <Input id={`allergies-${i}`}
+                    value={t.allergies} onChange={(e) => onUpdate(i, { allergies: e.target.value })} placeholder="None / Nuts" className="h-12 rounded-xl bg-white border-0 text-sm" />
             </div>
             <div className="space-y-1.5 sm:col-span-2">
-              <Label className="text-sm font-semibold">Medical Conditions</Label>
-              <Input value={t.medicalConditions} onChange={(e) => onUpdate(i, { medicalConditions: e.target.value })} placeholder="None / Asthma / Diabetes" className="h-12 rounded-xl bg-white border-0 text-sm" />
+              <Label htmlFor={`medical-${i}`} className="text-sm font-semibold">Medical Conditions</Label>
+              <Input id={`medical-${i}`}
+                    value={t.medicalConditions} onChange={(e) => onUpdate(i, { medicalConditions: e.target.value })} placeholder="None / Asthma / Diabetes" className="h-12 rounded-xl bg-white border-0 text-sm" />
             </div>
           </div>
         </div>

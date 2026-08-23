@@ -33,9 +33,13 @@ export function SharedFormHeader({
         <h1 className="mb-3 text-2xl font-bold text-white sm:text-3xl">
           Tell us who is travelling
         </h1>
-        <p className="mb-5 max-w-lg text-sm text-white/60">
-          We use this to arrange your stay, food and pickup. You can close this
-          page and come back to the same link.
+        {/* The old copy said you could close the page and come back, which
+            implies the answers are held. Nothing is stored until Submit, so it
+            promised something the form does not do. */}
+        <p className="mb-5 max-w-lg text-sm text-white/85">
+          We use this to arrange your stay, food and pickup. The link stays
+          valid, so you can return to it, but fill it in one sitting: your
+          answers are only saved when you submit.
         </p>
         <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-white/70">
           <span className="inline-flex items-center gap-1.5">

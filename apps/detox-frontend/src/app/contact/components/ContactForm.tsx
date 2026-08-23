@@ -19,6 +19,13 @@ export function ContactForm() {
     defaultValues: { name: "", email: "", subject: "", message: "" },
   });
 
+  /**
+   * The in-flight guard used to be released only on the error path, so after
+   * one successful send sendingRef stayed true forever. "Send Another Message"
+   * cleared the form but not the ref, so the next submit returned at the guard:
+   * no request, no error, no spinner, and the enquiry was silently dropped for
+   * the rest of the session. Released in a finally instead.
+   */
   const handleSubmit = async (data: ContactFormValues) => {
     if (sendingRef.current) return;
     sendingRef.current = true;
@@ -28,6 +35,7 @@ export function ContactForm() {
       setSent(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    } finally {
       sendingRef.current = false;
     }
   };
@@ -40,7 +48,7 @@ export function ContactForm() {
         </div>
         <h3 className="text-2xl font-bold mb-3">Message Sent!</h3>
         <p className="text-muted-foreground max-w-sm mb-6">Thank you for reaching out. We will get back to you within 24 hours.</p>
-        <Button variant="outline" onClick={() => { setSent(false); setError(null); form.reset(); }} className="rounded-full h-11 px-6">
+        <Button variant="outline" onClick={() => { setSent(false); setError(null); sendingRef.current = false; form.reset(); }} className="rounded-full h-11 px-6">
           Send Another Message
         </Button>
       </motion.div>

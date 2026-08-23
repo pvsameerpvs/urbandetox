@@ -66,10 +66,11 @@ export function TravelerCard({ traveler, index, isExpanded, onToggle, onUpdate }
         <div className="px-4 pb-4 sm:px-5 sm:pb-5 space-y-4 border-t border-border/20 pt-4">
           {/* Name */}
           <div className="space-y-1.5">
-            <Label className="text-sm font-semibold">Full Name</Label>
+            <Label htmlFor={`tc-name-${index}`} className="text-sm font-semibold">Full Name</Label>
             <div className="relative">
               <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
+                id={`tc-name-${index}`}
                 value={traveler.name}
                 onChange={(e) => onUpdate({ name: e.target.value })}
                 placeholder="Full name"
@@ -80,10 +81,11 @@ export function TravelerCard({ traveler, index, isExpanded, onToggle, onUpdate }
 
           {/* Phone */}
           <div className="space-y-1.5">
-            <Label className="text-sm font-semibold">Phone Number</Label>
+            <Label htmlFor={`tc-phone-${index}`} className="text-sm font-semibold">Phone Number</Label>
             <div className="relative">
               <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
+                id={`tc-phone-${index}`}
                 value={traveler.phone}
                 onChange={(e) => onUpdate({ phone: e.target.value })}
                 type="tel"
@@ -95,9 +97,9 @@ export function TravelerCard({ traveler, index, isExpanded, onToggle, onUpdate }
 
           {/* Food Preference */}
           <div className="space-y-1.5">
-            <Label className="text-sm font-semibold">Food Preference</Label>
+            <Label htmlFor={`tc-food-${index}`} className="text-sm font-semibold">Food Preference</Label>
             <Select value={traveler.foodPreference} onValueChange={(v) => onUpdate({ foodPreference: v ?? "" })}>
-              <SelectTrigger className="h-12 rounded-xl bg-secondary/40 border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20">
+              <SelectTrigger id={`tc-food-${index}`} className="h-12 rounded-xl bg-secondary/40 border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
@@ -110,9 +112,10 @@ export function TravelerCard({ traveler, index, isExpanded, onToggle, onUpdate }
 
           {/* Allergies */}
           <div className="space-y-1.5">
-            <Label className="text-sm font-semibold">Allergies (if any)</Label>
+            <Label htmlFor={`tc-allergies-${index}`} className="text-sm font-semibold">Allergies (if any)</Label>
             <Input
-              value={traveler.allergies}
+              id={`tc-allergies-${index}`}
+                value={traveler.allergies}
               onChange={(e) => onUpdate({ allergies: e.target.value })}
               placeholder="None / Nuts / Gluten"
               className="h-12 rounded-xl bg-secondary/40 border-0 text-sm focus-visible:ring-2 focus-visible:ring-brand/20"

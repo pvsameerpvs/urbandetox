@@ -21,7 +21,9 @@ export function SuccessHero() {
         Thank <span className="text-brand">You</span>
       </h1>
       <p className="text-base text-muted-foreground max-w-md mx-auto">
-        Your detox is confirmed. We have sent a summary to your phone and email.
+        {/* No SMS or WhatsApp message is sent anywhere in the codebase; the
+            confirmation goes out by email through Resend. */}
+        Your detox is confirmed. A summary is on its way to your email.
       </p>
     </motion.div>
   );

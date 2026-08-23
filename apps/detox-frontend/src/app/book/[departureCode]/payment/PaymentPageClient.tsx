@@ -485,7 +485,16 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
             </div>
 
             <AnimatePresence mode="wait">
-              <PaymentStatusAlert status={status} message={errorMessage} />
+              <PaymentStatusAlert
+                status={status}
+                message={errorMessage}
+                successTitle={method === "cod" ? "Seat reserved" : undefined}
+                successDetail={
+                  method === "cod"
+                    ? "Nothing has been charged. You pay in cash at the meeting point."
+                    : undefined
+                }
+              />
             </AnimatePresence>
 
             {unavailableReason && (

@@ -27,10 +27,14 @@ export function SuccessPageClient({ departure, pkg, dest }: SuccessPageClientPro
   const [resumeStep, setResumeStep] = useState<number | undefined>();
   const hydrated = useHydrated();
 
+  const [payLater, setPayLater] = useState(false);
+
   useEffect(() => {
     const saved = loadBookingState(departure.code);
     if (saved) {
       startTransition(() => setTravelerCount(saved.travelers.length));
+      // Pay on Arrival collects nothing now, so "Total Paid" would be a lie.
+      setPayLater(saved.paymentStatus === "cod");
     }
   }, [departure.code]);
 
@@ -48,7 +52,13 @@ export function SuccessPageClient({ departure, pkg, dest }: SuccessPageClientPro
           setDetailsState("complete");
         }
       })
-      .catch(() => active && setDetailsState("complete"));
+      /*
+       * Was setDetailsState("complete"). A failed lookup then told the
+       * customer we already had their traveller details when we may have
+       * nothing. Falling back to "pending" asks someone who has already
+       * filled it in to check, which is the harmless direction to be wrong in.
+       */
+      .catch(() => active && setDetailsState("pending"));
     return () => {
       active = false;
     };
@@ -105,7 +115,7 @@ export function SuccessPageClient({ departure, pkg, dest }: SuccessPageClientPro
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Total Paid</span>
+                <span className="text-muted-foreground">{payLater ? "Total due at pickup" : "Total Paid"}</span>
                 <span className="font-bold text-brand">
                   {hydrated ? formatPrice(totalPaid) : <span className="inline-block h-5 w-20 bg-secondary rounded animate-pulse" />}
                 </span>

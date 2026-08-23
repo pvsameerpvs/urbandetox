@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { fetchDestinations, fetchFilteredPackages, type PackageFilters } from "@/lib/api";
+import { fetchDestinations, fetchFilteredPackages, fetchPackages, type PackageFilters } from "@/lib/api";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildTripCollectionNodes } from "@/lib/seo/collection";
 import { buildBreadcrumbNode } from "@/lib/seo/breadcrumb";
@@ -46,14 +46,22 @@ export default async function DetoxBrowsePage({ searchParams }: PageProps) {
     budget,
   };
 
-  const [destinations, packages] = await Promise.all([
+  const [destinations, packages, allPackages] = await Promise.all([
     fetchDestinations().catch(() => []),
     fetchFilteredPackages(filters).catch(() => []),
+    // Unfiltered, for the duration chips and the browse-by-destination counts.
+    fetchPackages().catch(() => []),
   ]);
 
-  const durations = Array.from(new Set(packages.map((p) => p.duration)))
-    .concat([2, 3, 5, 6])
-    .filter((d, i, a) => a.indexOf(d) === i)
+  /**
+   * Only durations that a live trip actually has. This used to concat a
+   * hardcoded [2, 3, 5, 6], so the bar shipped a "5 Days" chip that could
+   * never match anything and always returned an empty result set. Derived from
+   * allPackages, not the filtered list, so the chips do not vanish as you
+   * filter.
+   */
+  const durations = Array.from(new Set(allPackages.map((p) => p.duration)))
+    .filter((d) => Number.isFinite(d) && d > 0)
     .sort((a, b) => a - b);
 
   // Any active filter narrows the rendered list, so the enumerating ItemList is
@@ -119,7 +127,10 @@ export default async function DetoxBrowsePage({ searchParams }: PageProps) {
               <DestinationBrowseCard
                 key={dest.slug}
                 destination={dest}
-                packageCount={packages.filter((p) => p.destinationSlug === dest.slug).length}
+                /* Counted from allPackages: using the filtered list made these
+                   cards claim a destination had 0 trips whenever a filter
+                   excluded them, which is not what the card says. */
+                packageCount={allPackages.filter((p) => p.destinationSlug === dest.slug).length}
               />
             ))}
           </div>

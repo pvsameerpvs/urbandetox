@@ -1,10 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Send } from "lucide-react";
+import { Loader2, Send } from "lucide-react";
 import { Button } from "@urbandetox/ui";
 import type { CommonDetails, Traveler } from "@urbandetox/utils";
 import { fetchSharedForm, submitSharedForm } from "@/lib/api";
+import { createCompanionTraveler } from "@/lib/booking-factory";
 import { SharedFormHeader } from "./SharedFormHeader";
 import { SharedTravelerCard } from "./SharedTravelerCard";
 import { SharedGroupCard } from "./SharedGroupCard";
@@ -21,6 +22,7 @@ export function SharedFormClient({ token }: { token: string }) {
   });
   const [saveError, setSaveError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  const [saving, setSaving] = useState(false);
   const savingRef = useRef(false);
 
   useEffect(() => {
@@ -29,7 +31,19 @@ export function SharedFormClient({ token }: { token: string }) {
       .then((d) => {
         if (!active) return;
         setData(d);
-        setTravelers(d.travelers ?? []);
+        /*
+         * A booking whose travellers have never been saved comes back with an
+         * empty array, so the page rendered a traveller count in the header and
+         * not one field below it, and Submit would have posted an empty list.
+         * Seed blank rows up to the count that was actually booked.
+         */
+        const existing = d.travelers ?? [];
+        const expected = d.travelerCount ?? existing.length;
+        const seeded = [...existing];
+        for (let i = existing.length; i < expected; i += 1) {
+          seeded.push(i === 0 ? { ...createCompanionTraveler(0), type: "primary" } : createCompanionTraveler(i));
+        }
+        setTravelers(seeded);
         if (d.common) setCommon(d.common);
         if (d.onboardingComplete) setDone(true);
       })
@@ -43,14 +57,28 @@ export function SharedFormClient({ token }: { token: string }) {
 
   const submit = async () => {
     if (savingRef.current) return;
+
+    /*
+     * The form accepted entirely blank travellers and then reported success,
+     * so an admin could receive a booking with no names at all.
+     */
+    const missing = travelers.findIndex((t) => !t.name?.trim() || !t.phone?.trim());
+    if (missing !== -1) {
+      setSaveError(`Please add a name and phone number for traveller ${missing + 1}.`);
+      return;
+    }
+
     savingRef.current = true;
+    setSaving(true);
     setSaveError(null);
     try {
       await submitSharedForm(token, { travelers, common });
       setDone(true);
     } catch (e) {
       setSaveError(e instanceof Error ? e.message : "Could not save your details");
+    } finally {
       savingRef.current = false;
+      setSaving(false);
     }
   };
 
@@ -101,8 +129,16 @@ export function SharedFormClient({ token }: { token: string }) {
 
         {saveError && <p className="rounded-xl bg-red-50 p-3 text-sm text-red-600">{saveError}</p>}
 
-        <Button onClick={submit} className="h-12 w-full rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 font-semibold">
-          <Send className="mr-2 h-4 w-4" /> Submit Details
+        <Button
+          onClick={submit}
+          disabled={saving}
+          className="h-12 w-full rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 font-semibold disabled:opacity-60"
+        >
+          {saving ? (
+            <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending</>
+          ) : (
+            <><Send className="mr-2 h-4 w-4" /> Submit Details</>
+          )}
         </Button>
       </div>
     </div>

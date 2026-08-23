@@ -43,10 +43,11 @@ export function StepEmergencyContacts({ travelers, onUpdate, common, onUpdateCom
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label className="text-sm font-semibold">Emergency Name</Label>
+                <Label htmlFor={`ename-${i}`} className="text-sm font-semibold">Emergency Name</Label>
                 <div className="relative">
                   <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
+                    id={`ename-${i}`}
                     value={t.emergencyName}
                     onChange={(e) => onUpdate(i, { emergencyName: e.target.value })}
                     placeholder="Name"
@@ -56,10 +57,11 @@ export function StepEmergencyContacts({ travelers, onUpdate, common, onUpdateCom
                 {emergNameErr && <p className="text-red-500 text-xs mt-1">{emergNameErr}</p>}
               </div>
               <div className="space-y-1.5">
-                <Label className="text-sm font-semibold">Emergency Phone</Label>
+                <Label htmlFor={`ephone-${i}`} className="text-sm font-semibold">Emergency Phone</Label>
                 <div className="relative">
                   <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
+                    id={`ephone-${i}`}
                     value={t.emergencyPhone}
                     onChange={(e) => onUpdate(i, { emergencyPhone: e.target.value })}
                     placeholder="Phone"
@@ -69,11 +71,11 @@ export function StepEmergencyContacts({ travelers, onUpdate, common, onUpdateCom
                 {emergPhoneErr && <p className="text-red-500 text-xs mt-1">{emergPhoneErr}</p>}
               </div>
               <div className="space-y-1.5 sm:col-span-2">
-                <Label className="text-sm font-semibold">Relationship</Label>
+                <Label htmlFor={`erel-${i}`} className="text-sm font-semibold">Relationship</Label>
                 <div className="relative">
                   <Heart className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
                   <Select value={t.emergencyRelation} onValueChange={(v) => onUpdate(i, { emergencyRelation: v ?? "" })}>
-                    <SelectTrigger className={`h-12 pl-11 rounded-xl bg-white border-0 text-sm ${emergRelErr ? "ring-2 ring-red-400" : ""}`}>
+                    <SelectTrigger id={`erel-${i}`} className={`h-12 pl-11 rounded-xl bg-white border-0 text-sm ${emergRelErr ? "ring-2 ring-red-400" : ""}`}>
                       <SelectValue placeholder="Select relationship" />
                     </SelectTrigger>
                     <SelectContent>

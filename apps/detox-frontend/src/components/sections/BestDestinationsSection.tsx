@@ -8,12 +8,15 @@ import { cn, safeImageUrl } from "@urbandetox/utils";
 import type { Destination } from "@urbandetox/utils";
 import { Badge } from "@urbandetox/ui"
 
-const destMeta: Record<string, { label: string; featured?: boolean }> = {
-  kodaikanal: { label: "Signature", featured: true },
-  "north-kerala": { label: "Trending" },
-  gokarna: { label: "Coastal" },
-  kashmir: { label: "Premium" },
-};
+/*
+ * A hardcoded badge map used to live here, keyed on "kodaikanal",
+ * "north-kerala", "gokarna" and "kashmir". None of those are real slugs (they
+ * are kodai-detox, north-kerala-detox, gokarna-detox, and there is no kashmir),
+ * and only one entry set featured: true, so not one badge could ever render.
+ * Destination has no featured field to drive it from, and inventing an
+ * editorial label per destination is not this component's job. The card
+ * already shows the real `vibe` in its footer row.
+ */
 
 interface BestDestinationsSectionProps {
   destinations: Destination[];
@@ -29,8 +32,6 @@ function DestinationCard({
   index: number;
   count: number;
 }) {
-  const meta = destMeta[destination.slug] || {};
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
@@ -58,11 +59,6 @@ function DestinationCard({
 
             <div className="absolute inset-0 p-5 sm:p-6 flex flex-col justify-between">
               <div className="flex items-start justify-between">
-                {meta.featured && (
-                  <Badge className="bg-brand text-brand-foreground text-[10px] font-bold border-0 shadow-lg">
-                    {meta.label}
-                  </Badge>
-                )}
                 <div className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-black/40 backdrop-blur-sm px-2.5 py-1 text-[10px] font-semibold text-white">
                   <Images className="h-3 w-3" />
                   {(destination.gallery ?? []).length} photos

@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { DestinationPackageCard } from "./DestinationPackageCard";
+import { isDepartureListable } from "@/lib/departure-availability";
 import type { Destination } from "@urbandetox/utils";
 import type { Package, Departure } from "@urbandetox/utils";
 
@@ -21,7 +22,12 @@ export function DestinationPackages({ destination, packages, upcoming }: Destina
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {packages.map((pkg, index) => {
-          const pkgUpcoming = upcoming.filter((d) => d.packageSlug === pkg.slug);
+          // Cancelled and postponed departures were counted as upcoming and
+          // badged as available. isDepartureListable drops those and anything
+          // already past.
+          const pkgUpcoming = upcoming.filter(
+            (d) => d.packageSlug === pkg.slug && isDepartureListable(d)
+          );
           const nextDep = pkgUpcoming[0];
           return (
             <motion.div

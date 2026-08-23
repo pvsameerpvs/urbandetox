@@ -18,10 +18,13 @@ export function DestinationBrowseCard({ destination, packageCount }: Destination
 
   return (
     <motion.div
-      variants={{
-        hidden: { opacity: 0, y: 30 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
-      }}
+      /* These variants never ran: nothing above this card sets initial/animate
+         on a parent, so there was no orchestrator to resolve "hidden" or
+         "visible" against. Driven directly instead. */
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
     >
       <Link href={`/detox/${destination.slug}`} className="group block">
         <Card className="overflow-hidden border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl !gap-0 !py-0 hover:shadow-xl transition-all duration-500">
@@ -41,7 +44,7 @@ export function DestinationBrowseCard({ destination, packageCount }: Destination
               </div>
               <h3 className="text-xl sm:text-2xl font-bold text-white mb-1">{destination.name}</h3>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-white/70">{count} detox{count > 1 ? "es" : ""}</span>
+                <span className="text-sm text-white/85">{count} {count === 1 ? "detox" : "detoxes"}</span>
                 <span className="text-sm font-semibold text-brand-on-media inline-flex items-center gap-1 group-hover:gap-2 transition-all">
                   Explore <ArrowRight className="h-4 w-4" />
                 </span>

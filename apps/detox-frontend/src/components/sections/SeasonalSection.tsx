@@ -42,6 +42,7 @@ export function SeasonalSection({ groups, destMap }: SeasonalSectionProps) {
 
         {groups.map(({ tag, label, iconName, packages }) => (
           <SeasonalRow
+            tag={tag}
             key={tag}
             label={label}
             icon={getIconComponent(iconName)}

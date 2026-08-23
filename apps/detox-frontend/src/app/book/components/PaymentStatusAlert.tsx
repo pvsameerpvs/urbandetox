@@ -9,9 +9,17 @@ type PaymentStatus = "idle" | "processing" | "success" | "review" | "uncertain" 
 interface PaymentStatusAlertProps {
   status: PaymentStatus;
   message?: string;
+  /**
+   * Overrides the success headline. Pay on Arrival routes through the same
+   * "success" status as a card payment, and this panel used to hardcode
+   * "Payment successful!" for both, telling people they had paid when no money
+   * had been collected.
+   */
+  successTitle?: string;
+  successDetail?: string;
 }
 
-export function PaymentStatusAlert({ status, message }: PaymentStatusAlertProps) {
+export function PaymentStatusAlert({ status, message, successTitle, successDetail }: PaymentStatusAlertProps) {
   if (status === "idle") return null;
 
   if (status === "success") {
@@ -28,8 +36,10 @@ export function PaymentStatusAlert({ status, message }: PaymentStatusAlertProps)
               <CheckCircle2 className="h-6 w-6 text-emerald-600" />
             </div>
             <div>
-              <p className="font-bold text-emerald-800">Payment successful!</p>
-              <p className="text-sm text-emerald-700">Redirecting to onboarding...</p>
+              <p className="font-bold text-emerald-800">{successTitle ?? "Payment successful!"}</p>
+              {/* The old copy said "Redirecting to onboarding...", but finish()
+                  sends everyone to /book/<code>/success. */}
+              <p className="text-sm text-emerald-700">{successDetail ?? "Taking you to your confirmation..."}</p>
             </div>
             <Loader2 className="ml-auto h-5 w-5 text-emerald-600 animate-spin" />
           </CardContent>

@@ -33,10 +33,11 @@ export function StepReviewTravelers({ travelers, onUpdate }: StepReviewTravelers
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label className="text-sm font-semibold">Name</Label>
+                <Label htmlFor={`tname-${i}`} className="text-sm font-semibold">Name</Label>
                 <div className="relative">
                   <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
+                    id={`tname-${i}`}
                     value={t.name}
                     onChange={(e) => onUpdate(i, { name: e.target.value })}
                     className={`h-12 pl-11 rounded-xl bg-white border-0 text-sm ${nameError ? "ring-2 ring-red-400" : ""}`}
@@ -45,10 +46,11 @@ export function StepReviewTravelers({ travelers, onUpdate }: StepReviewTravelers
                 {nameError && <p className="text-red-500 text-xs mt-1">{nameError}</p>}
               </div>
               <div className="space-y-1.5">
-                <Label className="text-sm font-semibold">Phone</Label>
+                <Label htmlFor={`tphone-${i}`} className="text-sm font-semibold">Phone</Label>
                 <div className="relative">
                   <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
+                    id={`tphone-${i}`}
                     value={t.phone}
                     onChange={(e) => onUpdate(i, { phone: e.target.value })}
                     className={`h-12 pl-11 rounded-xl bg-white border-0 text-sm ${phoneError ? "ring-2 ring-red-400" : ""}`}

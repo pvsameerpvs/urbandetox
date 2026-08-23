@@ -56,3 +56,21 @@ export function getDepartureBookingUnavailableReason(
 export function isDepartureBookable(departure: DepartureAvailabilityInput) {
   return !getDepartureBookingUnavailableReason(departure);
 }
+
+/**
+ * Whether a departure belongs in a listing at all.
+ *
+ * Weaker than isDepartureBookable on purpose: a full departure is still worth
+ * showing, because it tells a visitor the trip is real and in demand. A
+ * cancelled, postponed, finished or past one is not, and showing it as an
+ * "upcoming" card with a live CTA is simply wrong.
+ */
+export function isDepartureListable(
+  departure: DepartureAvailabilityInput,
+  todayKey = getTodayDateKey()
+) {
+  if (departure.tripStatus === "canceled") return false;
+  if (departure.tripStatus === "postponed") return false;
+  if (departure.tripStatus === "finished") return false;
+  return departure.startDate >= todayKey;
+}

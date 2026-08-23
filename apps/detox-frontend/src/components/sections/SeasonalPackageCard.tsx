@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { formatPrice, safeImageUrl } from "@urbandetox/utils";
+import { formatPrice, safeImageUrl, getDurationLabel } from "@urbandetox/utils";
 import { Clock } from "lucide-react";
 import type { Package } from "@urbandetox/utils";
 import type { Destination } from "@urbandetox/utils";
@@ -35,11 +35,11 @@ export function SeasonalPackageCard({ pkg, dest, index }: SeasonalPackageCardPro
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
             <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1.5">
-              <span className="text-[10px] font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">
+              <span className="text-[10px] font-bold text-white bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded-full">
                 {dest.name}
               </span>
-              <span className="text-[10px] font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full inline-flex items-center gap-1">
-                <Clock className="h-2.5 w-2.5" /> {pkg.duration}
+              <span className="text-[10px] font-bold text-white bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                <Clock className="h-2.5 w-2.5" /> {getDurationLabel(pkg.duration)}
               </span>
             </div>
           </div>
