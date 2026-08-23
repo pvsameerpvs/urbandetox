@@ -55,7 +55,15 @@ export function SuccessPageClient({ departure, pkg, dest }: SuccessPageClientPro
   }, [departure.code]);
 
   const pricePerPerson = departure.offerPrice ?? departure.price;
-  const totalPaid = pricePerPerson * travelerCount;
+  const subtotal = pricePerPerson * travelerCount;
+  /**
+   * The 5% GST is real: payments.ts computes it and stores gst_paise, and the
+   * booking, payment and onboarding screens all show a "GST (5%)" line. This
+   * page was reporting the bare subtotal as "Total Paid", understating what
+   * the customer was actually charged.
+   */
+  const gst = Math.round(subtotal * 0.05);
+  const totalPaid = subtotal + gst;
 
   return (
     <main className="min-h-screen bg-white py-10 sm:py-14">
@@ -84,6 +92,18 @@ export function SuccessPageClient({ departure, pkg, dest }: SuccessPageClientPro
                 </div>
               ))}
               <Separator />
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Subtotal</span>
+                <span className="font-medium">
+                  {hydrated ? formatPrice(subtotal) : <span className="inline-block h-4 w-16 bg-secondary rounded animate-pulse" />}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">GST (5%)</span>
+                <span className="font-medium">
+                  {hydrated ? formatPrice(gst) : <span className="inline-block h-4 w-14 bg-secondary rounded animate-pulse" />}
+                </span>
+              </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Total Paid</span>
                 <span className="font-bold text-brand">

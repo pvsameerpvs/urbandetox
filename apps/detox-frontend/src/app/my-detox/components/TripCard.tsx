@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Progress } from "@/components/ui/progress";
 import { format, parseISO } from "date-fns";
 import { cn, safeImageUrl, whatsappLink } from "@urbandetox/utils";
-import { Calendar, MapPin, CheckCircle2, AlertCircle, ArrowRight, Wallet, ImageIcon, MessageCircle } from "lucide-react";
+import { Calendar, MapPin, CheckCircle2, AlertCircle, ArrowRight, Wallet, ImageIcon, MessageCircle, Clock3 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Card, CardContent, Badge, Button } from "@urbandetox/ui"
 import { MemoriesLightbox } from "./MemoriesLightbox";
@@ -103,9 +103,19 @@ export function TripCard({ trip, index, highlighted }: TripCardProps) {
                         <AlertCircle className="h-3 w-3" /> Payment review
                       </span>
                     ) : (
-                      <span className={cn("text-[11px] inline-flex items-center gap-1", trip.paymentStatus === "paid" ? "text-emerald-600" : "text-muted-foreground")}>
-                        <CheckCircle2 className="h-3 w-3" /> Paid
-                      </span>
+                      /* This branch printed a tick and the word "Paid" for
+                         every booking, changing only the colour when payment
+                         was still pending. Colour alone is not a status, and
+                         it told customers they had paid when they had not. */
+                      trip.paymentStatus === "paid" ? (
+                        <span className="text-[11px] inline-flex items-center gap-1 text-emerald-600">
+                          <CheckCircle2 className="h-3 w-3" /> Paid
+                        </span>
+                      ) : (
+                        <span className="text-[11px] inline-flex items-center gap-1 text-amber-600">
+                          <Clock3 className="h-3 w-3" /> Payment pending
+                        </span>
+                      )
                     )}
                     {isPaymentReview ? (
                       <span className="text-[11px] inline-flex items-center gap-1 text-muted-foreground">
