@@ -4,13 +4,14 @@ import { useState, useEffect, startTransition } from "react";
 ;
 ;
 import { SuccessHero, SuccessActions } from "../../components/SuccessHero";
+import { TravellerDetailsCard } from "../../components/TravellerDetailsCard";
 import { NextStepsGrid } from "../../components/NextStepsGrid";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { loadBookingState } from "@/lib/booking-storage";
+import { fetchBookingNextStep } from "@/lib/api";
 import { formatPrice, formatDateRange } from "@urbandetox/utils";
 ;
-import { CheckCircle2, FileCheck } from "lucide-react";
-import { Card, CardContent, Separator, Badge } from "@urbandetox/ui"
+import { Card, CardContent, Separator } from "@urbandetox/ui"
 import type { Departure, Package, Destination } from "@urbandetox/utils";
 
 interface SuccessPageClientProps {
@@ -21,6 +22,9 @@ interface SuccessPageClientProps {
 
 export function SuccessPageClient({ departure, pkg, dest }: SuccessPageClientProps) {
   const [travelerCount, setTravelerCount] = useState(1);
+  const [detailsState, setDetailsState] =
+    useState<"loading" | "pending" | "complete">("loading");
+  const [resumeStep, setResumeStep] = useState<number | undefined>();
   const hydrated = useHydrated();
 
   useEffect(() => {
@@ -28,6 +32,26 @@ export function SuccessPageClient({ departure, pkg, dest }: SuccessPageClientPro
     if (saved) {
       startTransition(() => setTravelerCount(saved.travelers.length));
     }
+  }, [departure.code]);
+
+  // Traveller details are optional now, so the card has to reflect what the
+  // server actually has rather than assuming the form was already completed.
+  useEffect(() => {
+    let active = true;
+    fetchBookingNextStep(departure.code)
+      .then((next) => {
+        if (!active) return;
+        if (next.action === "complete_onboarding") {
+          setResumeStep(next.onboardingStep > 1 ? next.onboardingStep : undefined);
+          setDetailsState("pending");
+        } else {
+          setDetailsState("complete");
+        }
+      })
+      .catch(() => active && setDetailsState("complete"));
+    return () => {
+      active = false;
+    };
   }, [departure.code]);
 
   const pricePerPerson = departure.offerPrice ?? departure.price;
@@ -70,22 +94,11 @@ export function SuccessPageClient({ departure, pkg, dest }: SuccessPageClientPro
           </CardContent>
         </Card>
 
-        <Card className="border-0 shadow-lg shadow-black/[0.03] bg-emerald-50 rounded-2xl mb-8">
-          <CardContent className="p-5 sm:p-6">
-            <div className="flex items-start gap-4">
-              <div className="inline-flex items-center justify-center rounded-xl bg-emerald-100 p-2.5 shrink-0">
-                <FileCheck className="h-5 w-5 text-emerald-600" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="text-sm font-bold">All Set for Your Trip</h3>
-                  <Badge className="bg-emerald-100 text-emerald-700 border-0 text-[10px] font-medium"><CheckCircle2 className="mr-1 h-3 w-3" /> Onboarding Done</Badge>
-                </div>
-                <p className="text-xs text-muted-foreground leading-relaxed">We have your traveler details, health info, emergency contacts, and travel preferences. You can view or edit them anytime in My Detox.</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <TravellerDetailsCard
+          departureCode={departure.code}
+          state={detailsState}
+          resumeStep={resumeStep}
+        />
 
         <div className="space-y-4 mb-10">
           <div className="flex items-center gap-3 mb-1">

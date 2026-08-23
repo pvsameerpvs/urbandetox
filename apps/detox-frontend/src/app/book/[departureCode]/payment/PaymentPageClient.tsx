@@ -130,7 +130,9 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
       save({ ...patch, paymentConfirmationPending: false });
       setStatus("success");
       setTimeout(() => {
-        window.location.href = `/book/${code}/onboarding`;
+        // Payment completes the booking. Traveller details are optional and are
+        // offered on the success page and in the confirmation email.
+        window.location.href = `/book/${code}/success`;
       }, 1200);
     },
     [code, save]
@@ -155,7 +157,7 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
             paymentStatus: nextStep.paymentStatus,
             onboardingStep: nextStep.onboardingStep,
           });
-          window.location.href = `/book/${code}/onboarding?step=${nextStep.onboardingStep}`;
+          window.location.href = `/book/${code}/success`;
           return;
         }
 
