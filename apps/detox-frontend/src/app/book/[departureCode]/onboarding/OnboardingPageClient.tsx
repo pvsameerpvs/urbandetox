@@ -18,6 +18,7 @@ import { StepFinalConfirm } from "./steps/StepFinalConfirm";
 import { slideVariants } from "@/lib/animations";
 import { type Traveler, type CommonDetails, type Departure, type Package, type Destination } from "@urbandetox/utils";
 import { useBooking } from "@/hooks/use-booking";
+import { createCompanionTraveler } from "@/lib/booking-factory";
 import { formatDateRange } from "@urbandetox/utils";
 import { updateBookingOnboarding, saveOnboardingProgress, fetchOnboardingProgress, fetchMyBookings } from "@/lib/api";
 import { onboardingFormSchema, type OnboardingFormValues, getStepFieldPaths } from "@/lib/onboarding-schema";
@@ -46,6 +47,7 @@ export function OnboardingPageClient({ code, departure, pkg, dest }: OnboardingP
   const [travelers, setTravelers] = useState<Traveler[]>([]);
   const [common, setCommon] = useState<CommonDetails>({ groupNote: "", modeOfArrival: "", needsTravelHelp: false });
   const [loadedFromServer, setLoadedFromServer] = useState(false);
+  const [bookedTravelerCount, setBookedTravelerCount] = useState(0);
   const [hydrated, setHydrated] = useState(false);
 
   const form = useForm<OnboardingFormValues>({
@@ -127,10 +129,11 @@ export function OnboardingPageClient({ code, departure, pkg, dest }: OnboardingP
     const resolveBooking = async () => {
       try {
         const data = await fetchMyBookings();
-        const found = (data as Array<{ id: string; bookingCode: string }>)
+        const found = (data as Array<{ id: string; bookingCode: string; travelerCount?: number }>)
           .find((b) => b.bookingCode === code);
         if (found && active) {
           setResolvedBookingId(found.id);
+          setBookedTravelerCount(found.travelerCount ?? 0);
           save({ bookingId: found.id });
         }
       } catch {
@@ -171,6 +174,37 @@ export function OnboardingPageClient({ code, departure, pkg, dest }: OnboardingP
       setLoadedFromServer(true);
     })();
   }, [bookingId, loadedFromServer, stepParam, form]);
+
+  /**
+   * Last-resort seeding.
+   *
+   * travelers is only filled from localStorage or from saved server progress.
+   * Open the onboarding link on a different device before anything has been
+   * saved and both are empty, so the form rendered no traveller fields at all
+   * and could never be completed. Seed blank rows from the count that was
+   * actually booked.
+   */
+  useEffect(() => {
+    if (travelers.length > 0) return;
+    if (!loadedFromServer || !bookingLookupComplete) return;
+    if (bookedTravelerCount < 1) return;
+    const timer = window.setTimeout(() => {
+      const seeded = Array.from({ length: bookedTravelerCount }, (_, i) =>
+        i === 0
+          ? { ...createCompanionTraveler(0), type: "primary" as const }
+          : createCompanionTraveler(i)
+      );
+      setTravelers(seeded);
+      form.reset({
+        travelers: seeded,
+        groupNote: common.groupNote,
+        modeOfArrival: common.modeOfArrival,
+        needsTravelHelp: common.needsTravelHelp,
+        confirmed: false as unknown as true,
+      });
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [travelers.length, loadedFromServer, bookingLookupComplete, bookedTravelerCount, common, form]);
 
   useEffect(() => {
     if (prevStep.current !== step) {
