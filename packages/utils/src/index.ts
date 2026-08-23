@@ -12,3 +12,4 @@ export * from "./departures";
 export * from "./faqs";
 export * from "./testimonials";
 export * from "./settings";
+export * from "./taxonomy";

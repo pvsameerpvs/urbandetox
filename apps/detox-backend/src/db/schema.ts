@@ -37,6 +37,15 @@ export const destinations = pgTable("destinations", {
   seoTitle: text("seo_title"),
   seoDescription: text("seo_description"),
   codePrefix: varchar("code_prefix", { length: 10 }),
+  state: varchar("state", { length: 100 }),
+  country: varchar("country", { length: 100 }).default("India"),
+  bestTimeToVisit: varchar("best_time_to_visit", { length: 255 }),
+  travelTimeFromBangalore: varchar("travel_time_from_bangalore", { length: 100 }),
+  /** hills | beach | forest | backwater | coastal | desert */
+  destinationTypes: jsonb("destination_types").$type<string[]>().default([]),
+  imageAlt: text("image_alt"),
+  /** active | hidden | coming_soon */
+  status: varchar("status", { length: 20 }).notNull().default("active"),
 });
 
 export const packages = pgTable("packages", {
@@ -69,6 +78,43 @@ export const packages = pgTable("packages", {
   featured: boolean("featured").notNull().default(false),
   seasonalTag: varchar("seasonal_tag", { length: 100 }),
   itineraryPdf: text("itinerary_pdf"),
+
+  // ── filter facets ──
+  /** solo | family | couples | corporate | college | b2b */
+  audiences: jsonb("audiences").$type<string[]>().default([]),
+  /** adventure | wellness | relaxation | culture | party */
+  themes: jsonb("themes").$type<string[]>().default([]),
+  /** beach | mountains | forest | backwater */
+  terrains: jsonb("terrains").$type<string[]>().default([]),
+  isDomestic: boolean("is_domestic").notNull().default(true),
+  isWeekend: boolean("is_weekend").notNull().default(false),
+  /** easy | moderate | active */
+  fitnessLevel: varchar("fitness_level", { length: 20 }),
+
+  // ── logistics ──
+  pickupPoint: varchar("pickup_point", { length: 255 }),
+  dropPoint: varchar("drop_point", { length: 255 }),
+  pickupTime: varchar("pickup_time", { length: 10 }),
+  returnTime: varchar("return_time", { length: 10 }),
+  pickupMapImage: text("pickup_map_image"),
+  pickupMapUrl: text("pickup_map_url"),
+  transportType: varchar("transport_type", { length: 100 }),
+  stayType: varchar("stay_type", { length: 100 }),
+  roomSharing: varchar("room_sharing", { length: 100 }),
+  mealPlan: varchar("meal_plan", { length: 255 }),
+
+  // ── trust and pre-trip info ──
+  womenFriendly: boolean("women_friendly").notNull().default(true),
+  soloFriendly: boolean("solo_friendly").notNull().default(true),
+  whatToPack: jsonb("what_to_pack").$type<string[]>().default([]),
+  thingsToKnow: jsonb("things_to_know").$type<string[]>().default([]),
+  cancellationPolicy: text("cancellation_policy"),
+
+  // ── SEO and lifecycle ──
+  seoTitle: text("seo_title"),
+  seoDescription: text("seo_description"),
+  /** draft | live | sold_out | coming_soon */
+  status: varchar("status", { length: 20 }).notNull().default("live"),
 });
 
 export const departures = pgTable("departures", {
@@ -87,6 +133,8 @@ export const departures = pgTable("departures", {
   image: text("image"),
   startTime: varchar("start_time", { length: 10 }),
   endTime: varchar("end_time", { length: 10 }),
+  /** Human label for a batch, e.g. "Long Weekend" or "New Year Batch". */
+  batchLabel: varchar("batch_label", { length: 100 }),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 

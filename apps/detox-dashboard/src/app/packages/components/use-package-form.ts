@@ -30,6 +30,32 @@ export const packageSchema = z.object({
   faqs: z.array(z.object({ question: z.string(), answer: z.string() })),
   itinerary: z.array(itineraryDaySchema).min(1, "At least one day is required"),
   itineraryPdf: z.string().optional(),
+
+  // taxonomy and logistics (all optional so existing flows keep working)
+  audiences: z.array(z.string()),
+  themes: z.array(z.string()),
+  terrains: z.array(z.string()),
+  fitnessLevel: z.string(),
+  isDomestic: z.boolean(),
+  isWeekend: z.boolean(),
+  womenFriendly: z.boolean(),
+  soloFriendly: z.boolean(),
+  status: z.string(),
+  pickupPoint: z.string(),
+  dropPoint: z.string(),
+  pickupTime: z.string(),
+  returnTime: z.string(),
+  pickupMapImage: z.string(),
+  pickupMapUrl: z.string(),
+  transportType: z.string(),
+  stayType: z.string(),
+  roomSharing: z.string(),
+  mealPlan: z.string(),
+  cancellationPolicy: z.string(),
+  whatToPack: z.array(z.string()),
+  thingsToKnow: z.array(z.string()),
+  seoTitle: z.string(),
+  seoDescription: z.string(),
 });
 
 export type PackageFormData = z.infer<typeof packageSchema>;
@@ -51,6 +77,30 @@ interface InitialData {
   faqs?: { question: string; answer: string }[];
   itinerary?: { day: number; title: string; description: string; activities: string[]; image?: string }[];
   itineraryPdf?: string;
+  audiences?: string[] | null;
+  themes?: string[] | null;
+  terrains?: string[] | null;
+  fitnessLevel?: string | null;
+  isDomestic?: boolean;
+  isWeekend?: boolean;
+  womenFriendly?: boolean;
+  soloFriendly?: boolean;
+  status?: string;
+  pickupPoint?: string | null;
+  dropPoint?: string | null;
+  pickupTime?: string | null;
+  returnTime?: string | null;
+  pickupMapImage?: string | null;
+  pickupMapUrl?: string | null;
+  transportType?: string | null;
+  stayType?: string | null;
+  roomSharing?: string | null;
+  mealPlan?: string | null;
+  cancellationPolicy?: string | null;
+  whatToPack?: string[] | null;
+  thingsToKnow?: string[] | null;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
 }
 
 export function usePackageForm(initialDestinationSlug: string, initialData?: InitialData) {
@@ -82,6 +132,31 @@ export function usePackageForm(initialDestinationSlug: string, initialData?: Ini
           image: d.image || "",
         }))
       : [{ day: 1, title: "", description: "", activities: [""], image: "" }],
+
+    audiences: initialData?.audiences ?? [],
+    themes: initialData?.themes ?? [],
+    terrains: initialData?.terrains ?? [],
+    fitnessLevel: initialData?.fitnessLevel ?? "",
+    isDomestic: initialData?.isDomestic ?? true,
+    isWeekend: initialData?.isWeekend ?? false,
+    womenFriendly: initialData?.womenFriendly ?? true,
+    soloFriendly: initialData?.soloFriendly ?? true,
+    status: initialData?.status ?? "live",
+    pickupPoint: initialData?.pickupPoint ?? "Bangalore",
+    dropPoint: initialData?.dropPoint ?? "Bangalore",
+    pickupTime: initialData?.pickupTime ?? "",
+    returnTime: initialData?.returnTime ?? "",
+    pickupMapImage: initialData?.pickupMapImage ?? "",
+    pickupMapUrl: initialData?.pickupMapUrl ?? "",
+    transportType: initialData?.transportType ?? "",
+    stayType: initialData?.stayType ?? "",
+    roomSharing: initialData?.roomSharing ?? "",
+    mealPlan: initialData?.mealPlan ?? "",
+    cancellationPolicy: initialData?.cancellationPolicy ?? "",
+    whatToPack: initialData?.whatToPack ?? [],
+    thingsToKnow: initialData?.thingsToKnow ?? [],
+    seoTitle: initialData?.seoTitle ?? "",
+    seoDescription: initialData?.seoDescription ?? "",
   }), [initialData, initialDestinationSlug, firstTag]);
 
   const form = useForm<PackageFormData>({

@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { useMemo } from "react";
 import { usePackageForm, type PackageFormData } from "@/app/packages/components/use-package-form";
+import { normalizePackagePayload } from "@/app/packages/components/normalize";
 import { BasicInfoFields } from "@/app/packages/components/basic-info-fields";
 import { HighlightsFields } from "@/app/packages/components/highlights-fields";
 import { ArrayInput } from "@/app/packages/components/array-input";
@@ -16,6 +17,8 @@ import { GalleryUpload } from "@/components/shared/GalleryUpload";
 import { FaqsFields } from "@/app/packages/components/faqs-fields";
 import { ItineraryFields } from "@/app/packages/components/itinerary-fields";
 import { PdfUpload } from "@/components/shared/PdfUpload";
+import { TaxonomyFields } from "@/app/packages/components/taxonomy-fields";
+import { LogisticsFields } from "@/app/packages/components/logistics-fields";
 
 export default function EditPackagePage() {
   const params = useParams();
@@ -58,7 +61,7 @@ export default function EditPackagePage() {
     const durationLabel = `${data.duration} Days / ${data.duration - 1} Nights`;
     try {
       await updatePackage(slug, {
-      ...data,
+      ...normalizePackagePayload(data),
       durationLabel,
       highlights: data.highlights.filter(Boolean),
       included: data.included.filter(Boolean),
@@ -144,6 +147,20 @@ export default function EditPackagePage() {
           <CardContent className="p-6">
             <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Itinerary PDF</h3>
             <PdfUpload value={f.form.watch("itineraryPdf") || ""} onChange={(v) => f.form.setValue("itineraryPdf", v, { shouldValidate: true })} folder="packages/itinerary" />
+          </CardContent>
+        </Card>
+
+        <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
+          <CardContent className="p-6">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Filters &amp; Audience</h3>
+            <TaxonomyFields form={f.form} />
+          </CardContent>
+        </Card>
+
+        <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
+          <CardContent className="p-6">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Logistics &amp; SEO</h3>
+            <LogisticsFields form={f.form} />
           </CardContent>
         </Card>
 

@@ -52,7 +52,8 @@ export async function deleteDestination(slug: string): Promise<void> {
 
 // ─── Packages ──────────────────────────────────────
 export async function fetchPackages<T = unknown>(): Promise<T[]> {
-  return api("/api/packages");
+  // status=all so the admin sees drafts and sold-out trips, not just live ones.
+  return api("/api/packages?status=all");
 }
 
 export async function fetchPackageBySlug<T = unknown>(slug: string): Promise<T | undefined> {

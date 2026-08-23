@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+const AUDIENCE_VALUES = ["solo", "family", "couples", "corporate", "college", "b2b"] as const;
+const THEME_VALUES = ["adventure", "wellness", "relaxation", "culture", "party"] as const;
+const TERRAIN_VALUES = ["beach", "mountains", "forest", "backwater"] as const;
+const DESTINATION_TYPE_VALUES = ["hills", "beach", "forest", "backwater", "coastal", "desert"] as const;
+
 // ─── Shared ──────────────────────────────────────
 const slugSchema = z.string().min(1).max(255);
 const uuidSchema = z.string().uuid();
@@ -21,6 +26,13 @@ export const createDestinationBody = z.object({
   seoTitle: z.string().optional(),
   seoDescription: z.string().optional(),
   codePrefix: z.string().min(2).max(10).optional(),
+  state: z.string().max(100).nullish(),
+  country: z.string().max(100).nullish(),
+  bestTimeToVisit: z.string().max(255).nullish(),
+  travelTimeFromBangalore: z.string().max(100).nullish(),
+  destinationTypes: z.array(z.enum(DESTINATION_TYPE_VALUES)).nullish(),
+  imageAlt: z.string().nullish(),
+  status: z.enum(["active", "hidden", "coming_soon"]).optional(),
 });
 
 export const updateDestinationBody = createDestinationBody.partial().omit({ slug: true });
@@ -47,6 +59,34 @@ export const createPackageBody = z.object({
   featured: z.boolean().optional(),
   seasonalTag: z.string().optional(),
   itineraryPdf: z.string().optional(),
+
+  audiences: z.array(z.enum(AUDIENCE_VALUES)).nullish(),
+  themes: z.array(z.enum(THEME_VALUES)).nullish(),
+  terrains: z.array(z.enum(TERRAIN_VALUES)).nullish(),
+  isDomestic: z.boolean().optional(),
+  isWeekend: z.boolean().optional(),
+  fitnessLevel: z.enum(["easy", "moderate", "active"]).nullish(),
+
+  pickupPoint: z.string().max(255).nullish(),
+  dropPoint: z.string().max(255).nullish(),
+  pickupTime: z.string().max(10).nullish(),
+  returnTime: z.string().max(10).nullish(),
+  pickupMapImage: z.string().nullish(),
+  pickupMapUrl: z.string().nullish(),
+  transportType: z.string().max(100).nullish(),
+  stayType: z.string().max(100).nullish(),
+  roomSharing: z.string().max(100).nullish(),
+  mealPlan: z.string().max(255).nullish(),
+
+  womenFriendly: z.boolean().optional(),
+  soloFriendly: z.boolean().optional(),
+  whatToPack: z.array(z.string()).nullish(),
+  thingsToKnow: z.array(z.string()).nullish(),
+  cancellationPolicy: z.string().nullish(),
+
+  seoTitle: z.string().nullish(),
+  seoDescription: z.string().nullish(),
+  status: z.enum(["draft", "live", "sold_out", "coming_soon"]).optional(),
 });
 
 export const updatePackageBody = createPackageBody.partial().omit({ slug: true });
@@ -57,6 +97,19 @@ export const packageSlugParam = z.object({
 export const packageListQuery = z.object({
   destination: z.string().optional(),
   featured: z.enum(["true", "false"]).optional(),
+  // Comma-separated taxonomy values, validated per-item in the controller.
+  audience: z.string().max(200).optional(),
+  theme: z.string().max(200).optional(),
+  terrain: z.string().max(200).optional(),
+  fitness: z.string().max(100).optional(),
+  duration: z.string().max(50).optional(),
+  domestic: z.enum(["true", "false"]).optional(),
+  weekend: z.enum(["true", "false"]).optional(),
+  minPrice: z.string().regex(/^\d+(\.\d+)?$/).optional(),
+  maxPrice: z.string().regex(/^\d+(\.\d+)?$/).optional(),
+  seasonalTag: z.string().max(100).optional(),
+  status: z.enum(["draft", "live", "sold_out", "coming_soon", "all"]).optional(),
+  q: z.string().max(200).optional(),
 });
 
 // ─── Departures ──────────────────────────────────

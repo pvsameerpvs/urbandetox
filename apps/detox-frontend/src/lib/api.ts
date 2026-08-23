@@ -78,6 +78,49 @@ export async function fetchPackageBySlug(
   }
 }
 
+/** Filter values accepted by GET /api/packages. Arrays become comma lists. */
+export interface PackageFilters {
+  destination?: string;
+  audience?: string[];
+  theme?: string[];
+  terrain?: string[];
+  fitness?: string[];
+  duration?: number[];
+  domestic?: boolean;
+  weekend?: boolean;
+  minPrice?: number;
+  maxPrice?: number;
+  seasonalTag?: string;
+  q?: string;
+}
+
+export function buildPackageQuery(filters: PackageFilters): string {
+  const p = new URLSearchParams();
+  const addList = (key: string, values?: Array<string | number>) => {
+    if (values?.length) p.set(key, values.join(","));
+  };
+  if (filters.destination) p.set("destination", filters.destination);
+  addList("audience", filters.audience);
+  addList("theme", filters.theme);
+  addList("terrain", filters.terrain);
+  addList("fitness", filters.fitness);
+  addList("duration", filters.duration);
+  if (filters.domestic !== undefined) p.set("domestic", String(filters.domestic));
+  if (filters.weekend) p.set("weekend", "true");
+  if (filters.minPrice !== undefined) p.set("minPrice", String(filters.minPrice));
+  if (filters.maxPrice !== undefined) p.set("maxPrice", String(filters.maxPrice));
+  if (filters.seasonalTag) p.set("seasonalTag", filters.seasonalTag);
+  if (filters.q?.trim()) p.set("q", filters.q.trim());
+  return p.toString();
+}
+
+export async function fetchFilteredPackages(
+  filters: PackageFilters
+): Promise<Package[]> {
+  const qs = buildPackageQuery(filters);
+  return api<Package[]>(`/api/packages${qs ? `?${qs}` : ""}`);
+}
+
 export async function fetchFeaturedPackages(): Promise<Package[]> {
   return api<Package[]>("/api/packages?featured=true");
 }
