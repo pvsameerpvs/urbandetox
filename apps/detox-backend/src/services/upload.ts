@@ -24,8 +24,8 @@ import { MAX_FILE_SIZE_MB } from "@/services/constants";
  *   marketing/seasonal        → Seasonal campaign images
  *   testimonials/avatars      → Customer testimonial photos
  *   users/avatars             → Registered user profile pictures
- *   bookings/id-docs          → Traveler ID uploads (Aadhaar, Passport, DL)
- *   bookings/photos           → Traveler passport-size photos
+ *   (no bookings/ root: traveller ID documents and photos are PII and must
+ *    not live in this public bucket. See services/private-storage.ts.)
  *   cms/general               → Uncategorized admin uploads
  *   temp/                     → Temporary / pre-processing uploads
  *
@@ -44,7 +44,14 @@ const ALLOWED_ROOT_FOLDERS = [
   "marketing",
   "testimonials",
   "users",
-  "bookings",
+  /**
+   * "bookings" deliberately absent. This service writes to the PUBLIC R2
+   * bucket and returns a world-readable URL, so a traveller's Aadhaar or
+   * passport uploaded through here would be retrievable by anyone with the
+   * link. Booking documents go through services/private-storage.ts instead,
+   * which uses a private Supabase bucket and short-lived signed URLs. Nothing
+   * referenced this root, so removing it breaks no caller.
+   */
   "cms",
   "temp",
   // Legacy roots (kept for backward compatibility)
