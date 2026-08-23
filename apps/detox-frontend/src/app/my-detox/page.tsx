@@ -47,9 +47,6 @@ export default function MyDetoxPage() {
   const email = authUser?.email || profile.personal.email || "";
   const initials = displayName.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
 
-  const handleCancel = (bookingId: string) => {
-    setTrips((prev) => prev.filter((t) => t.id !== bookingId));
-  };
 
   if (!isLoggedIn) {
     return (
@@ -90,11 +87,11 @@ export default function MyDetoxPage() {
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <Link href="/profile" className="flex flex-col items-center gap-1 rounded-xl bg-white/5 hover:bg-white/10 transition-colors p-2">
-                  <User className="h-4 w-4 text-brand" />
+                  <User className="h-4 w-4 text-brand-on-media" />
                   <span className="text-[10px] font-medium text-white/80">Profile</span>
                 </Link>
                 <Link href="/profile/personal" className="flex flex-col items-center gap-1 rounded-xl bg-white/5 hover:bg-white/10 transition-colors p-2">
-                  <Settings className="h-4 w-4 text-brand" />
+                  <Settings className="h-4 w-4 text-brand-on-media" />
                   <span className="text-[10px] font-medium text-white/80">Settings</span>
                 </Link>
               </div>
@@ -118,11 +115,11 @@ export default function MyDetoxPage() {
               <div className="space-y-4">
                 <h2 className="text-lg font-bold">Upcoming Trips</h2>
                 {upcoming.map((trip, index) => (
-                  <TripCard key={trip.id} trip={trip} index={index} onCancel={handleCancel} highlighted={trip.id === highlightBookingId} />
+                  <TripCard key={trip.id} trip={trip} index={index} highlighted={trip.id === highlightBookingId} />
                 ))}
               </div>
             )}
-            <PastTripsSection trips={trips} onCancel={handleCancel} highlightedBookingId={highlightBookingId} />
+            <PastTripsSection trips={trips} highlightedBookingId={highlightBookingId} />
             <div className="rounded-2xl bg-secondary/[0.03] border border-border/40 p-6 sm:p-8 text-center">
               <h3 className="text-lg font-bold mb-2">Ready for another reset?</h3>
               <p className="text-sm text-muted-foreground mb-4">Browse upcoming detoxes and find your next date.</p>

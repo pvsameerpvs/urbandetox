@@ -263,14 +263,6 @@ export async function fetchBookingNextStep(
   );
 }
 
-export async function cancelMyBooking(
-  bookingId: string
-): Promise<{ status: string }> {
-  return authApi(`/api/bookings/${encodeURIComponent(bookingId)}/cancel`, {
-    method: "POST",
-  });
-}
-
 export async function createCheckoutSession(payload: {
   idempotencyKey: string;
   departureCode: string;

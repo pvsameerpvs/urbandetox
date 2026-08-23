@@ -6,7 +6,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { TripCard } from "./TripCard";
 import type { Trip } from "./TripCard";
 
-export function PastTripsSection({ trips, onCancel, highlightedBookingId }: { trips: Trip[]; onCancel?: (bookingId: string) => void; highlightedBookingId?: string | null }) {
+export function PastTripsSection({ trips, highlightedBookingId }: { trips: Trip[]; highlightedBookingId?: string | null }) {
   const past = trips.filter((t) => t.status === "completed" || t.status === "cancelled");
   const highlightedPast = past.some((trip) => trip.id === highlightedBookingId);
   const [open, setOpen] = useState(highlightedPast);
@@ -27,7 +27,7 @@ export function PastTripsSection({ trips, onCancel, highlightedBookingId }: { tr
         {open && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.3 }} className="space-y-4 overflow-hidden">
             {past.map((trip, index) => (
-              <TripCard key={trip.id} trip={trip} index={index} onCancel={onCancel} highlighted={trip.id === highlightedBookingId} />
+              <TripCard key={trip.id} trip={trip} index={index} highlighted={trip.id === highlightedBookingId} />
             ))}
           </motion.div>
         )}

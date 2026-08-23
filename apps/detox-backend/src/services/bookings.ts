@@ -1,7 +1,7 @@
 import { and, desc, eq, gt, inArray } from "drizzle-orm";
 import { db } from "@/db";
 import { bookings, checkoutSessions, payments, departures } from "@/db/schema";
-import { getDepartureStatus, PaymentService } from "@/services/payments";
+import { getDepartureStatus } from "@/services/payments";
 
 const ACTIVE_BOOKING_STATUSES = ["confirmed", "reserved_cod", "payment_review"];
 const ACTIVE_CHECKOUT_STATUSES = ["creating_order", "payment_pending", "processing"];
@@ -205,13 +205,15 @@ export const BookingService = {
     return updated;
   },
 
-  async cancel(input: { userId: string; bookingId: string }) {
+  async cancel(input: { userId: string; bookingId: string; isAdmin?: boolean }) {
     const [booking] = await db
       .select()
       .from(bookings)
       .where(eq(bookings.id, input.bookingId));
 
-    if (!booking || booking.userId !== input.userId) {
+    // Admins act on any booking; the ownership check still applies to everyone
+    // else, so this stays safe if the route is ever reopened to customers.
+    if (!booking || (!input.isAdmin && booking.userId !== input.userId)) {
       throw new Error("Booking not found");
     }
 
@@ -224,6 +226,16 @@ export const BookingService = {
       throw new Error("Booking cannot be cancelled in its current state");
     }
 
+    /**
+     * Cancelling deliberately does NOT move money.
+     *
+     * It used to call createRefund with no amount, which Razorpay treats as a
+     * full refund: no approval, no cancellation window, and none of the
+     * deductions the published terms allow for. Refunds now go through the
+     * admin-only endpoint at POST /api/payments/:paymentId/refunds, where an
+     * amount is chosen deliberately.
+     */
+    let refundDue: { razorpayPaymentId: string; amountPaise: number } | null = null;
     if (booking.paymentStatus === "paid") {
       const [paymentRecord] = await db
         .select()
@@ -233,11 +245,10 @@ export const BookingService = {
       if (!paymentRecord || paymentRecord.status !== "captured") {
         throw new Error("Captured payment not found; cancellation requires support");
       }
-
-      await PaymentService.createRefund({
+      refundDue = {
         razorpayPaymentId: paymentRecord.razorpayPaymentId,
-        idempotencyKey: `cancel-${booking.id}`,
-      });
+        amountPaise: paymentRecord.amountPaise - paymentRecord.amountRefundedPaise,
+      };
     }
 
     await db.transaction(async (tx) => {
@@ -287,7 +298,11 @@ export const BookingService = {
       }
     });
 
-    return { status: "canceled" };
+    return {
+      status: "canceled",
+      // The admin still has to issue any refund explicitly.
+      refundDue,
+    };
   },
 
   async getProgress(input: { userId: string; bookingId: string }) {

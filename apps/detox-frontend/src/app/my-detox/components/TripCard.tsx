@@ -5,11 +5,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { Progress } from "@/components/ui/progress";
 import { format, parseISO } from "date-fns";
-import { cn, safeImageUrl } from "@urbandetox/utils";
-import { Calendar, MapPin, CheckCircle2, AlertCircle, ArrowRight, X, Wallet, Loader2, ImageIcon } from "lucide-react";
+import { cn, safeImageUrl, whatsappLink } from "@urbandetox/utils";
+import { Calendar, MapPin, CheckCircle2, AlertCircle, ArrowRight, Wallet, ImageIcon, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import { Card, CardContent, Badge, Button, Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@urbandetox/ui"
-import { cancelMyBooking } from "@/lib/api";
+import { Card, CardContent, Badge, Button } from "@urbandetox/ui"
 import { MemoriesLightbox } from "./MemoriesLightbox";
 
 export interface Trip {
@@ -40,31 +39,16 @@ function getTripProgress(trip: Trip): number {
 interface TripCardProps {
   trip: Trip;
   index: number;
-  onCancel?: (bookingId: string) => void;
   highlighted?: boolean;
 }
 
-export function TripCard({ trip, index, onCancel, highlighted }: TripCardProps) {
+export function TripCard({ trip, index, highlighted }: TripCardProps) {
   const progress = getTripProgress(trip);
   const isUpcoming = trip.status === "upcoming";
   const isPaymentReview = trip.bookingStatus === "payment_review";
   const canCompleteOnboarding =
     isUpcoming && trip.onboardingStatus === "pending" && !isPaymentReview;
   const [memoriesOpen, setMemoriesOpen] = useState(false);
-  const [cancelOpen, setCancelOpen] = useState(false);
-  const [cancelling, setCancelling] = useState(false);
-
-  const handleCancel = async () => {
-    setCancelling(true);
-    try {
-      await cancelMyBooking(trip.id);
-      setCancelOpen(false);
-      onCancel?.(trip.id);
-    } catch {
-      setCancelling(false);
-    }
-  };
-
   return (
     <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: index * 0.1 }}>
       <Card className={cn("border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-500", highlighted && "ring-2 ring-brand shadow-brand/15")}>
@@ -170,28 +154,20 @@ export function TripCard({ trip, index, onCancel, highlighted }: TripCardProps) 
                 </>
               )}
               {isUpcoming && (
-                <Button size="sm" variant="ghost" className="rounded-xl h-9 px-3 text-xs text-muted-foreground hover:text-destructive hover:bg-destructive/10" onClick={() => setCancelOpen(true)}>
-                  <X className="mr-1 h-3.5 w-3.5" /> Cancel
+                <Button size="sm" variant="ghost" className="rounded-xl h-9 px-3 text-xs text-muted-foreground hover:text-foreground" asChild>
+                  <a
+                    href={whatsappLink(
+                      `Hi, I need to change or cancel my booking for ${trip.packageTitle} (${trip.bookingCode}).`
+                    )}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <MessageCircle className="mr-1 h-3.5 w-3.5" /> Need to change this?
+                  </a>
                 </Button>
               )}
             </div>
 
-            <Dialog open={cancelOpen} onOpenChange={setCancelOpen}>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Cancel Booking</DialogTitle>
-                  <DialogDescription>
-                    Are you sure you want to cancel your {trip.packageTitle} trip?{trip.paymentStatus === "paid" ? " A refund will be initiated." : ""}
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setCancelOpen(false)} disabled={cancelling}>Keep Booking</Button>
-                  <Button variant="destructive" onClick={handleCancel} disabled={cancelling}>
-                    {cancelling ? <><Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> Cancelling...</> : <>Confirm Cancel</>}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
           </CardContent>
         </div>
       </Card>

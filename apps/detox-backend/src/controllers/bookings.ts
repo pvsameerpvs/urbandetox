@@ -103,6 +103,7 @@ export const BookingController = {
     const result = await BookingService.cancel({
       userId: req.user!.id,
       bookingId: String(req.params.id),
+      isAdmin: req.user?.role === "admin",
     });
     res.json(result);
   },

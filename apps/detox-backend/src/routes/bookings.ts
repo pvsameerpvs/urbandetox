@@ -29,7 +29,9 @@ router.get(
   "/:id/onboarding/progress",
   BookingController.getProgress
 );
-router.post("/:id/cancel", BookingController.cancel);
+// Admin only. Cancelling releases seats and closes the booking; it never
+// refunds. Any refund is a separate, deliberate admin action.
+router.post("/:id/cancel", requireAdmin, auditMiddleware, BookingController.cancel);
 
 // Share links are admin-only: they hand out access to a customer's personal
 // details, so issuing one is an admin action and is audited.
