@@ -20,8 +20,9 @@ export function FilterChipGroup<T extends string>({
       <legend className="text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground mb-2.5">
         {label}
       </legend>
-      {/* Horizontal scroll on mobile so long groups never widen the page. */}
-      <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 snap-x sm:flex-wrap sm:overflow-visible">
+      {/* Horizontal scroll on mobile so long groups never widen the page.
+          `scrollbar-hide` keeps it swipeable without the visible scrollbar line. */}
+      <div className="flex gap-2 overflow-x-auto -mx-1 px-1 snap-x scrollbar-hide sm:flex-wrap sm:overflow-visible">
         {options.map((o) => {
           const active = selected.includes(o.value);
           return (

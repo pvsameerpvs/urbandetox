@@ -1,11 +1,12 @@
 "use client";
 
-import { useCallback, useMemo, useTransition } from "react";
+import { useCallback, useMemo, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Loader2, X } from "lucide-react";
-import { AUDIENCES, BUDGET_BANDS, FITNESS_LEVELS, TERRAINS, THEMES } from "@urbandetox/utils";
-import { FilterChipGroup } from "./FilterChipGroup";
+import { ChevronDown, Loader2, SlidersHorizontal } from "lucide-react";
+import { cn } from "@urbandetox/utils";
+import { FilterPanel } from "./FilterPanel";
 import { FilterSearchForm } from "./FilterSearchForm";
+import { ActiveFilterPills, toActivePills } from "./ActiveFilterPills";
 
 interface DetoxFilterBarProps {
   durations: number[];
@@ -19,6 +20,7 @@ export function DetoxFilterBar({ durations, resultCount }: DetoxFilterBarProps) 
   const router = useRouter();
   const params = useSearchParams();
   const [pending, startTransition] = useTransition();
+  const [open, setOpen] = useState(false);
 
   const listOf = useCallback(
     (key: string) => (params.get(key) ?? "").split(",").filter(Boolean),
@@ -33,31 +35,23 @@ export function DetoxFilterBar({ durations, resultCount }: DetoxFilterBarProps) 
     [router]
   );
 
-  const toggle = useCallback(
-    (key: string, value: string) => {
+  const setValue = useCallback(
+    (key: string, values: string[]) => {
       const next = new URLSearchParams(params.toString());
-      const current = (next.get(key) ?? "").split(",").filter(Boolean);
-      const updated = current.includes(value)
-        ? current.filter((v) => v !== value)
-        : [...current, value];
-      if (updated.length) next.set(key, updated.join(","));
+      if (values.length) next.set(key, values.join(","));
       else next.delete(key);
       push(next);
     },
     [params, push]
   );
 
-  const submitSearch = (term: string) => {
-    const next = new URLSearchParams(params.toString());
-    if (term.trim()) next.set("q", term.trim());
-    else next.delete("q");
-    push(next);
+  const toggle = (key: string, value: string) => {
+    const current = listOf(key);
+    setValue(key, current.includes(value) ? current.filter((v) => v !== value) : [...current, value]);
   };
 
-  const activeCount = useMemo(
-    () => KEYS.reduce((n, k) => n + (params.get(k) ? 1 : 0), 0),
-    [params]
-  );
+  const remove = (key: string, value: string) =>
+    key === "q" ? setValue("q", []) : setValue(key, listOf(key).filter((v) => v !== value));
 
   const clearAll = () => {
     const next = new URLSearchParams(params.toString());
@@ -65,50 +59,59 @@ export function DetoxFilterBar({ durations, resultCount }: DetoxFilterBarProps) 
     push(next);
   };
 
+  const pills = useMemo(() => toActivePills(params, KEYS), [params]);
+
   return (
-    <div className="rounded-2xl border border-border/60 bg-card p-5 sm:p-6 shadow-lg shadow-black/[0.03]">
-      {/* Keyed on the URL value so Clear all also clears the input. */}
-      <FilterSearchForm
-        key={params.get("q") ?? ""}
-        initialTerm={params.get("q") ?? ""}
-        onSubmit={submitSearch}
-      />
+    <div className="rounded-2xl border border-border/60 bg-card px-4 py-3 shadow-lg shadow-black/[0.03] sm:px-5">
+      {/* Compact toolbar. The heavy chip groups live behind the toggle so results
+          stay above the fold, on mobile especially. */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="min-w-0 flex-1">
+          <FilterSearchForm
+            key={params.get("q") ?? ""}
+            initialTerm={params.get("q") ?? ""}
+            onSubmit={(term) => setValue("q", term.trim() ? [term.trim()] : [])}
+          />
+        </div>
 
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        <FilterChipGroup label="Who's going" options={AUDIENCES} selected={listOf("audience")} onToggle={(v) => toggle("audience", v)} />
-        <FilterChipGroup label="Experience" options={THEMES} selected={listOf("theme")} onToggle={(v) => toggle("theme", v)} />
-        <FilterChipGroup label="Landscape" options={TERRAINS} selected={listOf("terrain")} onToggle={(v) => toggle("terrain", v)} />
-        <FilterChipGroup label="Effort" options={FITNESS_LEVELS} selected={listOf("fitness")} onToggle={(v) => toggle("fitness", v)} />
-        <FilterChipGroup
-          label="Duration"
-          options={durations.map((d) => ({ value: String(d), label: `${d} Days` }))}
-          selected={listOf("duration")}
-          onToggle={(v) => toggle("duration", v)}
-        />
-        <FilterChipGroup
-          label="Budget"
-          options={BUDGET_BANDS.map((b) => ({ value: b.value, label: b.label }))}
-          selected={listOf("budget")}
-          onToggle={(v) => toggle("budget", v)}
-        />
-      </div>
-
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-border/60 pt-4">
-        <p className="flex items-center gap-2 text-xs text-muted-foreground">
-          {pending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-          {resultCount} {resultCount === 1 ? "trip" : "trips"}
-          {activeCount > 0 && ` · ${activeCount} filter${activeCount === 1 ? "" : "s"} active`}
-        </p>
-        {activeCount > 0 && (
+        <div className="flex shrink-0 items-center gap-3">
           <button
             type="button"
-            onClick={clearAll}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 rounded"
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            aria-controls="detox-filter-panel"
+            className={cn(
+              "inline-flex h-11 items-center gap-2 rounded-xl border px-4 text-sm font-semibold transition-colors",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40",
+              pills.length
+                ? "border-brand bg-brand-muted text-foreground"
+                : "border-border bg-background text-muted-foreground hover:text-foreground"
+            )}
           >
-            <X className="h-3.5 w-3.5" /> Clear all
+            <SlidersHorizontal className="h-4 w-4" />
+            Filters
+            {pills.length > 0 && (
+              <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-brand px-1.5 text-[11px] font-bold text-brand-foreground">
+                {pills.length}
+              </span>
+            )}
+            <ChevronDown className={cn("h-4 w-4 transition-transform", open && "rotate-180")} />
           </button>
-        )}
+
+          <p className="flex shrink-0 items-center gap-1.5 whitespace-nowrap text-xs text-muted-foreground">
+            {pending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+            {resultCount} {resultCount === 1 ? "trip" : "trips"}
+          </p>
+        </div>
       </div>
+
+      {pills.length > 0 && (
+        <div className="mt-3 border-t border-border/50 pt-3">
+          <ActiveFilterPills pills={pills} onRemove={remove} onClearAll={clearAll} />
+        </div>
+      )}
+
+      {open && <FilterPanel durations={durations} listOf={listOf} onToggle={toggle} />}
     </div>
   );
 }

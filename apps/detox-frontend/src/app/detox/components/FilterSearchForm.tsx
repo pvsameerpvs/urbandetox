@@ -17,7 +17,7 @@ export function FilterSearchForm({ initialTerm, onSubmit }: FilterSearchFormProp
         e.preventDefault();
         onSubmit(term);
       }}
-      className="mb-6 flex gap-2"
+      className="flex gap-2"
     >
       <div className="relative flex-1 min-w-0">
         <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
