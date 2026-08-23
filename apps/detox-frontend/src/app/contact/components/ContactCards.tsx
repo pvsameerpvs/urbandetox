@@ -10,7 +10,9 @@ import { BRAND } from "@urbandetox/utils";
 
 const cards = [
   { icon: Mail, label: "Email", value: BRAND.contact.email, href: `mailto:${BRAND.contact.email}`, color: "bg-blue-50 text-blue-600" },
-  { icon: Phone, label: "Phone", value: BRAND.contact.phone, href: `tel:${BRAND.contact.phone.replace(/-/g, "")}`, color: "bg-emerald-50 text-emerald-600" },
+  // tel: must be digits only. Deriving it from whatsappNumber avoids re-breaking
+  // this whenever the display format changes (it previously stripped only hyphens).
+  { icon: Phone, label: "Phone", value: BRAND.contact.phone, href: `tel:+${BRAND.contact.whatsappNumber}`, color: "bg-emerald-50 text-emerald-600" },
   { icon: MessageCircle, label: "WhatsApp", value: "Chat now", href: BRAND.contact.whatsapp, external: true, color: "bg-green-50 text-green-600" },
   { icon: MapPin, label: "Base", value: BRAND.address, color: "bg-amber-50 text-amber-600" },
 ];

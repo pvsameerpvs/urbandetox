@@ -19,10 +19,10 @@ export interface SiteSettings {
 }
 
 export const defaultSocialLinks: SocialLink[] = [
-  { platform: "facebook", url: "", enabled: false },
-  { platform: "instagram", url: "https://instagram.com/urbandetox", enabled: true },
+  { platform: "facebook", url: "https://www.facebook.com/p/Urban-Detox-61572878404022/", enabled: true },
+  { platform: "instagram", url: "https://www.instagram.com/_urban_detox_", enabled: true },
   { platform: "twitter", url: "", enabled: false },
-  { platform: "linkedin", url: "", enabled: false },
+  { platform: "linkedin", url: "https://www.linkedin.com/in/urban-detox/", enabled: true },
   { platform: "snapchat", url: "", enabled: false },
   { platform: "youtube", url: "", enabled: false },
 ];

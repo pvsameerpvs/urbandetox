@@ -7,7 +7,7 @@ export const BRAND = {
     whatsappNumber: "919886639393",
     phone: "+91 98866 39393",
     whatsapp: "https://wa.me/919886639393",
-    instagram: "https://instagram.com/urbandetox",
+    instagram: "https://www.instagram.com/_urban_detox_",
   },
   address: "Bangalore, India",
 } as const;
