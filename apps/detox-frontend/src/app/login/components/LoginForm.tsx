@@ -101,8 +101,6 @@ export function LoginForm() {
         </motion.form>
       </AnimatePresence>
 
-      {/* brand on white sits at 1.3:1, so the accent is the underline and the
-          text itself stays at full body contrast. */}
       <p className="mt-5 text-center text-xs text-muted-foreground">
         Not booked yet?{" "}
         <Link href="/detox" className="font-semibold text-foreground underline decoration-brand decoration-2 underline-offset-2 hover:decoration-foreground/40">

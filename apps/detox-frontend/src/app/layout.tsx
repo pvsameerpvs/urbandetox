@@ -5,6 +5,8 @@ import "./globals.css";
 import { ConditionalNavbar } from "@/components/layout/ConditionalNavbar";
 import { ConditionalFooter } from "@/components/layout/ConditionalFooter";
 import { ClientProviders } from "@/components/providers";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { buildOrganizationNode, buildWebSiteNode } from "@/lib/seo/brand";
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -31,6 +33,7 @@ export default function RootLayout({
       className={`${redHatDisplay.variable} ${superbusyHeading.variable} ${superbusyCta.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        <JsonLd id="ld-brand" nodes={[buildOrganizationNode(), buildWebSiteNode()]} />
         <ClientProviders>
           <ConditionalNavbar />
           <main className="flex-1">{children}</main>

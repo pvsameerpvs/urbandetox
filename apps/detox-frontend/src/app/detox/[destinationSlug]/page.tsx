@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { fetchDestinationBySlug, fetchPackagesByDestination, fetchUpcomingDepartures } from "@/lib/api";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { buildDestinationNode } from "@/lib/seo/destination";
+import { buildBreadcrumbNode } from "@/lib/seo/breadcrumb";
 import { DestinationHero } from "./components/DestinationHero";
 import { DestinationPackages } from "./components/DestinationPackages";
 
@@ -44,6 +47,17 @@ export default async function DestinationPage({ params }: PageProps) {
 
   return (
     <main className="min-h-screen bg-white pb-20">
+      <JsonLd
+        id="ld-destination"
+        nodes={[
+          ...buildDestinationNode(dest, packages),
+          buildBreadcrumbNode(`/detox/${dest.slug}`, [
+            { name: "Home", path: "/" },
+            { name: "Explore Detox", path: "/detox" },
+            { name: dest.name, path: `/detox/${dest.slug}` },
+          ]),
+        ]}
+      />
       <DestinationHero destination={dest} packageCount={packages.length} />
       {packages.length > 0 && (
         <DestinationPackages destination={dest} packages={packages} upcoming={upcoming} />

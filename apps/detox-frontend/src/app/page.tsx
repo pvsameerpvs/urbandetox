@@ -15,6 +15,7 @@ import { HeroSection } from "@/components/sections/HeroSection";
 import { BestDestinationsSection } from "@/components/sections/BestDestinationsSection";
 import { UpcomingDetoxSection } from "@/components/sections/UpcomingDetoxSection";
 import { WhySection } from "@/components/sections/WhySection";
+import { QuickAnswers } from "@/components/sections/QuickAnswers";
 import { SeasonalSection } from "@/components/sections/SeasonalSection";
 import { GuideHighlightsSection } from "@/components/sections/GuideHighlightsSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
@@ -97,6 +98,10 @@ export default async function Home() {
       />
 
       <SeasonalSection groups={seasonalGroups} destMap={destMap} />
+      {/* Placed after the card grids and before the guide teasers: the answers
+          summarise what the grids above show, which is the order a reader
+          scanning for a straight answer expects. */}
+      <QuickAnswers destinations={destinations} packages={packages} />
       <GuideHighlightsSection guides={guides} />
       <CorporateUniversitySection />
       <FinalCTASection />

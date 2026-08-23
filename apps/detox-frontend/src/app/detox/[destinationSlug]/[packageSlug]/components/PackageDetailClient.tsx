@@ -18,6 +18,7 @@ import { MobilePackageCTA } from "./MobilePackageCTA";
 
 import { containerVariants } from "@/lib/animations";
 import { isDepartureBookable } from "@/lib/departure-availability";
+import { selectVisibleDepartures } from "@/lib/departure-visibility";
 import type { Package, Departure, GuideArticle, Destination } from "@urbandetox/utils";
 
 interface PackageDetailClientProps {
@@ -33,17 +34,9 @@ export function PackageDetailClient({ pkg, dest, departures, guides, selectedDep
     ? departures.find((d) => d.code === selectedDepartureCode)
     : undefined;
 
-  const visibleDepartures = departures.filter(
-    (d) => isDepartureBookable(d) || d.code === selectedDep?.code
-  );
-  const upcomingDepartures = (() => {
-    if (!selectedDep) return visibleDepartures.slice(0, 4);
-    const list = visibleDepartures.slice(0, 4);
-    if (!list.some((d) => d.code === selectedDep.code)) {
-      list.unshift(selectedDep);
-    }
-    return list.slice(0, 5);
-  })();
+  // Shared with the JSON-LD builder in page.tsx so the Event nodes describe
+  // exactly the departures rendered below. See lib/departure-visibility.ts.
+  const upcomingDepartures = selectVisibleDepartures(departures, selectedDepartureCode);
 
   const bookableDepartures = departures.filter(isDepartureBookable);
   const sidebarDeparture = (selectedDep && isDepartureBookable(selectedDep))

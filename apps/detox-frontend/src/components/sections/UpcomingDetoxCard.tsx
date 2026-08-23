@@ -48,7 +48,9 @@ export function UpcomingDetoxCard({ dep, pkg, dest }: UpcomingDetoxCardProps) {
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
-            priority
+            // No `priority`/`preload` here. This section is below the fold, and
+            // six cards each emitted a <link rel="preload" as="image"> into
+            // <head>, racing the hero's LCP image for bandwidth.
           />
         </div>
 

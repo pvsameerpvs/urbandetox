@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { BUDGET_BANDS } from "@urbandetox/utils";
 import { fetchDestinations, fetchFilteredPackages, type PackageFilters } from "@/lib/api";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { buildTripCollectionNodes } from "@/lib/seo/collection";
+import { buildBreadcrumbNode } from "@/lib/seo/breadcrumb";
 import { DetoxFilterBar } from "./components/DetoxFilterBar";
 import { DetoxResults } from "./components/DetoxResults";
 import { DestinationBrowseCard } from "./components/DestinationBrowseCard";
@@ -57,8 +60,24 @@ export default async function DetoxBrowsePage({ searchParams }: PageProps) {
     .filter((d, i, a) => a.indexOf(d) === i)
     .sort((a, b) => a - b);
 
+  // Any active filter narrows the rendered list, so the enumerating ItemList is
+  // suppressed. See lib/seo/collection.ts.
+  const isFiltered = Object.entries(filters).some(([k, v]) =>
+    k === "weekend" ? v === true : Array.isArray(v) ? v.length > 0 : v !== undefined
+  );
+
   return (
     <div className="min-h-screen bg-background">
+      <JsonLd
+        id="ld-detox-browse"
+        nodes={[
+          ...buildTripCollectionNodes(packages, destinations, isFiltered),
+          buildBreadcrumbNode("/detox", [
+            { name: "Home", path: "/" },
+            { name: "Explore Detox", path: "/detox" },
+          ]),
+        ]}
+      />
       <div className="relative bg-sidebar-dark overflow-hidden">
         <div
           className="absolute inset-0 opacity-[0.03]"

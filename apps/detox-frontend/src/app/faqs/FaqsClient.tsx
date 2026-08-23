@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { FaqItem } from "@urbandetox/utils";
+import { dedupeFaqs } from "@/lib/seo/faq";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@urbandetox/ui"
 
 interface FaqsClientProps {
@@ -12,9 +13,15 @@ interface FaqsClientProps {
 export function FaqsClient({ categories, faqs }: FaqsClientProps) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
+  // Deduped before filtering, and with the same helper the FAQPage graph uses,
+  // so the visible list and the structured data can never disagree about how
+  // many questions this page answers. The /api/faqs table is currently double
+  // seeded; see dedupeFaqs.
+  const unique = dedupeFaqs(faqs);
+
   const filtered = activeCategory
-    ? faqs.filter((f) => f.category === activeCategory)
-    : faqs;
+    ? unique.filter((f) => f.category === activeCategory)
+    : unique;
 
   return (
     <section className="py-10 sm:py-14">

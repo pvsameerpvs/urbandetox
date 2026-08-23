@@ -1,5 +1,11 @@
 import { notFound } from "next/navigation";
 import { fetchPackageBySlug, fetchDeparturesByPackage, fetchGuides, fetchDestinationBySlug } from "@/lib/api";
+import { selectVisibleDepartures } from "@/lib/departure-visibility";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { buildTouristTripNode, packagePath } from "@/lib/seo/trip";
+import { buildDepartureEventNodes } from "@/lib/seo/departure";
+import { buildBreadcrumbNode } from "@/lib/seo/breadcrumb";
+import { buildFaqPageNode } from "@/lib/seo/faq";
 import { PackageDetailClient } from "./components/PackageDetailClient";
 
 interface PageProps {
@@ -22,5 +28,27 @@ export default async function DetoxDetailPage({ params, searchParams }: PageProp
     notFound();
   }
 
-  return <PackageDetailClient pkg={pkg} dest={dest} departures={departures} guides={guides} selectedDepartureCode={selectedDepartureCode} />;
+  // Same list the page renders, so no Event node describes a hidden departure.
+  const visibleDepartures = selectVisibleDepartures(departures, selectedDepartureCode);
+  const path = packagePath(pkg);
+
+  return (
+    <>
+      <JsonLd
+        id="ld-package"
+        nodes={[
+          buildTouristTripNode(pkg, dest),
+          ...buildDepartureEventNodes(pkg, dest, visibleDepartures),
+          buildBreadcrumbNode(path, [
+            { name: "Home", path: "/" },
+            { name: "Explore Detox", path: "/detox" },
+            { name: dest.name, path: `/detox/${dest.slug}` },
+            { name: pkg.title, path },
+          ]),
+          buildFaqPageNode(path, pkg.faqs ?? []),
+        ]}
+      />
+      <PackageDetailClient pkg={pkg} dest={dest} departures={departures} guides={guides} selectedDepartureCode={selectedDepartureCode} />
+    </>
+  );
 }

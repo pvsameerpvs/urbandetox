@@ -31,6 +31,9 @@
   --trip-brand: #f3f0ea;
   --button-lime: #c9f269;
   --button-lime-text: #083c2f;
+  /* Painted under the hero slideshow so the first frame fades up from brand
+     dark instead of white. Costs zero bytes and is not an LCP candidate. */
+  --hero-ground: #083c2f;
   --footer: var(--button-lime);
   --footer-foreground: var(--button-lime-text);
 }
