@@ -64,7 +64,11 @@ export function StepFinalConfirm({ common, onUpdate, travelerCount = 1 }: StepFi
         <div className="space-y-1">
           <Label htmlFor="confirmAll" className="text-sm font-normal leading-relaxed cursor-pointer">
             <span className="font-semibold">{travelerCount > 1 ? "I confirm all details are accurate for everyone in my group." : "I confirm all details are accurate."}</span>
-            <span className="text-muted-foreground block text-xs mt-0.5">I have read and accept the trip terms, cancellation policy, and safety guidelines.</span>
+            <span className="text-muted-foreground block text-xs mt-0.5">
+              I have read and accept the{" "}
+              <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-foreground">trip terms</a>,{" "}
+              <a href="/terms#cancellation-and-refund-policy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-foreground">cancellation policy</a>, and safety guidelines.
+            </span>
           </Label>
           {confirmError && <p className="text-red-500 text-xs mt-1">{confirmError}</p>}
         </div>

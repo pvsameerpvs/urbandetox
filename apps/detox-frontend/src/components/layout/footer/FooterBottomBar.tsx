@@ -13,11 +13,17 @@ export function FooterBottomBar() {
         </div>
       </div>
       <div className="flex items-center gap-4">
-        <Link href="#" className="hover:text-footer-foreground/60 transition-colors">
+        <Link href="/terms" className="hover:text-footer-foreground/60 transition-colors">
           Terms
         </Link>
-        <Link href="#" className="hover:text-footer-foreground/60 transition-colors">
+        <Link href="/terms#privacy-policy" className="hover:text-footer-foreground/60 transition-colors">
           Privacy
+        </Link>
+        <Link
+          href="/terms#cancellation-and-refund-policy"
+          className="hover:text-footer-foreground/60 transition-colors"
+        >
+          Cancellation
         </Link>
       </div>
     </div>

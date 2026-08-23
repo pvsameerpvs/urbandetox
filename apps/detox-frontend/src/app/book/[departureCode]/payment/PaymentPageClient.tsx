@@ -524,7 +524,12 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
                   {!hydrated ? <span className="inline-flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Loading price...</span> : unavailableReason ? <><Lock className="mr-2 h-4 w-4" /> Booking Closed</> : checkingNextStep ? <span className="inline-flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Checking booking...</span> : status === "processing" ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Preparing Checkout...</> : <><Lock className="mr-2 h-4 w-4" /> {method === "cod" ? "Reserve with Pay on Arrival" : `Pay ${formatPrice(total)} Securely`}</>}
                 </Button>
 
-                <p className="text-xs text-muted-foreground text-center">By clicking Pay, you agree to our Terms of Service and Cancellation Policy.</p>
+                <p className="text-xs text-muted-foreground text-center">
+                  By clicking Pay, you agree to our{" "}
+                  <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-foreground">Terms of Service</a>
+                  {" "}and{" "}
+                  <a href="/terms#cancellation-and-refund-policy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-foreground">Cancellation Policy</a>.
+                </p>
               </CardContent>
             </Card>
           </div>
