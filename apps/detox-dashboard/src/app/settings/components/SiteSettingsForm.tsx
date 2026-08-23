@@ -224,7 +224,7 @@ export function SiteSettingsForm() {
             <p className="text-sm font-medium">WhatsApp Number</p>
           </div>
           <p className="text-xs text-muted-foreground">
-            Include country code without + or spaces. Example: 919876543210
+            Include country code without + or spaces. Example: 919886639393
           </p>
           <input
             type="tel"
@@ -234,7 +234,7 @@ export function SiteSettingsForm() {
                 prev ? { ...prev, whatsappNumber: e.target.value.trim() } : prev
               )
             }
-            placeholder="919876543210"
+            placeholder="919886639393"
             className="h-10 w-full px-3 rounded-lg border border-input bg-white text-sm outline-none focus:border-brand/50 transition-colors"
           />
         </div>

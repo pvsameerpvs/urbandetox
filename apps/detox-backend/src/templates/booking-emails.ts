@@ -1,4 +1,5 @@
 import { baseTemplate, escapeHtml, type EmailContent } from "./email-layout";
+import { SITE_URL, SUPPORT_PHONE_DISPLAY, SUPPORT_WHATSAPP_URL } from "@/config/brand";
 
 function paymentStatusLabel(paymentStatus: string) {
   if (paymentStatus === "paid") return "Paid";
@@ -21,6 +22,7 @@ export function bookingConfirmationTemplate(data: {
 }): EmailContent {
   const firstName = escapeHtml(data.fullName.split(" ")[0] || "Traveler");
   const paymentLabel = paymentStatusLabel(data.paymentStatus);
+  const onboardingUrl = `${SITE_URL}/book/${data.departureCode}/onboarding`;
   const paymentNextStep =
     data.paymentStatus === "cod"
       ? "Your payment is due on arrival. Our team will confirm the payment details before departure."
@@ -66,13 +68,20 @@ export function bookingConfirmationTemplate(data: {
       </div>` : ""}
     </div>
 
+    <p><strong>One thing left to do</strong></p>
+    <p>Share your traveller details so we can arrange your stay, food and pickup. It takes a few minutes and you can finish it whenever suits you.</p>
+
+    <p style="text-align:center;">
+      <a href="${onboardingUrl}" class="cta">Add Traveller Details</a>
+    </p>
+
     <p><strong>What happens next?</strong></p>
     <p style="margin-bottom:8px;">1. Our team will reach out to you within 24 hours with the final itinerary and packing list.</p>
     <p style="margin-bottom:8px;">2. ${paymentNextStep}</p>
     <p style="margin-bottom:8px;">3. You will receive a reminder 48 hours before departure with meeting point details.</p>
 
     <div class="divider"></div>
-    <p style="font-size:13px; color:#78716c;">Questions? Reply to this email or WhatsApp us at <a href="https://wa.me/919876543210" style="color:#78716c;">+91-98765-43210</a>.</p>
+    <p style="font-size:13px; color:#78716c;">Questions? Reply to this email or WhatsApp us at <a href="${SUPPORT_WHATSAPP_URL}" style="color:#78716c;">${SUPPORT_PHONE_DISPLAY}</a>.</p>
   `;
 
   const textContent = `Your detox is confirmed, ${data.fullName.split(" ")[0] || "Traveler"}!
@@ -88,15 +97,19 @@ Travelers: ${data.travelers}
 Departure Code: ${data.departureCode}
 Payment: ${paymentLabel}${data.paymentMethod ? ` (${data.paymentMethod})` : ""}
 ${data.totalPrice ? `Total: ${data.totalPrice}\n` : ""}
+One thing left to do
+Share your traveller details so we can arrange your stay, food and pickup:
+${onboardingUrl}
+
 What happens next?
 1. Our team will reach out to you within 24 hours with the final itinerary and packing list.
 2. ${paymentNextStep}
 3. You will receive a reminder 48 hours before departure with meeting point details.
 
-Questions? Reply to this email or WhatsApp us at +91-98765-43210.
+Questions? Reply to this email or WhatsApp us at ${SUPPORT_PHONE_DISPLAY}.
 
 Urban Detox - Bangalore, India
-hello@urbandetox.in | https://urbandetox.in
+hello@urbandetox.in | ${SITE_URL}
 `;
 
   return {
@@ -194,7 +207,7 @@ ${data.totalPrice ? `Total: ${data.totalPrice}\n` : ""}Booked At: ${data.bookedA
 Please follow up within 24 hours. If payment is pending, send the payment link via WhatsApp.
 
 Urban Detox - Bangalore, India
-hello@urbandetox.in | https://urbandetox.in
+hello@urbandetox.in | ${SITE_URL}
 `;
 
   return {
@@ -448,7 +461,7 @@ export function onboardingReminderTemplate(data: {
   stepLabel: string;
 }): EmailContent {
   const firstName = escapeHtml(data.fullName.split(" ")[0] || "Traveler");
-  const onboardingUrl = `https://urbandetox.in/book/${data.departureCode}/onboarding?step=${data.step}`;
+  const onboardingUrl = `${SITE_URL}/book/${data.departureCode}/onboarding?step=${data.step}`;
 
   const htmlContent = `
     <h2>Finish your onboarding, ${firstName}!</h2>
@@ -482,7 +495,7 @@ export function onboardingReminderTemplate(data: {
     <p style="font-size:13px; color:#78716c; margin-top:16px;">This link will take you directly to where you left off. No need to re-enter your previous details.</p>
 
     <div class="divider"></div>
-    <p style="font-size:13px; color:#78716c;">Need help? Reply to this email or WhatsApp us at <a href="https://wa.me/919876543210" style="color:#78716c;">+91-98765-43210</a>.</p>
+    <p style="font-size:13px; color:#78716c;">Need help? Reply to this email or WhatsApp us at <a href="${SUPPORT_WHATSAPP_URL}" style="color:#78716c;">${SUPPORT_PHONE_DISPLAY}</a>.</p>
   `;
 
   const textContent = `Finish your onboarding, ${data.fullName.split(" ")[0] || "Traveler"}!
@@ -500,10 +513,10 @@ Continue here: ${onboardingUrl}
 
 This link will take you directly to where you left off. No need to re-enter your previous details.
 
-Need help? Reply to this email or WhatsApp us at +91-98765-43210.
+Need help? Reply to this email or WhatsApp us at ${SUPPORT_PHONE_DISPLAY}.
 
 Urban Detox - Bangalore, India
-hello@urbandetox.in | https://urbandetox.in
+hello@urbandetox.in | ${SITE_URL}
 `;
 
   return {

@@ -32,7 +32,7 @@ const DEFAULT_HERO = "https://images.unsplash.com/photo-1501555088652-021faa106b
 export const defaultSiteSettings: SiteSettings = {
   footerEnabled: true,
   socialLinks: defaultSocialLinks,
-  whatsappNumber: "919876543210",
+  whatsappNumber: "919886639393",
   heroImages: [DEFAULT_HERO, "", "", "", ""],
   activeHeroIndex: 0,
   heroBadge: "Curated Offbeat Escapes",

@@ -4,6 +4,7 @@ import { CheckCircle, ArrowRight, MessageCircle } from "lucide-react";
 ;
 import Link from "next/link";
 import { Button } from "@urbandetox/ui"
+import { BRAND } from "@urbandetox/utils";
 
 export function SuccessHero() {
   return (
@@ -54,7 +55,7 @@ export function SuccessActions() {
         className="rounded-xl border-green-200 text-green-600 hover:bg-green-50 h-12 px-7 text-sm font-medium"
         asChild
       >
-        <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer">
+        <a href={BRAND.contact.whatsapp} target="_blank" rel="noopener noreferrer">
           <MessageCircle className="mr-2 h-4 w-4" /> WhatsApp Us
         </a>
       </Button>

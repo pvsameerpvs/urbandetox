@@ -3,8 +3,10 @@ export const BRAND = {
   tagline: "Disconnect from routine. Step into your next detox.",
   contact: {
     email: "hello@urbandetox.in",
-    phone: "+91-98765-43210",
-    whatsapp: "https://wa.me/919876543210",
+    /** Digits only, in the form wa.me expects. */
+    whatsappNumber: "919886639393",
+    phone: "+91 98866 39393",
+    whatsapp: "https://wa.me/919886639393",
     instagram: "https://instagram.com/urbandetox",
   },
   address: "Bangalore, India",

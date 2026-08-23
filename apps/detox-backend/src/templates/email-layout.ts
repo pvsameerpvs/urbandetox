@@ -1,3 +1,4 @@
+import { SITE_URL, SUPPORT_PHONE_DISPLAY, SUPPORT_WHATSAPP_URL } from "@/config/brand";
 const BRAND_COLOR = "#C6F06B";
 const BRAND_DARK = "#1c1917";
 const BRAND_MUTED = "#78716c";
@@ -65,8 +66,8 @@ export function baseTemplate(title: string, content: string): string {
       </div>
       <div class="footer">
         <p style="margin:0 0 6px;"><strong>Urban Detox</strong> &mdash; Bangalore, India</p>
-        <p style="margin:0 0 6px;">hello@urbandetox.in &middot; +91-98765-43210</p>
-        <p style="margin:0;"><a href="https://urbandetox.in">urbandetox.in</a></p>
+        <p style="margin:0 0 6px;">hello@urbandetox.in &middot; ${SUPPORT_PHONE_DISPLAY}</p>
+        <p style="margin:0;"><a href="${SITE_URL}">urbandetox.in</a></p>
       </div>
     </div>
   </div>
