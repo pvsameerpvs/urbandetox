@@ -18,6 +18,9 @@ export function NavbarLogo({ isLightMode, onClick, className }: NavbarLogoProps)
         alt="Urban Detox"
         width={1332}
         height={200}
+        // Without `sizes` Next derives the srcset from the declared 1332px
+        // width and ships a 1440px-wide file for a 32px-tall wordmark.
+        sizes="(min-width: 1024px) 267px, (min-width: 640px) 240px, 213px"
         className="h-8 w-auto sm:h-9 lg:h-10 object-contain"
         priority
       />

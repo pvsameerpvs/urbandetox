@@ -36,6 +36,10 @@ export function HeroBackground({ images, startIndex = 0 }: HeroBackgroundProps) 
             // attribute is emitted. It starts working the moment the
             // optimizer is turned back on.
             sizes="100vw"
+            // 55 becomes AVIF q35 after the optimizer subtracts 20. Checked at
+            // 1:1 against the source: safe here because a black/40-to-85
+            // gradient sits over the whole frame.
+            quality={55}
             // Next 16 deprecated `priority` in favour of `preload`: "Starting
             // with Next.js 16, the `priority` property has been deprecated in
             // favor of the `preload` property in order to make the behavior
