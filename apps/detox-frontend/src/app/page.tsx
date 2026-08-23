@@ -7,6 +7,7 @@ import {
   fetchFeaturedGuides,
   fetchTestimonials,
   fetchGoogleReviews,
+  fetchSeasonalTags,
 } from "@/lib/api";
 import { initialSeasonalTags } from "@urbandetox/utils";
 import { HeroSection } from "@/components/sections/HeroSection";
@@ -20,13 +21,14 @@ import { CorporateUniversitySection } from "@/components/sections/CorporateUnive
 import { FinalCTASection } from "@/components/sections/FinalCTASection";
 
 export default async function Home() {
-  const [destinations, packages, departures, guides, testimonials, googleReviews] = await Promise.all([
+  const [destinations, packages, departures, guides, testimonials, googleReviews, seasonalTags] = await Promise.all([
     fetchDestinations(),
     fetchPackages(),
     fetchUpcomingDepartures(50),
     fetchFeaturedGuides(4),
     fetchTestimonials(4),
     fetchGoogleReviews().catch(() => ({ rating: 0, total: 0, url: "" })),
+    fetchSeasonalTags().catch(() => []),
   ]);
 
   const destMap = new Map(destinations.map((d) => [d.slug, d]));
@@ -58,7 +60,11 @@ export default async function Home() {
   const seasonalGroups = Array.from(
     new Set(featuredPackages.map((p) => p.seasonalTag).filter((t): t is string => !!t))
   ).map((tag) => {
-    const meta = initialSeasonalTags.find((t) => t.name === tag);
+    // Prefer the seasonal_tags table so a tag created in the admin renders with
+    // its real label and icon. The static list is only a fallback.
+    const meta =
+      seasonalTags.find((t) => t.name === tag) ??
+      initialSeasonalTags.find((t) => t.name === tag);
     return {
       tag,
       label: meta?.label || tag,

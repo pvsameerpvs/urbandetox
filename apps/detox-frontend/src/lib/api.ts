@@ -146,6 +146,13 @@ export async function fetchFaqCategories(): Promise<string[]> {
   return api<string[]>("/api/faqs/categories");
 }
 
+// ── Seasonal Tags ───────────────────────────────────
+export async function fetchSeasonalTags(): Promise<
+  import("@urbandetox/utils").SeasonalTag[]
+> {
+  return api<import("@urbandetox/utils").SeasonalTag[]>("/api/seasonal-tags");
+}
+
 // ── Testimonials ────────────────────────────────────
 export async function fetchTestimonials(limit = 4): Promise<Testimonial[]> {
   return api<Testimonial[]>(`/api/testimonials?limit=${limit}`);

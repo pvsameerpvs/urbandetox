@@ -11,12 +11,14 @@ interface NavbarLogoProps {
 export function NavbarLogo({ isLightMode, onClick, className }: NavbarLogoProps) {
   return (
     <Link href="/" className={cn("flex items-center shrink-0", className)} onClick={onClick}>
+      {/* The wordmark is 11875x1784 (6.66:1). Sizing by height with width:auto
+          keeps its true aspect ratio; a square box letterboxed it to ~112x17px. */}
       <Image
         src={isLightMode ? "/log-detox.png" : "/log-detox-white.png"}
         alt="Urban Detox"
-        width={160}
-        height={160}
-        className="h-28 w-28 sm:h-32 sm:w-32 lg:h-36 lg:w-36 object-contain"
+        width={1332}
+        height={200}
+        className="h-8 w-auto sm:h-9 lg:h-10 object-contain"
         priority
       />
     </Link>

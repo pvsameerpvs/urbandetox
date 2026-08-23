@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button, Card, CardContent, Separator } from "@urbandetox/ui";
-import { formatPrice, formatDateRange } from "@urbandetox/utils";
+import { BRAND, formatPrice, formatDateRange } from "@urbandetox/utils";
 import { Calendar, Users, ArrowRight, Phone, Shield, Heart, Check, Download } from "lucide-react";
 
 interface PackageSidebarProps {
@@ -53,16 +53,27 @@ export function PackageSidebar({ startingPrice, nextDeparture, isSelected, itine
               </Link>
             </Button>
             <Button variant="outline" className="w-full rounded-xl border-border/60 h-12 text-sm font-medium" asChild>
-              <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer">
+              <a href={BRAND.contact.whatsapp} target="_blank" rel="noopener noreferrer">
                 <Phone className="mr-2 h-4 w-4" /> Ask on WhatsApp
               </a>
             </Button>
             {itineraryPdf && (
-              <Button variant="ghost" className="w-full rounded-xl h-12 text-sm font-medium text-brand hover:text-brand hover:bg-brand/5" asChild>
-                <a href={itineraryPdf} target="_blank" rel="noopener noreferrer">
-                  <Download className="mr-2 h-4 w-4" /> Download Detail Itinerary
-                </a>
-              </Button>
+              <a
+                href={itineraryPdf}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 rounded-xl border border-brand/30 bg-brand-muted p-3.5 transition-colors hover:border-brand/60 hover:bg-brand-muted/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+              >
+                <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/70">
+                  <Download className="h-4 w-4 text-brand" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-sm font-semibold">Download Detail Itinerary</span>
+                  <span className="block text-xs text-muted-foreground">
+                    Full day-by-day plan as a PDF
+                  </span>
+                </span>
+              </a>
             )}
           </CardContent>
         </Card>

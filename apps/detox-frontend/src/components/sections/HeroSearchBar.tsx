@@ -48,7 +48,7 @@ export function HeroSearchBar({ departures, availableDurations }: HeroSearchBarP
   };
 
   return (
-    <div className="relative z-20 mx-auto w-full max-w-[720px] md:max-w-[840px] lg:max-w-[900px] shrink-0 translate-y-1/2 px-8">
+    <div className="relative z-20 mx-auto w-full max-w-[560px] md:max-w-[660px] lg:max-w-[720px] shrink-0 translate-y-1/2 px-8">
       <motion.div
         initial={false}
         animate={{ opacity: 1, y: 0 }}
@@ -56,7 +56,7 @@ export function HeroSearchBar({ departures, availableDurations }: HeroSearchBarP
         className="overflow-hidden rounded-[22px] border border-white/80 bg-white/95 shadow-[0_28px_90px_rgba(45,79,60,0.18)] backdrop-blur"
       >
         {/* Month nav */}
-        <div className="grid grid-cols-[2.5rem_1fr_2.5rem] items-center gap-2 px-5 pt-6 sm:px-8 sm:pt-7">
+        <div className="grid grid-cols-[2.5rem_1fr_2.5rem] items-center gap-2 px-4 pt-5 sm:px-6 sm:pt-6">
           <button
             type="button"
             onClick={() => setVisibleMonth((m) => addMonths(m, -1))}

@@ -15,6 +15,7 @@ import {
   Camera,
   FileText,
   User,
+  ExternalLink,
 } from "lucide-react";
 import { safeImageUrl, type Traveler } from "@urbandetox/utils";
 import { DetailRow } from "./DetailRow";
@@ -75,10 +76,23 @@ export function TravelerDetailCard({ traveler, isPrimary, index }: TravelerDetai
               <Camera className="h-3.5 w-3.5" />
               <span className="font-medium">Photo {hasPhoto ? "Uploaded" : "Pending"}</span>
             </div>
-            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs ${hasId ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>
-              <FileText className="h-3.5 w-3.5" />
-              <span className="font-medium">{traveler.idType || "ID"} {hasId ? "Uploaded" : "Pending"}</span>
-            </div>
+            {hasId ? (
+              <a
+                href={traveler.idUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+              >
+                <FileText className="h-3.5 w-3.5" />
+                <span className="font-medium">View {traveler.idType || "ID"}</span>
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            ) : (
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs bg-amber-50 text-amber-700">
+                <FileText className="h-3.5 w-3.5" />
+                <span className="font-medium">{traveler.idType || "ID"} Pending</span>
+              </div>
+            )}
           </div>
 
           {/* Basic Info */}
