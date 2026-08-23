@@ -1,5 +1,8 @@
 import { notFound } from "next/navigation";
 import { fetchGuideBySlug, fetchRelatedGuides, fetchDestinationBySlug, fetchPackageBySlug } from "@/lib/api";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { buildArticleNode } from "@/lib/seo/article";
+import { buildBreadcrumbNode } from "@/lib/seo/breadcrumb";
 import { GuideHero } from "./components/GuideHero";
 import { GuideContent } from "./components/GuideContent";
 import { RelatedPackageCard } from "./components/RelatedPackageCard";
@@ -30,6 +33,17 @@ export default async function GuideDetailPage({ params }: PageProps) {
 
   return (
     <main className="min-h-screen bg-white">
+      <JsonLd
+        id="ld-guide"
+        nodes={[
+          buildArticleNode(guide, dest),
+          buildBreadcrumbNode(`/guide/${guide.slug}`, [
+            { name: "Home", path: "/" },
+            { name: "Guides", path: "/guide" },
+            { name: guide.title, path: `/guide/${guide.slug}` },
+          ]),
+        ]}
+      />
       <GuideHero
         title={guide.title}
         excerpt={guide.excerpt}

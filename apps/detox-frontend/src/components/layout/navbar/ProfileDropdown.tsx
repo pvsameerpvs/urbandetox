@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { useUserProfile } from "@/lib/user-profile";
 import { User, MapPin, Settings, LogOut, ChevronDown, Compass } from "lucide-react";
+import { cn } from "@urbandetox/utils";
 import { Avatar, AvatarImage, AvatarFallback, Button, Separator } from "@urbandetox/ui"
 
-export function ProfileDropdown() {
+export function ProfileDropdown({ isLightMode = true }: { isLightMode?: boolean }) {
   const { authUser, logout, profile } = useUserProfile();
   const router = useRouter();
 
@@ -28,13 +29,16 @@ export function ProfileDropdown() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button className="flex items-center gap-2 rounded-full pl-1 pr-3 py-1 hover:bg-secondary/80 transition-colors">
+        <button className={cn("flex items-center gap-2 rounded-full pl-1 pr-3 py-1 transition-colors", isLightMode ? "hover:bg-secondary/80" : "hover:bg-white/15")}>
           <Avatar className="h-8 w-8 border border-border/40 shadow-sm">
             {authUser?.avatarUrl ? <AvatarImage src={authUser.avatarUrl} alt={displayName} /> : null}
             <AvatarFallback className="bg-brand text-brand-foreground text-xs font-bold">{initials}</AvatarFallback>
           </Avatar>
-          <span className="hidden xl:block text-sm font-semibold max-w-[100px] truncate">{displayName}</span>
-          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+          {/* This span inherited --foreground (#1c1917). Over the hero photo in
+              dark-mode navbar that measured 1.05:1, so the signed-in user's own
+              name was invisible. */}
+          <span className={cn("hidden xl:block text-sm font-semibold max-w-[100px] truncate", isLightMode ? "text-foreground" : "text-white")}>{displayName}</span>
+          <ChevronDown className={cn("h-3.5 w-3.5", isLightMode ? "text-muted-foreground" : "text-white/80")} />
         </button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-64 p-0">

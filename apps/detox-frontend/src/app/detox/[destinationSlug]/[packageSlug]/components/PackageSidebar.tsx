@@ -18,13 +18,13 @@ export function PackageSidebar({ packageTitle, startingPrice, nextDeparture, isS
     <aside className="hidden lg:block">
       <div className="sticky top-24 space-y-4">
         <Card className="border-0 shadow-xl shadow-black/[0.06] bg-white rounded-2xl overflow-hidden">
-          <div className="bg-gradient-to-r from-brand/60 via-brand to-brand/60 p-5 relative">
+          <div className="bg-gradient-to-r from-brand/95 via-brand to-brand/95 p-5 relative">
             <div
               className="absolute inset-0 opacity-10"
               style={{ backgroundImage: `radial-gradient(circle, white 1px, transparent 1px)`, backgroundSize: "20px 20px" }}
             />
             <div className="relative z-10">
-              <p className="text-xs font-medium text-brand-foreground/80 uppercase tracking-wider">
+              <p className="text-xs font-medium text-brand-foreground uppercase tracking-wider">
                 {isSelected ? "Your selected trip" : "Starting from"}
               </p>
               <p className="text-3xl font-bold text-brand-foreground mt-1">

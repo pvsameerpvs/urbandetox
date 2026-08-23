@@ -44,7 +44,7 @@ export function CalendarMonth({ className, month, onDateClick, tripDateMap, acti
     <div className={cn("min-w-0", className)}>
       <div className="grid grid-cols-7 text-center">
         {WEEKDAYS.map((d) => (
-          <span key={d} className="pb-4 text-[11px] font-bold text-brand/35">
+          <span key={d} className="pb-4 text-[11px] font-bold text-brand">
             {d}
           </span>
         ))}

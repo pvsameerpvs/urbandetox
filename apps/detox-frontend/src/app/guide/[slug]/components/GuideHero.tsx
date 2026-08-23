@@ -22,7 +22,7 @@ export function GuideHero({ title, excerpt, category, image, destName, featured 
     <div className="relative">
       <div className="relative h-[45vh] min-h-[320px] max-h-[520px] overflow-hidden">
         <Image src={safeImageUrl(image)} alt={title} fill className="object-cover" sizes="100vw" priority />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/65 to-black/40" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60" />
       </div>
 
@@ -43,11 +43,11 @@ export function GuideHero({ title, excerpt, category, image, destName, featured 
                   Featured
                 </Badge>
               )}
-              <span className="inline-flex items-center gap-1 text-xs text-white/70">
+              <span className="inline-flex items-center gap-1 text-xs text-white">
                 <Clock className="h-3 w-3" /> 5 min read
               </span>
               {destName && (
-                <span className="inline-flex items-center gap-1 text-xs text-white/70">
+                <span className="inline-flex items-center gap-1 text-xs text-white">
                   <MapPin className="h-3 w-3" /> {destName}
                 </span>
               )}

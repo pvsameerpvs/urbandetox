@@ -55,7 +55,7 @@ export function HeroTextContent({ heroText }: HeroTextContentProps) {
         animate="visible"
         className="text-center text-white max-w-3xl mx-auto translate-y-5 sm:translate-y-6"
       >
-        <motion.div variants={badgeVariants} className="inline-flex items-center gap-2 rounded-full bg-white/15 backdrop-blur-md px-4 py-2 mb-6 border border-white/20">
+        <motion.div variants={badgeVariants} className="inline-flex items-center gap-2 rounded-full bg-black/50 backdrop-blur-md px-4 py-2 mb-6 border border-white/25">
           <span className="text-sm font-semibold tracking-wide uppercase">{heroText.badge}</span>
         </motion.div>
 
@@ -85,7 +85,7 @@ export function HeroTextContent({ heroText }: HeroTextContentProps) {
           <Button
             size="lg"
             variant="outline"
-            className="border-white/30 text-white hover:bg-white/10 hover:text-white bg-transparent h-10 sm:h-11 px-4 sm:px-5 text-xs sm:text-sm"
+            className="border-white/60 text-white hover:bg-black/55 hover:text-white bg-black/40 h-10 sm:h-11 px-4 sm:px-5 text-xs sm:text-sm"
             asChild
           >
             <Link href="/detox">{heroText.ctaSecondary}</Link>

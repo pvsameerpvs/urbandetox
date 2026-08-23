@@ -49,7 +49,7 @@ export function NavbarActions({ isLightMode, mobile, onClick }: NavbarActionsPro
   if (isLoggedIn) {
     return (
       <div className="hidden md:flex items-center gap-3">
-        <ProfileDropdown />
+        <ProfileDropdown isLightMode={isLightMode} />
       </div>
     );
   }

@@ -1,9 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
-
-const ROTATE_MS = 6000;
+import { useHeroRotation } from "./use-hero-rotation";
 
 interface HeroBackgroundProps {
   /** All configured hero images. One is fine; more will cross-fade. */
@@ -20,53 +18,66 @@ export function HeroBackground({ images, startIndex = 0 }: HeroBackgroundProps) 
       : slides;
   // No stock-photo fallback: an empty set renders the dark ground alone, which
   // is better than flashing an unrelated image before the real one arrives.
-  const shown = ordered;
 
-  const [index, setIndex] = useState(0);
-
-  useEffect(() => {
-    if (shown.length < 2) return;
-    // Respect a reduced-motion preference by not auto-advancing at all.
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
-
-    const id = window.setInterval(
-      () => setIndex((i) => (i + 1) % shown.length),
-      ROTATE_MS
-    );
-    return () => window.clearInterval(id);
-  }, [shown.length]);
+  const { index, live, jumpTo, markReady } = useHeroRotation(ordered.length);
 
   return (
-    <div className="absolute inset-0">
-      {shown.map((src, i) => (
-        <Image
-          key={src}
-          src={src}
-          alt=""
-          aria-hidden={i !== index}
-          fill
-          // Only the first frame is a priority load; the rest stream in behind it.
-          priority={i === 0}
-          quality={90}
-          sizes="100vw"
-          unoptimized={src.startsWith("data:image")}
-          className={`object-cover transition-opacity duration-1000 ease-in-out ${
-            i === index ? "opacity-100" : "opacity-0"
-          }`}
-        />
-      ))}
+    <div className="absolute inset-0 bg-[var(--hero-ground)]">
+      {ordered.map((src, i) =>
+        live.includes(i) ? (
+          <Image
+            key={`${i}-${src}`}
+            src={src}
+            alt=""
+            fill
+            // Correct for a full-bleed hero, and currently inert: with
+            // `images.unoptimized` set, generateImgAttrs returns
+            // `{ src, srcSet: undefined, sizes: undefined }`, so no `sizes`
+            // attribute is emitted. It starts working the moment the
+            // optimizer is turned back on.
+            sizes="100vw"
+            // Next 16 deprecated `priority` in favour of `preload`: "Starting
+            // with Next.js 16, the `priority` property has been deprecated in
+            // favor of the `preload` property in order to make the behavior
+            // clear." `preload` emits the <link rel="preload" as="image">, and
+            // ImagePreload spreads fetchPriority onto that link, so the LCP
+            // frame is requested High rather than at the browser's default for
+            // images. Passing both is supported; only preload+priority and
+            // preload+loading="lazy" throw.
+            preload={i === 0}
+            fetchPriority={i === 0 ? "high" : undefined}
+            // Frames past 0 only ever mount client-side, so the preload scanner
+            // never sees them. `eager` just stops Next stamping loading="lazy",
+            // which is a no-op lie for an inset-0 element.
+            loading={i === 0 ? undefined : "eager"}
+            // `sync` would put a 1440x1920 decode on the main thread in the
+            // LCP frame. Next also awaits img.decode() before firing onLoad,
+            // so the fade below is already decode-safe.
+            decoding="async"
+            // Only fade to a frame whose bitmap is ready.
+            onLoad={() => markReady(i)}
+            unoptimized={src.startsWith("data:image")}
+            // `visibility` rides the same transition so a faded-out frame stops
+            // being painted (no composited layer, no retained decode) without
+            // leaving the DOM — leaving would refetch on the next cycle, since
+            // R2 sends no Cache-Control.
+            className={`object-cover transition-[opacity,visibility] duration-1000 ease-in-out ${
+              i === index ? "visible opacity-100" : "invisible opacity-0"
+            }`}
+          />
+        ) : null
+      )}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
       <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40" />
 
-      {shown.length > 1 && (
+      {ordered.length > 1 && (
         <div className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 gap-1.5">
-          {shown.map((src, i) => (
+          {ordered.map((src, i) => (
             <button
-              key={src}
+              key={`${i}-${src}`}
               type="button"
-              onClick={() => setIndex(i)}
-              aria-label={`Show hero image ${i + 1} of ${shown.length}`}
+              onClick={() => jumpTo(i)}
+              aria-label={`Show hero image ${i + 1} of ${ordered.length}`}
               aria-current={i === index}
               className={`h-1.5 rounded-full transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 ${
                 i === index ? "w-6 bg-white/90" : "w-1.5 bg-white/40 hover:bg-white/70"

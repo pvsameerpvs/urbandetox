@@ -245,8 +245,21 @@ Always use CSS variables, never hex codes in page files:
 className="bg-brand text-brand-foreground"
 
 // Wrong
-className="bg-[#C6F06B]"
+className="bg-[#2d4f3c]"
 ```
+
+`--brand` is `#2d4f3c`, a dark forest green. It reads at 9.15:1 on white, so
+it is the right accent on light cards and light page backgrounds.
+
+**It is unreadable on photos and dark grounds** — about 1.5-2.1:1 over a
+darkened image and 1.98:1 on `--sidebar-dark`. For text or meaning-bearing
+icons sitting on an image, a scrim, or a dark panel, use
+`text-brand-on-media` (`#a7c4b5`), which holds 7.5:1 or better on the same
+ground. Never reach for `text-brand` there.
+
+Scrims need care too: over `black/30` nothing passes, not even pure white. A
+`bg-gradient-to-t` is fully transparent at the top, so anything at
+`absolute top-N` has no protection at all and needs its own solid background.
 
 ### 12. Animation Patterns
 
@@ -300,4 +313,5 @@ pnpm build
 - **Font**: Geist Sans + Geist Mono — never change
 - **Body text color**: `#1c1917` — never change
 - **Muted text color**: `#78716c` — never change
-- **Brand color**: `#C6F06B` via CSS variables only — never use hex in component files
+- **Brand color**: `#2d4f3c` via CSS variables only — never use hex in component files
+- **Brand on photos/dark**: `#a7c4b5` via `text-brand-on-media` — `text-brand` fails contrast there

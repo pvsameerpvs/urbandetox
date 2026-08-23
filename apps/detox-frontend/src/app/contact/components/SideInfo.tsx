@@ -52,7 +52,7 @@ export function SideInfo() {
             </div>
             <div>
               <h3 className="font-bold text-base">Prefer WhatsApp?</h3>
-              <p className="text-xs text-white/60">Quick questions welcome</p>
+              <p className="text-xs text-white/80">Quick questions welcome</p>
             </div>
           </div>
           <p className="text-sm text-white/70 mb-4">Most of our travelers book via WhatsApp. Drop us a message and we will guide you through the process.</p>
