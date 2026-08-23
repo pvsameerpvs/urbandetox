@@ -24,7 +24,7 @@ export const defaultSocialLinks: SocialLink[] = [
   { platform: "twitter", url: "", enabled: false },
   { platform: "linkedin", url: "https://www.linkedin.com/in/urban-detox/", enabled: true },
   { platform: "snapchat", url: "", enabled: false },
-  { platform: "youtube", url: "", enabled: false },
+  { platform: "youtube", url: "https://www.youtube.com/@urban_detox", enabled: true },
 ];
 
 const DEFAULT_HERO = "https://images.unsplash.com/photo-1501555088652-021faa106b9b?q=80&w=2000&auto=format&fit=crop";
