@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 ;
 ;
 import { BookOpen, Sparkles, Clock, ArrowRight } from "lucide-react";
-import { cn, safeImageUrl } from "@urbandetox/utils";
+import { cn, safeImageUrl, readingMinutes } from "@urbandetox/utils";
 import { Card, CardContent, Badge } from "@urbandetox/ui"
 
 interface Guide {
@@ -15,6 +15,8 @@ interface Guide {
   title: string;
   category: string;
   excerpt: string;
+  /** Needed for a real reading estimate rather than a hardcoded one. */
+  content: string;
   image: string;
   featured?: boolean;
 }
@@ -40,7 +42,7 @@ export function GuideCard({ guide }: { guide: Guide }) {
             <h3 className="text-base font-bold leading-snug mb-2 group-hover:text-brand transition-colors">{guide.title}</h3>
             <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 mb-4 flex-1">{guide.excerpt}</p>
             <div className="flex items-center justify-between pt-3 border-t border-border/30">
-              <span className="text-xs text-muted-foreground inline-flex items-center gap-1"><Clock className="h-3 w-3" /> 5 min read</span>
+              <span className="text-xs text-muted-foreground inline-flex items-center gap-1"><Clock className="h-3 w-3" /> {readingMinutes(guide.content)} min read</span>
               <span className="text-sm font-semibold text-brand inline-flex items-center gap-1 group-hover:gap-2 transition-all">Read <ArrowRight className="h-3.5 w-3.5" /></span>
             </div>
           </CardContent>

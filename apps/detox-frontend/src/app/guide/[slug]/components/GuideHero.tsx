@@ -5,19 +5,21 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 ;
 import { BookOpen, MapPin, Clock, ArrowLeft } from "lucide-react";
-import { safeImageUrl } from "@urbandetox/utils";
+import { safeImageUrl, readingMinutes } from "@urbandetox/utils";
 import { Badge } from "@urbandetox/ui"
 
 interface GuideHeroProps {
   title: string;
   excerpt: string;
+  /** Article body, for the reading estimate. */
+  content: string;
   category: string;
   image: string;
   destName?: string;
   featured?: boolean;
 }
 
-export function GuideHero({ title, excerpt, category, image, destName, featured }: GuideHeroProps) {
+export function GuideHero({ title, excerpt, content, category, image, destName, featured }: GuideHeroProps) {
   return (
     <div className="relative">
       <div className="relative h-[45vh] min-h-[320px] max-h-[520px] overflow-hidden">
@@ -44,7 +46,7 @@ export function GuideHero({ title, excerpt, category, image, destName, featured 
                 </Badge>
               )}
               <span className="inline-flex items-center gap-1 text-xs text-white">
-                <Clock className="h-3 w-3" /> 5 min read
+                <Clock className="h-3 w-3" /> {readingMinutes(content)} min read
               </span>
               {destName && (
                 <span className="inline-flex items-center gap-1 text-xs text-white">

@@ -14,6 +14,13 @@ interface RelatedPackageCardProps {
 }
 
 export function RelatedPackageCard({ pkg, dest }: RelatedPackageCardProps) {
+  /*
+   * Without a destination there is no valid trip URL, and the card used to
+   * render a link to /detox/undefined/<slug>. Better to show nothing than a
+   * guaranteed 404.
+   */
+  if (!dest) return null;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

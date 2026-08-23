@@ -47,6 +47,7 @@ export default async function GuideDetailPage({ params }: PageProps) {
       <GuideHero
         title={guide.title}
         excerpt={guide.excerpt}
+        content={guide.content}
         category={guide.category}
         image={guide.image}
         destName={dest?.name}

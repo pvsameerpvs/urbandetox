@@ -6,6 +6,7 @@ import {
   useState,
   useCallback,
   useEffect,
+  useRef,
 } from "react";
 import {
   SUPABASE_ENV_ERROR,
@@ -191,6 +192,22 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
             dateOfBirth: serverProfile.dateOfBirth || prev.personal.dateOfBirth || "",
             gender: serverProfile.gender || prev.personal.gender || "",
           },
+          /*
+           * These arrive from the users row now. Previously updateHealth and
+           * setEmergencyContacts only touched localStorage, so preferences were
+           * per-device and vanished on logout while the profile UI still
+           * promised they would auto-fill onboarding.
+           */
+          health: {
+            foodPreference: serverProfile.foodPreference ?? prev.health.foodPreference ?? "",
+            allergies: serverProfile.allergies ?? prev.health.allergies ?? "",
+            medicalConditions: serverProfile.medicalConditions ?? prev.health.medicalConditions ?? "",
+            bloodGroup: serverProfile.bloodGroup ?? prev.health.bloodGroup ?? "",
+          },
+          emergencyContacts:
+            Array.isArray(serverProfile.emergencyContacts) && serverProfile.emergencyContacts.length
+              ? (serverProfile.emergencyContacts as EmergencyContact[])
+              : prev.emergencyContacts,
         }));
         setAuthUser(user);
         setIsLoggedIn(true);
@@ -397,9 +414,44 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
     }
   }, [supabase]);
 
+  /**
+   * Debounced write.
+   *
+   * The profile pages call this on every change event, and it used to PUT
+   * immediately, so typing a name fired one request per keystroke. Two
+   * consequences: the validation on the Save button was decorative, because
+   * every intermediate value had already been persisted, and out-of-order
+   * responses could leave a truncated value as the stored one. Local state is
+   * still updated synchronously so the inputs stay responsive.
+   */
+  const pendingPersonal = useRef<Partial<PersonalInfo>>({});
+  const personalTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const updatePersonal = useCallback(
-    async (data: Partial<PersonalInfo>) => {
+    (data: Partial<PersonalInfo>) => {
       setProfile((prev) => ({ ...prev, personal: { ...prev.personal, ...data } }));
+      if (!isLoggedIn) return;
+
+      pendingPersonal.current = { ...pendingPersonal.current, ...data };
+      if (personalTimer.current) clearTimeout(personalTimer.current);
+      personalTimer.current = setTimeout(() => {
+        const payload = pendingPersonal.current;
+        pendingPersonal.current = {};
+        personalTimer.current = null;
+        void fetchWithAuth("/api/auth/profile", {
+          method: "PUT",
+          body: JSON.stringify(payload),
+        }).catch(() => {
+          // Local state already reflects it; the next edit retries.
+        });
+      }, 700);
+    },
+    [isLoggedIn]
+  );
+
+  const updateHealth = useCallback(
+    async (data: Partial<HealthInfo>) => {
+      setProfile((prev) => ({ ...prev, health: { ...prev.health, ...data } }));
       if (isLoggedIn) {
         try {
           await fetchWithAuth("/api/auth/profile", {
@@ -407,20 +459,29 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
             body: JSON.stringify(data),
           });
         } catch {
-          // silently fail, localStorage is the source of truth
+          // Local state already reflects the change; the next save retries.
         }
       }
     },
     [isLoggedIn]
   );
 
-  const updateHealth = useCallback((data: Partial<HealthInfo>) => {
-    setProfile((prev) => ({ ...prev, health: { ...prev.health, ...data } }));
-  }, []);
-
-  const setEmergencyContacts = useCallback((contacts: EmergencyContact[]) => {
-    setProfile((prev) => ({ ...prev, emergencyContacts: contacts }));
-  }, []);
+  const setEmergencyContacts = useCallback(
+    async (contacts: EmergencyContact[]) => {
+      setProfile((prev) => ({ ...prev, emergencyContacts: contacts }));
+      if (isLoggedIn) {
+        try {
+          await fetchWithAuth("/api/auth/profile", {
+            method: "PUT",
+            body: JSON.stringify({ emergencyContacts: contacts }),
+          });
+        } catch {
+          // Local state already reflects the change; the next save retries.
+        }
+      }
+    },
+    [isLoggedIn]
+  );
 
   const addEmergencyContact = useCallback(() => {
     setProfile((prev) => ({

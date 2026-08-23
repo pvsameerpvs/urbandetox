@@ -188,6 +188,15 @@ export const users = pgTable("users", {
   dateOfBirth: varchar("date_of_birth", { length: 20 }),
   gender: varchar("gender", { length: 50 }),
   avatarUrl: text("avatar_url"),
+  /**
+   * Traveller preferences, previously localStorage-only despite the profile UI
+   * promising they would auto-fill onboarding. See 0014_user_health_profile.
+   */
+  foodPreference: varchar("food_preference", { length: 50 }),
+  allergies: text("allergies"),
+  medicalConditions: text("medical_conditions"),
+  bloodGroup: varchar("blood_group", { length: 10 }),
+  emergencyContacts: jsonb("emergency_contacts"),
   role: userRoleEnum("role").notNull().default("authenticated"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),

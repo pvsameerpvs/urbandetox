@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 ;
 ;
 import { Tag, Clock, User, Sparkles, ArrowRight } from "lucide-react";
-import { safeImageUrl } from "@urbandetox/utils";
+import { safeImageUrl, readingMinutes } from "@urbandetox/utils";
 import { Card, CardContent, Badge, Button } from "@urbandetox/ui"
 
 interface Guide {
@@ -16,6 +16,8 @@ interface Guide {
   title: string;
   category: string;
   excerpt: string;
+  /** Needed for a real reading estimate rather than a hardcoded one. */
+  content: string;
   image: string;
 }
 
@@ -37,7 +39,7 @@ export function FeaturedGuide({ guide }: { guide: Guide }) {
               <h2 className="text-2xl sm:text-3xl font-bold leading-tight mb-4 group-hover:text-brand transition-colors">{guide.title}</h2>
               <p className="text-base text-muted-foreground leading-relaxed mb-6">{guide.excerpt}</p>
               <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
-                <span className="inline-flex items-center gap-1.5"><Clock className="h-4 w-4" /> 8 min read</span>
+                <span className="inline-flex items-center gap-1.5"><Clock className="h-4 w-4" /> {readingMinutes(guide.content)} min read</span>
                 <span className="inline-flex items-center gap-1.5"><User className="h-4 w-4" /> Urban Detox Team</span>
               </div>
               <Button className="w-fit rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-11 px-6 shadow-lg shadow-brand/10">Read Full Guide <ArrowRight className="ml-2 h-4 w-4" /></Button>

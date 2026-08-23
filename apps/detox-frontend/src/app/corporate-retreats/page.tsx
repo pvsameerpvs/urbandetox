@@ -28,10 +28,19 @@ export default function CorporateRetreatsPage() {
           Take your team off the grid. Our corporate detox retreats are designed for deeper bonding, creative thinking, and genuine rest — without the generic hotel banquet hall vibe.
         </p>
 
+        {/* These sizes are larger than the 10-traveller cap on purpose: a
+            corporate booking is a private charter for one company, not a
+            public departure that strangers join. Saying so removes what would
+            otherwise read as a contradiction. */}
+        <p className="mb-6 text-sm text-muted-foreground">
+          Corporate trips are private charters booked as a whole group, so they
+          are not held to the 10-traveller cap that applies to our public
+          departures.
+        </p>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 mb-10">
           <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
             <CardContent className="p-6">
-              <h3 className="text-base font-semibold mb-2">Small Teams (8-15)</h3>
+              <h3 className="text-base font-semibold mb-2">Small teams (8 to 15)</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Perfect for leadership offsites, product sprints, or team resets. We use our standard detox framework with added team exercises.
               </p>
@@ -39,7 +48,7 @@ export default function CorporateRetreatsPage() {
           </Card>
           <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
             <CardContent className="p-6">
-              <h3 className="text-base font-semibold mb-2">Larger Teams (20-40)</h3>
+              <h3 className="text-base font-semibold mb-2">Larger teams (20 to 40)</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 We book multiple adjacent properties and run parallel tracks. Some groups hike, some reflect, everyone meets at the bonfire.
               </p>

@@ -11,11 +11,13 @@ import { PastTripsSection } from "./components/PastTripsSection";
 import { useUserProfile } from "@/lib/user-profile";
 import { fetchMyBookings } from "@/lib/api";
 import { Button, Avatar, AvatarImage, AvatarFallback } from "@urbandetox/ui"
+import { whatsappLink } from "@urbandetox/utils";
 
 export default function MyDetoxPage() {
   const { profile, authUser, isLoggedIn } = useUserProfile();
   const [trips, setTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [highlightBookingId, setHighlightBookingId] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
@@ -35,7 +37,12 @@ export default function MyDetoxPage() {
     let mounted = true;
     fetchMyBookings()
       .then((data) => { if (mounted) setTrips((data as Trip[]) || []); })
-      .catch(() => { if (mounted) setTrips([]); })
+      /*
+       * Was setTrips([]), which rendered the "No trips yet" empty state. A
+       * customer who had paid was told they had no bookings whenever the API
+       * was unreachable.
+       */
+      .catch(() => { if (mounted) setLoadError(true); })
       .finally(() => { if (mounted) setLoading(false); });
     return () => { mounted = false; };
   }, [isLoggedIn]);
@@ -103,6 +110,32 @@ export default function MyDetoxPage() {
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 -mt-6 sm:-mt-8 relative z-10 pb-16">
         {loading ? (
           <div className="py-20 text-center text-muted-foreground text-sm">Loading your trips...</div>
+        ) : loadError ? (
+          <div className="rounded-2xl bg-white p-8 text-center shadow-lg shadow-black/[0.03] sm:p-10">
+            <p className="mb-1 font-bold">We could not load your trips</p>
+            <p className="mb-5 text-sm text-muted-foreground">
+              This is a problem on our side, not a sign that you have no
+              bookings. Try again, or message us and we will confirm what you
+              have booked.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <Button
+                onClick={() => window.location.reload()}
+                className="h-11 rounded-xl bg-brand px-5 text-sm font-semibold text-brand-foreground hover:bg-brand/90"
+              >
+                Try again
+              </Button>
+              <Button asChild variant="outline" className="h-11 rounded-xl px-5 text-sm font-semibold">
+                <a
+                  href={whatsappLink("Hi, I cannot see my bookings on My Detox.")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  WhatsApp us
+                </a>
+              </Button>
+            </div>
+          </div>
         ) : hasTrips ? (
           <div className="space-y-10">
             <TripStatsBar trips={trips} />

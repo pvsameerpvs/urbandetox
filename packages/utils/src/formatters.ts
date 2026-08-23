@@ -53,3 +53,17 @@ export function formatTime(timeStr: string | undefined): string {
   const displayH = h % 12 || 12;
   return `${displayH}:${minutes} ${ampm}`;
 }
+
+/**
+ * Estimated reading time in whole minutes, from the article body.
+ *
+ * The guide cards, the featured guide and the guide hero each printed a
+ * hardcoded figure ("5 min read", "8 min read"), so every article claimed the
+ * same length regardless of what was written. 200 words per minute is the
+ * usual desktop-reading assumption; the floor is 1 so a short note never reads
+ * as "0 min".
+ */
+export function readingMinutes(content: string): number {
+  const words = content.trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+}

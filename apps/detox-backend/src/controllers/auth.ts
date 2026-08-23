@@ -97,7 +97,13 @@ export const AuthController = {
   async upsertProfile(req: Request, res: Response) {
     const userId = req.user!.id;
     const email = req.user!.email;
-    const { fullName, phone, dateOfBirth, gender, avatarUrl } = req.body;
+    const {
+      fullName, phone, dateOfBirth, gender, avatarUrl,
+      // Traveller preferences. These were localStorage-only, so they were
+      // per-device and lost on logout despite the profile UI promising they
+      // would auto-fill onboarding.
+      foodPreference, allergies, medicalConditions, bloodGroup, emergencyContacts,
+    } = req.body;
 
     const [existing] = await db.select().from(users).where(eq(users.id, userId));
 
@@ -110,6 +116,11 @@ export const AuthController = {
           ...(dateOfBirth !== undefined && { dateOfBirth }),
           ...(gender !== undefined && { gender }),
           ...(avatarUrl !== undefined && { avatarUrl }),
+          ...(foodPreference !== undefined && { foodPreference }),
+          ...(allergies !== undefined && { allergies }),
+          ...(medicalConditions !== undefined && { medicalConditions }),
+          ...(bloodGroup !== undefined && { bloodGroup }),
+          ...(emergencyContacts !== undefined && { emergencyContacts }),
           updatedAt: new Date(),
         })
         .where(eq(users.id, userId))
