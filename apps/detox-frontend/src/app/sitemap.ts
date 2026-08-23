@@ -36,6 +36,10 @@ const STATIC_ROUTES: Array<{
 }> = [
   { path: "/", changeFrequency: "daily", priority: 1 },
   { path: "/detox", changeFrequency: "daily", priority: 0.9 },
+  // The two scope tabs are real, linked, stable views rather than facet noise,
+  // and robots.ts allows them explicitly. Listed so they can be discovered.
+  { path: "/detox?scope=india", changeFrequency: "daily", priority: 0.7 },
+  { path: "/detox?scope=international", changeFrequency: "weekly", priority: 0.7 },
   { path: "/guide", changeFrequency: "weekly", priority: 0.6 },
   { path: "/about", changeFrequency: "yearly", priority: 0.4 },
   { path: "/faqs", changeFrequency: "monthly", priority: 0.4 },

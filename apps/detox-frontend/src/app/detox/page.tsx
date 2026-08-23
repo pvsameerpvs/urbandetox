@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { fetchDestinations, fetchFilteredPackages, fetchPackages, type PackageFilters } from "@/lib/api";
+import { filterPackagesByScope, internationalSlugs, parseScope } from "@/lib/trip-scope";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildTripCollectionNodes } from "@/lib/seo/collection";
 import { buildBreadcrumbNode } from "@/lib/seo/breadcrumb";
 import { DetoxFilterBar } from "./components/DetoxFilterBar";
+import { ScopeTabs } from "./components/ScopeTabs";
 import { DetoxResults } from "./components/DetoxResults";
 import { DestinationBrowseCard } from "./components/DestinationBrowseCard";
 
@@ -60,6 +62,27 @@ export default async function DetoxBrowsePage({ searchParams }: PageProps) {
    * allPackages, not the filtered list, so the chips do not vanish as you
    * filter.
    */
+  /**
+   * India versus international. The client asked for international trips to be
+   * separated rather than merged into the local list, so this narrows the
+   * rendered results and drives the counts on the tabs. Applied here rather
+   * than in the API because scope lives on the destination, not the package.
+   */
+  const scope = parseScope(one(q.scope));
+  const scoped = filterPackagesByScope(packages, destinations, scope);
+  const intl = internationalSlugs(destinations);
+  const scopedDestinations = scope
+    ? destinations.filter((d) =>
+        scope === "international" ? intl.has(d.slug) : !intl.has(d.slug)
+      )
+    : destinations;
+
+  const scopeCounts = {
+    all: allPackages.length,
+    india: allPackages.filter((p) => !intl.has(p.destinationSlug)).length,
+    international: allPackages.filter((p) => intl.has(p.destinationSlug)).length,
+  };
+
   const durations = Array.from(new Set(allPackages.map((p) => p.duration)))
     .filter((d) => Number.isFinite(d) && d > 0)
     .sort((a, b) => a - b);
@@ -109,8 +132,9 @@ export default async function DetoxBrowsePage({ searchParams }: PageProps) {
 
       <section className="py-10 sm:py-14">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
-          <DetoxFilterBar durations={durations} resultCount={packages.length} />
-          <DetoxResults packages={packages} destinations={destinations} />
+          <ScopeTabs counts={scopeCounts} />
+          <DetoxFilterBar durations={durations} resultCount={scoped.length} />
+          <DetoxResults packages={scoped} destinations={destinations} />
         </div>
       </section>
 
@@ -125,7 +149,9 @@ export default async function DetoxBrowsePage({ searchParams }: PageProps) {
             </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {destinations.map((dest) => (
+            {/* Scoped as well, or picking "International" would still list all
+                sixteen destinations underneath and undo the separation. */}
+            {scopedDestinations.map((dest) => (
               <DestinationBrowseCard
                 key={dest.slug}
                 destination={dest}

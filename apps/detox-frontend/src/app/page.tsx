@@ -16,6 +16,7 @@ import { BestDestinationsSection } from "@/components/sections/BestDestinationsS
 import { UpcomingDetoxSection } from "@/components/sections/UpcomingDetoxSection";
 import { WhySection } from "@/components/sections/WhySection";
 import { QuickAnswers } from "@/components/sections/QuickAnswers";
+import { InternationalSection } from "@/components/sections/InternationalSection";
 import { SeasonalSection } from "@/components/sections/SeasonalSection";
 import { GuideHighlightsSection } from "@/components/sections/GuideHighlightsSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
@@ -98,6 +99,10 @@ export default async function Home() {
         destinations={destinations}
         packageCounts={destPackageCount}
       />
+
+      {/* Placed after the local destination grids so the contrast reads: this
+          is what we do at home, and we also go abroad. */}
+      <InternationalSection destinations={destinations} packages={packages} />
 
       <SeasonalSection groups={seasonalGroups} destMap={destMap} />
       {/* Placed after the card grids and before the guide teasers: the answers

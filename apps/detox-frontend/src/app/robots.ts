@@ -35,7 +35,14 @@ export default function robots(): MetadataRoute.Robots {
       ...(blockedAi.length ? [{ userAgent: blockedAi, disallow: "/" }] : []),
       {
         userAgent: "*",
-        allow: "/",
+        /**
+         * The scope tabs are the exception to the faceted-navigation block
+         * below. They are two stable, linked URLs that split India from
+         * international, which the client wants findable, so they are allowed
+         * explicitly. Longest-match wins in robots.txt, so this beats the
+         * "/detox?" disallow for these two and nothing else.
+         */
+        allow: ["/", "/detox?scope="],
         disallow: [
           // Authenticated and transactional routes. Bare prefixes on purpose:
           // "Disallow: /profile/" would leave /profile itself crawlable, since
