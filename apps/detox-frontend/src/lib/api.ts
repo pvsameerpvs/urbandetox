@@ -514,3 +514,26 @@ export async function fetchSiteSettings(): Promise<import("@urbandetox/utils").S
     clearTimeout(timeout);
   }
 }
+
+// ── Local guide requests ────────────────────────────
+export async function submitGuideRequest(payload: {
+  fullName: string;
+  email: string;
+  phone: string;
+  location: string;
+  travelDates?: string;
+  groupSize?: number;
+  needs?: string;
+  languages?: string[];
+}): Promise<{ success: boolean; id: string; message: string }> {
+  const res = await fetch(`${API_BASE}/api/guide-requests`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error((body as { error?: string }).error || "Could not send your request.");
+  }
+  return body as { success: boolean; id: string; message: string };
+}

@@ -262,3 +262,26 @@ export const shareLinkBody = z.object({
 export const shareTokenParam = z.object({
   token: z.string().min(20).max(200).regex(/^[A-Za-z0-9_-]+$/),
 });
+
+/** Public "hire a local guide" submission. */
+export const guideRequestBody = z.object({
+  fullName: z.string().min(2, "Name is required").max(255),
+  email: z.string().email("Enter a valid email").max(255),
+  phone: z.string().min(7, "Enter a valid phone number").max(50),
+  // Free text, because the point is a guide for ANY location, including ones
+  // we do not run trips to.
+  location: z.string().min(2, "Tell us where").max(255),
+  travelDates: z.string().max(255).optional(),
+  groupSize: z.number().int().min(1).max(200).optional(),
+  needs: z.string().max(2000).optional(),
+  languages: z.array(z.string().max(60)).max(10).optional(),
+});
+
+export const guideRequestListQuery = z.object({
+  status: z.string().max(20).optional(),
+});
+
+export const guideRequestUpdateBody = z.object({
+  status: z.enum(["new", "contacted", "matched", "closed"]).optional(),
+  adminNotes: z.string().max(4000).optional(),
+});

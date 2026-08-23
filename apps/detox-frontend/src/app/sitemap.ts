@@ -41,6 +41,7 @@ const STATIC_ROUTES: Array<{
   { path: "/detox?scope=india", changeFrequency: "daily", priority: 0.7 },
   { path: "/detox?scope=international", changeFrequency: "weekly", priority: 0.7 },
   { path: "/guide", changeFrequency: "weekly", priority: 0.6 },
+  { path: "/local-guides", changeFrequency: "monthly", priority: 0.7 },
   { path: "/about", changeFrequency: "yearly", priority: 0.4 },
   { path: "/faqs", changeFrequency: "monthly", priority: 0.4 },
   { path: "/contact", changeFrequency: "yearly", priority: 0.4 },

@@ -369,6 +369,29 @@ export const guideApplications = pgTable("guide_applications", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+/**
+ * A customer asking for a local guide, which is the opposite direction to
+ * guideApplications. `location` is free text because the request is explicitly
+ * "a guide for any location", including places we do not run trips to.
+ */
+export const guideRequests = pgTable("guide_requests", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  fullName: varchar("full_name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull(),
+  phone: varchar("phone", { length: 50 }).notNull(),
+  location: varchar("location", { length: 255 }).notNull(),
+  /** Free text. Most people say "second week of March", not a date. */
+  travelDates: varchar("travel_dates", { length: 255 }),
+  groupSize: integer("group_size"),
+  needs: text("needs"),
+  languages: jsonb("languages").$type<string[]>().notNull().default([]),
+  /** new | contacted | matched | closed */
+  status: varchar("status", { length: 20 }).notNull().default("new"),
+  adminNotes: text("admin_notes"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 export const bookingShareLinks = pgTable("booking_share_links", {
   id: uuid("id").primaryKey().defaultRandom(),
   bookingId: uuid("booking_id")

@@ -4,20 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  Menu,
-  X,
-  Compass,
-  BookOpen,
-  UserPlus,
-  Info,
-  Phone,
-  LogIn,
-  MapPin,
-  ArrowRight,
-  User,
-  LogOut,
-} from "lucide-react";
+import { Menu, X, Compass, BookOpen, UserPlus, Info, Phone, LogIn, MapPin, ArrowRight, User, LogOut, Globe2, UserRoundSearch } from "lucide-react";
 import { cn } from "@urbandetox/utils";
 import { useUserProfile } from "@/lib/user-profile";
 import {
@@ -29,7 +16,10 @@ import {
 
 const navLinks = [
   { href: "/detox", label: "Explore Detox", icon: Compass, desc: "Browse all retreats" },
+  { href: "/detox?scope=international", label: "International", icon: Globe2, desc: "Trips outside India" },
   { href: "/guide", label: "Travel Guide", icon: BookOpen, desc: "Travel stories & tips" },
+  // Two different things: hiring a guide, and applying to be one.
+  { href: "/local-guides", label: "Hire a Guide", icon: UserRoundSearch, desc: "A local guide, anywhere" },
   { href: "/join-us", label: "Become a Guide", icon: UserPlus, desc: "Apply to guide our trips" },
   { href: "/about", label: "About", icon: Info, desc: "Who we are" },
   { href: "/contact", label: "Contact", icon: Phone, desc: "Get in touch" },
