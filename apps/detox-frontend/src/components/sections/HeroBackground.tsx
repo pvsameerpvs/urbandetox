@@ -3,9 +3,6 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
-const FALLBACK =
-  "https://images.unsplash.com/photo-1501555088652-021faa106b9b?q=80&w=2000&auto=format&fit=crop";
-
 const ROTATE_MS = 6000;
 
 interface HeroBackgroundProps {
@@ -21,7 +18,9 @@ export function HeroBackground({ images, startIndex = 0 }: HeroBackgroundProps) 
     slides.length > 1 && startIndex > 0
       ? [...slides.slice(startIndex), ...slides.slice(0, startIndex)]
       : slides;
-  const shown = ordered.length > 0 ? ordered : [FALLBACK];
+  // No stock-photo fallback: an empty set renders the dark ground alone, which
+  // is better than flashing an unrelated image before the real one arrives.
+  const shown = ordered;
 
   const [index, setIndex] = useState(0);
 

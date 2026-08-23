@@ -342,3 +342,10 @@ export async function fetchBookingShareLinkStatus(bookingId: string) {
 export async function revokeBookingShareLink(bookingId: string) {
   return api<{ revoked: number }>(`/api/bookings/${bookingId}/share-link`, { method: "DELETE" });
 }
+
+// ─── Traveller documents (private storage) ───────────
+export async function fetchDocumentUrl(storagePath: string) {
+  return api<{ url: string; expiresInSeconds: number }>(
+    `/api/documents/signed-url?path=${encodeURIComponent(storagePath)}`
+  );
+}

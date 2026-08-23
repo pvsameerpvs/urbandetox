@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Card, CardContent, Badge } from "@urbandetox/ui";
 import {
@@ -18,6 +18,8 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { safeImageUrl, type Traveler } from "@urbandetox/utils";
+import { toast } from "sonner";
+import { fetchDocumentUrl } from "@/lib/api";
 import { DetailRow } from "./DetailRow";
 
 interface TravelerDetailCardProps {
@@ -27,9 +29,48 @@ interface TravelerDetailCardProps {
 }
 
 export function TravelerDetailCard({ traveler, isPrimary, index }: TravelerDetailCardProps) {
-  const hasPhoto = traveler.photoUrl && traveler.photoUrl.startsWith("http");
-  const hasId = traveler.idUrl && traveler.idUrl.startsWith("http");
+  const hasPhoto = Boolean(traveler.photoUrl);
+  // Documents are stored as private paths now; older rows may hold a URL.
+  const hasId = Boolean(traveler.idUrl);
   const [showPhoto, setShowPhoto] = useState(false);
+  const [opening, setOpening] = useState(false);
+  const [photoSrc, setPhotoSrc] = useState<string | null>(null);
+
+  /**
+   * Photos live in the same private bucket as ID proofs, so the thumbnail needs
+   * a signed URL too. Legacy rows may still hold a plain URL.
+   */
+  useEffect(() => {
+    const p = traveler.photoUrl;
+    if (!p) return;
+    if (p.startsWith("http")) { setPhotoSrc(p); return; }
+    let active = true;
+    fetchDocumentUrl(p)
+      .then(({ url }) => active && setPhotoSrc(url))
+      .catch(() => active && setPhotoSrc(null));
+    return () => { active = false; };
+  }, [traveler.photoUrl]);
+
+  /**
+   * ID proofs live in a private bucket, so the URL is minted on demand with a
+   * short TTL rather than stored anywhere.
+   */
+  const openId = async () => {
+    if (!traveler.idUrl) return;
+    if (traveler.idUrl.startsWith("http")) {
+      window.open(traveler.idUrl, "_blank", "noopener,noreferrer");
+      return;
+    }
+    setOpening(true);
+    try {
+      const { url } = await fetchDocumentUrl(traveler.idUrl);
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not open the document");
+    } finally {
+      setOpening(false);
+    }
+  };
 
   return (
     <>
@@ -39,12 +80,12 @@ export function TravelerDetailCard({ traveler, isPrimary, index }: TravelerDetai
           {/* Photo + Header */}
           <div className="flex items-start gap-4">
             <div className="shrink-0">
-              {hasPhoto ? (
+              {hasPhoto && photoSrc ? (
                 <button
                   onClick={() => setShowPhoto(true)}
                   className="h-16 w-16 rounded-xl overflow-hidden bg-secondary hover:ring-2 hover:ring-brand/40 transition-all cursor-pointer"
                 >
-                  <Image src={safeImageUrl(traveler.photoUrl)} alt={traveler.name} width={64} height={64} className="h-full w-full object-cover" />
+                  <Image src={safeImageUrl(photoSrc ?? "")} alt={traveler.name} width={64} height={64} className="h-full w-full object-cover" unoptimized />
                 </button>
               ) : (
                 <div className={`h-16 w-16 rounded-xl flex items-center justify-center ${isPrimary ? "bg-brand/10" : "bg-secondary"}`}>
@@ -77,16 +118,18 @@ export function TravelerDetailCard({ traveler, isPrimary, index }: TravelerDetai
               <span className="font-medium">Photo {hasPhoto ? "Uploaded" : "Pending"}</span>
             </div>
             {hasId ? (
-              <a
-                href={traveler.idUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+              <button
+                type="button"
+                onClick={openId}
+                disabled={opening}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 disabled:opacity-60"
               >
                 <FileText className="h-3.5 w-3.5" />
-                <span className="font-medium">View {traveler.idType || "ID"}</span>
+                <span className="font-medium">
+                  {opening ? "Opening..." : `View ${traveler.idType || "ID"}`}
+                </span>
                 <ExternalLink className="h-3 w-3" />
-              </a>
+              </button>
             ) : (
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs bg-amber-50 text-amber-700">
                 <FileText className="h-3.5 w-3.5" />
@@ -149,7 +192,7 @@ export function TravelerDetailCard({ traveler, isPrimary, index }: TravelerDetai
       </Card>
 
       {/* Photo Lightbox */}
-      {showPhoto && hasPhoto && (
+      {showPhoto && photoSrc && (
         <div
           className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
           onClick={() => setShowPhoto(false)}
@@ -166,10 +209,11 @@ export function TravelerDetailCard({ traveler, isPrimary, index }: TravelerDetai
             </div>
             <div className="p-4">
               <Image
-                src={safeImageUrl(traveler.photoUrl)}
+                src={safeImageUrl(photoSrc ?? "")}
                 alt={traveler.name}
                 width={400}
                 height={400}
+                unoptimized
                 className="w-full h-auto rounded-xl object-cover"
               />
             </div>

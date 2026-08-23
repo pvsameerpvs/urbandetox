@@ -8,6 +8,7 @@ import {
   fetchTestimonials,
   fetchGoogleReviews,
   fetchSeasonalTags,
+  fetchSiteSettings,
 } from "@/lib/api";
 import { initialSeasonalTags } from "@urbandetox/utils";
 import { HeroSection } from "@/components/sections/HeroSection";
@@ -21,7 +22,7 @@ import { CorporateUniversitySection } from "@/components/sections/CorporateUnive
 import { FinalCTASection } from "@/components/sections/FinalCTASection";
 
 export default async function Home() {
-  const [destinations, packages, departures, guides, testimonials, googleReviews, seasonalTags] = await Promise.all([
+  const [destinations, packages, departures, guides, testimonials, googleReviews, seasonalTags, siteSettings] = await Promise.all([
     fetchDestinations(),
     fetchPackages(),
     fetchUpcomingDepartures(50),
@@ -29,6 +30,7 @@ export default async function Home() {
     fetchTestimonials(4),
     fetchGoogleReviews().catch(() => ({ rating: 0, total: 0, url: "" })),
     fetchSeasonalTags().catch(() => []),
+    fetchSiteSettings().catch(() => null),
   ]);
 
   const destMap = new Map(destinations.map((d) => [d.slug, d]));
@@ -78,6 +80,7 @@ export default async function Home() {
       <HeroSection
         departures={enrichedDepartures}
         availableDurations={availableDurations}
+        settings={siteSettings}
       />
       <UpcomingDetoxSection departures={enrichedDepartures} />
       <WhySection />

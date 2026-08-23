@@ -87,7 +87,14 @@ export function SharedFormClient({ token }: { token: string }) {
 
       <div className="mx-auto max-w-3xl space-y-5 px-4 py-10 sm:px-6">
         {travelers.map((t, i) => (
-          <SharedTravelerCard key={t.id ?? i} traveler={t} index={i} onChange={(p) => patch(i, p)} />
+          <SharedTravelerCard
+            key={t.id ?? i}
+            traveler={t}
+            index={i}
+            bookingId={data.bookingId}
+            token={token}
+            onChange={(p) => patch(i, p)}
+          />
         ))}
 
         <SharedGroupCard common={common} onChange={(p) => setCommon((c) => ({ ...c, ...p }))} />

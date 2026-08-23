@@ -426,6 +426,46 @@ export async function submitSharedForm(
   return body as { success: boolean; message: string };
 }
 
+// ── Traveller documents (private storage) ───────────
+/**
+ * Uploads an ID proof or photo to private storage. Returns a storage PATH, not
+ * a URL: reading requires a short-lived signed URL from the endpoint below.
+ * bookingId and token go in the query string because multer only guarantees
+ * req.body for fields transmitted before the file.
+ */
+export async function uploadTravellerDocument(input: {
+  file: File;
+  bookingId: string;
+  kind: "photo" | "id";
+  token?: string;
+}): Promise<{ path: string }> {
+  const qs = new URLSearchParams({ bookingId: input.bookingId, kind: input.kind });
+  if (input.token) qs.set("token", input.token);
+  const fd = new FormData();
+  fd.append("file", input.file);
+  const res = await fetch(`${API_BASE}/api/documents?${qs.toString()}`, {
+    method: "POST",
+    body: fd,
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error((body as { error?: string }).error || "Upload failed");
+  return body as { path: string };
+}
+
+export async function fetchDocumentUrl(
+  storagePath: string,
+  token?: string
+): Promise<{ url: string; expiresInSeconds: number }> {
+  const qs = new URLSearchParams({ path: storagePath });
+  if (token) qs.set("token", token);
+  const res = await fetch(`${API_BASE}/api/documents/signed-url?${qs.toString()}`, {
+    cache: "no-store",
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error((body as { error?: string }).error || "Could not open the document");
+  return body as { url: string; expiresInSeconds: number };
+}
+
 // ── Contact ────────────────────────────────────────
 export async function submitContact(payload: {
   name: string;

@@ -4,7 +4,7 @@
  * a placeholder number survived in production email for so long. Change here.
  */
 
-const rawSiteUrl = process.env.SITE_URL || "https://www.urbandetox.in";
+const rawSiteUrl = process.env.SITE_URL || "https://beta.urbandetox.in";
 
 /** No trailing slash, so `${SITE_URL}/path` is always well formed. */
 export const SITE_URL = rawSiteUrl.replace(/\/+$/, "");

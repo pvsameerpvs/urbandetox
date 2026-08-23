@@ -2,6 +2,7 @@
 
 import { Input, Label } from "@urbandetox/ui";
 import type { Traveler } from "@urbandetox/utils";
+import { DocumentUpload } from "./DocumentUpload";
 
 const FOOD = ["vegetarian", "non-vegetarian", "vegan", "jain"];
 const GENDERS = ["Female", "Male", "Other", "Prefer not to say"];
@@ -9,10 +10,12 @@ const GENDERS = ["Female", "Male", "Other", "Prefer not to say"];
 interface SharedTravelerCardProps {
   traveler: Traveler;
   index: number;
+  bookingId: string;
+  token: string;
   onChange: (patch: Partial<Traveler>) => void;
 }
 
-export function SharedTravelerCard({ traveler, index, onChange }: SharedTravelerCardProps) {
+export function SharedTravelerCard({ traveler, index, bookingId, token, onChange }: SharedTravelerCardProps) {
   const set = (key: keyof Traveler) => (e: { target: { value: string } }) =>
     onChange({ [key]: e.target.value } as Partial<Traveler>);
 
@@ -77,6 +80,26 @@ export function SharedTravelerCard({ traveler, index, onChange }: SharedTraveler
         {field("medicalConditions", "Medical conditions we should know about", {
           placeholder: "None",
         })}
+      </div>
+
+      <div className="mt-5 grid grid-cols-1 gap-4 border-t border-border/50 pt-5 sm:grid-cols-2">
+        <DocumentUpload
+          label="Passport-size photo"
+          kind="photo"
+          bookingId={bookingId}
+          token={token}
+          value={traveler.photoUrl || undefined}
+          onUploaded={(path) => onChange({ photoUrl: path })}
+        />
+        <DocumentUpload
+          label="Government ID (Aadhaar, passport or DL)"
+          hint="Held privately, never shown publicly"
+          kind="id"
+          bookingId={bookingId}
+          token={token}
+          value={traveler.idUrl || undefined}
+          onUploaded={(path) => onChange({ idUrl: path, idType: traveler.idType || "ID" })}
+        />
       </div>
 
       <div className="mt-5 border-t border-border/50 pt-5">
