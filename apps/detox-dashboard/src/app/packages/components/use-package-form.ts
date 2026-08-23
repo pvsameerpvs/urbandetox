@@ -60,6 +60,14 @@ export const packageSchema = z.object({
 
 export type PackageFormData = z.infer<typeof packageSchema>;
 
+type ArrayFieldName =
+  | "highlights"
+  | "included"
+  | "notIncluded"
+  | "gallery"
+  | "whatToPack"
+  | "thingsToKnow";
+
 interface InitialData {
   title?: string;
   subtitle?: string;
@@ -178,19 +186,21 @@ export function usePackageForm(initialDestinationSlug: string, initialData?: Ini
   const gallery = form.watch("gallery");
   const faqs = form.watch("faqs");
   const itinerary = form.watch("itinerary");
+  const whatToPack = form.watch("whatToPack");
+  const thingsToKnow = form.watch("thingsToKnow");
   /* eslint-enable react-hooks/incompatible-library */
 
-  const updateArrayItem = (name: "highlights" | "included" | "notIncluded" | "gallery", index: number, value: string) => {
+  const updateArrayItem = (name: ArrayFieldName, index: number, value: string) => {
     const arr = [...form.getValues(name)];
     arr[index] = value;
     form.setValue(name, arr, { shouldValidate: true });
   };
 
-  const appendArrayItem = (name: "highlights" | "included" | "notIncluded" | "gallery", value: string) => {
+  const appendArrayItem = (name: ArrayFieldName, value: string) => {
     form.setValue(name, [...form.getValues(name), value], { shouldValidate: true });
   };
 
-  const removeArrayItem = (name: "highlights" | "included" | "notIncluded" | "gallery", index: number) => {
+  const removeArrayItem = (name: ArrayFieldName, index: number) => {
     form.setValue(name, form.getValues(name).filter((_, i) => i !== index), { shouldValidate: true });
   };
 
@@ -249,6 +259,8 @@ export function usePackageForm(initialDestinationSlug: string, initialData?: Ini
     gallery,
     faqs,
     itinerary,
+    whatToPack,
+    thingsToKnow,
     updateArrayItem,
     appendArrayItem,
     removeArrayItem,

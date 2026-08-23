@@ -10,7 +10,7 @@ import {
 } from "@urbandetox/utils";
 import { Label } from "@urbandetox/ui";
 import type { PackageFormData } from "./use-package-form";
-import { ChipMultiSelect } from "./chip-multi-select";
+import { ChipMultiSelect } from "@/components/shared/ChipMultiSelect";
 
 type ArrayField = "audiences" | "themes" | "terrains";
 

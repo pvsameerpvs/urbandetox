@@ -16,6 +16,7 @@ import {
 import { FormSection } from "@/components/forms/FormSection";
 import { FormActions } from "@/components/forms/FormActions";
 import type { Destination } from "@urbandetox/utils";
+import { DestinationTaxonomyFields } from "./DestinationTaxonomyFields";
 
 const schema = z.object({
   name: z.string().min(1, "Destination name is required"),
@@ -28,6 +29,13 @@ const schema = z.object({
   seoTitle: z.string().optional(),
   seoDescription: z.string().optional(),
   codePrefix: z.string().min(2).max(10).optional(),
+  state: z.string(),
+  country: z.string(),
+  bestTimeToVisit: z.string(),
+  travelTimeFromBangalore: z.string(),
+  destinationTypes: z.array(z.string()),
+  imageAlt: z.string(),
+  status: z.string(),
 });
 
 export type DestinationFormData = z.infer<typeof schema>;
@@ -63,6 +71,13 @@ export function DestinationForm({ mode, initialData, slugValue, onSubmit, submit
       seoTitle: initialData?.seoTitle || "",
       seoDescription: initialData?.seoDescription || "",
       codePrefix: initialData?.codePrefix || "",
+      state: initialData?.state || "",
+      country: initialData?.country || "India",
+      bestTimeToVisit: initialData?.bestTimeToVisit || "",
+      travelTimeFromBangalore: initialData?.travelTimeFromBangalore || "",
+      destinationTypes: initialData?.destinationTypes || [],
+      imageAlt: initialData?.imageAlt || "",
+      status: initialData?.status || "active",
     },
   });
 
@@ -240,6 +255,15 @@ export function DestinationForm({ mode, initialData, slugValue, onSubmit, submit
               </FormItem>
             )}
           />
+
+          <FormSection>
+
+            <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Location &amp; Filters</h3>
+
+            <DestinationTaxonomyFields form={form} />
+
+          </FormSection>
+
 
           <FormActions submitLabel={submitLabel} cancelHref={cancelHref} />
         </FormSection>

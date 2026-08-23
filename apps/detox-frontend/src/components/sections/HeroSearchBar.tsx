@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Departure, Package, Destination } from "@urbandetox/utils";
 import { CalendarMonth } from "./CalendarMonth";
+import { HeroSearchRow } from "./HeroSearchRow";
 import { DurationBadges } from "./DurationBadges";
 import { buildTripDateMap, primaryTrip, getDurationDays, toDateKey } from "./search-bar-utils";
 
@@ -55,8 +56,10 @@ export function HeroSearchBar({ departures, availableDurations }: HeroSearchBarP
         transition={{ duration: 0.7, ease: "easeOut" }}
         className="overflow-hidden rounded-[22px] border border-white/80 bg-white/95 shadow-[0_28px_90px_rgba(45,79,60,0.18)] backdrop-blur"
       >
+        <HeroSearchRow />
+
         {/* Month nav */}
-        <div className="grid grid-cols-[2.5rem_1fr_2.5rem] items-center gap-2 px-4 pt-5 sm:px-6 sm:pt-6">
+        <div className="grid grid-cols-[2.5rem_1fr_2.5rem] items-center gap-2 px-4 pt-4 sm:px-6 sm:pt-4">
           <button
             type="button"
             onClick={() => setVisibleMonth((m) => addMonths(m, -1))}
@@ -84,7 +87,7 @@ export function HeroSearchBar({ departures, availableDurations }: HeroSearchBarP
         </div>
 
         {/* Calendars */}
-        <div className="px-5 pb-6 pt-6 sm:px-9 sm:pb-8">
+        <div className="px-5 pb-5 pt-3 sm:px-9 sm:pb-6">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-10">
             <CalendarMonth
               month={visibleMonth}

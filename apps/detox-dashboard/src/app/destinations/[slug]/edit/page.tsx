@@ -8,6 +8,7 @@ import { updateDestination } from "@/lib/admin-data";
 import { useAdminDestination } from "@/hooks/use-admin-data";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { DestinationForm, type DestinationFormData } from "../../components/DestinationForm";
+import { normalizeDestinationPayload } from "@/app/destinations/components/normalize";
 
 export default function EditDestinationPage() {
   const params = useParams();
@@ -26,7 +27,10 @@ export default function EditDestinationPage() {
 
   async function handleSubmit(data: DestinationFormData) {
     try {
-      await updateDestination(slug, { ...data, gallery: data.gallery.filter(Boolean) });
+      await updateDestination(slug, {
+        ...normalizeDestinationPayload(data),
+        gallery: data.gallery.filter(Boolean),
+      });
       toast.success("Destination updated successfully");
       router.push("/destinations");
     } catch {

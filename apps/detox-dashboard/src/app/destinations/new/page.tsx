@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { createDestination } from "@/lib/admin-data";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { DestinationForm, type DestinationFormData } from "../components/DestinationForm";
+import { normalizeDestinationPayload } from "@/app/destinations/components/normalize";
 
 export default function NewDestinationPage() {
   const router = useRouter();
@@ -13,7 +14,7 @@ export default function NewDestinationPage() {
     const slug = data.name.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-");
     try {
       await createDestination({
-        ...data,
+        ...normalizeDestinationPayload(data),
         slug,
         gallery: data.gallery.filter(Boolean),
       });

@@ -9,6 +9,7 @@ import { HighlightsSection } from "./HighlightsSection";
 import { GallerySection } from "./GallerySection";
 import { ItinerarySection } from "./ItinerarySection";
 import { InclusionsSection } from "./InclusionsSection";
+import { TripLogisticsSection } from "./TripLogisticsSection";
 import { DeparturesSection } from "./DeparturesSection";
 import { RelatedGuidesSection } from "./RelatedGuidesSection";
 import { PackageFAQsSection } from "./PackageFAQsSection";
@@ -77,6 +78,7 @@ export function PackageDetailClient({ pkg, dest, departures, guides, selectedDep
             <GallerySection images={pkg.gallery || []} />
             <ItinerarySection itinerary={pkg.itinerary} />
             <InclusionsSection included={pkg.included || []} notIncluded={pkg.notIncluded || []} />
+            <TripLogisticsSection pkg={pkg} />
             <DeparturesSection departures={upcomingDepartures} selectedCode={selectedDepartureCode} />
             <RelatedGuidesSection guides={guides} />
             <PackageFAQsSection faqs={pkg.faqs || []} />

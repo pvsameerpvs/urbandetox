@@ -128,6 +128,21 @@ export default function NewPackagePage() {
           </CardContent>
         </Card>
 
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
+            <CardContent className="p-6">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">What to Pack</h3>
+              <ArrayInput items={f.whatToPack} onUpdate={(i, v) => f.updateArrayItem("whatToPack", i, v)} onAdd={() => f.appendArrayItem("whatToPack", "")} onRemove={(i) => f.removeArrayItem("whatToPack", i)} placeholder="Item" />
+            </CardContent>
+          </Card>
+          <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
+            <CardContent className="p-6">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Things to Know</h3>
+              <ArrayInput items={f.thingsToKnow} onUpdate={(i, v) => f.updateArrayItem("thingsToKnow", i, v)} onAdd={() => f.appendArrayItem("thingsToKnow", "")} onRemove={(i) => f.removeArrayItem("thingsToKnow", i)} placeholder="Note" />
+            </CardContent>
+          </Card>
+        </div>
+
         <Card className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl">
           <CardContent className="p-6">
             <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Logistics &amp; SEO</h3>
