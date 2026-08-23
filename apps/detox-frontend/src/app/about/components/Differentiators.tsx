@@ -8,7 +8,7 @@ import { Card, CardContent } from "@urbandetox/ui"
 
 const features = [
   { icon: Compass, title: "Offbeat First", description: "We skip tourist traps. Every destination is chosen for quiet, beauty, and real disconnection. You will not find crowds here." },
-  { icon: Users, title: "Small Groups", description: "6 to 12 people. Intimate enough to make friends, small enough to stay personal. No large buses, no forced socializing." },
+  { icon: Users, title: "Small Groups", description: "Only 10 travellers per trip. Intimate enough to make friends, small enough to stay personal. No large buses, no forced socializing." },
   { icon: Heart, title: "Local Stays", description: "Family-run cottages and homestays. Clean, safe, and authentic. Not luxury, but real — with hosts who care." },
   { icon: Leaf, title: "Guided Stillness", description: "Nature walks, silence sessions, and intentional downtime. Not a tour. A reset. Every activity has a purpose." },
 ];

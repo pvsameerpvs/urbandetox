@@ -12,6 +12,20 @@ export const BRAND = {
   address: "Bangalore, India",
 } as const;
 
+/**
+ * WhatsApp deep link, optionally with a prefilled message.
+ *
+ * A bare wa.me link with no number opens WhatsApp without a recipient, so the
+ * number is always included. `text` is what appears already typed in the chat,
+ * which is how an enquiry tells you which trip it came from.
+ */
+export function whatsappLink(message?: string): string {
+  const base = `https://wa.me/${BRAND.contact.whatsappNumber}`;
+  const text = message?.trim();
+  return text ? `${base}?text=${encodeURIComponent(text)}` : base;
+}
+
+
 export const DESTINATIONS = [
   { label: "All Destinations", value: "all" },
   { label: "Kodaikanal", value: "kodaikanal" },

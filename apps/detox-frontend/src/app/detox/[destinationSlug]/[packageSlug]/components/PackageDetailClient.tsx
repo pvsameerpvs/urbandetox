@@ -85,6 +85,7 @@ export function PackageDetailClient({ pkg, dest, departures, guides, selectedDep
           </motion.div>
 
           <PackageSidebar
+            packageTitle={pkg.title}
             startingPrice={pkg.startingPrice}
             nextDeparture={sidebarDeparture ? { startDate: sidebarDeparture.startDate, endDate: sidebarDeparture.endDate, seatsLeft: sidebarDeparture.seatsLeft, code: sidebarDeparture.code, price: sidebarDeparture.price, offerPrice: sidebarDeparture.offerPrice } : null}
             isSelected={selectedDepartureIsBookable}

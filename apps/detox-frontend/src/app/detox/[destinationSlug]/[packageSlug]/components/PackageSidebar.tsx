@@ -2,17 +2,18 @@
 
 import Link from "next/link";
 import { Button, Card, CardContent, Separator } from "@urbandetox/ui";
-import { BRAND, formatPrice, formatDateRange } from "@urbandetox/utils";
+import { formatPrice, formatDateRange, whatsappLink } from "@urbandetox/utils";
 import { Calendar, Users, ArrowRight, Phone, Shield, Heart, Check, Download } from "lucide-react";
 
 interface PackageSidebarProps {
+  packageTitle: string;
   startingPrice: number;
   nextDeparture: { startDate: string; endDate: string; seatsLeft: number; code: string; price: number; offerPrice?: number } | null;
   isSelected?: boolean;
   itineraryPdf?: string;
 }
 
-export function PackageSidebar({ startingPrice, nextDeparture, isSelected, itineraryPdf }: PackageSidebarProps) {
+export function PackageSidebar({ packageTitle, startingPrice, nextDeparture, isSelected, itineraryPdf }: PackageSidebarProps) {
   return (
     <aside className="hidden lg:block">
       <div className="sticky top-24 space-y-4">
@@ -53,7 +54,11 @@ export function PackageSidebar({ startingPrice, nextDeparture, isSelected, itine
               </Link>
             </Button>
             <Button variant="outline" className="w-full rounded-xl border-border/60 h-12 text-sm font-medium" asChild>
-              <a href={BRAND.contact.whatsapp} target="_blank" rel="noopener noreferrer">
+              <a
+                href={whatsappLink(`Hi, I would like details about ${packageTitle}.`)}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Phone className="mr-2 h-4 w-4" /> Ask on WhatsApp
               </a>
             </Button>
@@ -83,7 +88,7 @@ export function PackageSidebar({ startingPrice, nextDeparture, isSelected, itine
             <h4 className="text-sm font-bold">Why book with us?</h4>
             <div className="space-y-2.5">
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Shield className="h-3.5 w-3.5 text-brand shrink-0" /> Small groups (6-12 people)
+                <Shield className="h-3.5 w-3.5 text-brand shrink-0" /> Only 10 travellers per trip
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Heart className="h-3.5 w-3.5 text-brand shrink-0" /> Local homestays

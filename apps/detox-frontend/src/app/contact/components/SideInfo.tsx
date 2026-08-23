@@ -2,7 +2,7 @@
 
 import { Clock, Instagram, MessageCircle } from "lucide-react";
 import { Card, CardContent, Button } from "@urbandetox/ui";
-import { BRAND } from "@urbandetox/utils";
+import { BRAND, whatsappLink } from "@urbandetox/utils";
 
 export function SideInfo() {
   return (
@@ -57,7 +57,7 @@ export function SideInfo() {
           </div>
           <p className="text-sm text-white/70 mb-4">Most of our travelers book via WhatsApp. Drop us a message and we will guide you through the process.</p>
           <Button className="w-full rounded-xl bg-white text-brand hover:bg-white/90 h-11 font-semibold" asChild>
-            <a href={BRAND.contact.whatsapp} target="_blank" rel="noopener noreferrer"><MessageCircle className="mr-2 h-4 w-4" /> Chat on WhatsApp</a>
+            <a href={whatsappLink("Hi, I have a question about Urban Detox trips.")} target="_blank" rel="noopener noreferrer"><MessageCircle className="mr-2 h-4 w-4" /> Chat on WhatsApp</a>
           </Button>
         </CardContent>
       </Card>

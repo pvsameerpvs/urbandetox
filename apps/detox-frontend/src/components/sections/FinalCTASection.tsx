@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import { BRAND, cn } from "@urbandetox/utils";
+import { BRAND, cn, whatsappLink } from "@urbandetox/utils";
 import { Button } from "@urbandetox/ui";
 
 export function FinalCTASection() {
@@ -47,7 +47,7 @@ export function FinalCTASection() {
                 )}
                 asChild
               >
-                <Link href={BRAND.contact.whatsapp} target="_blank" rel="noopener noreferrer">
+                <Link href={whatsappLink("Hi, I need help choosing an Urban Detox trip.")} target="_blank" rel="noopener noreferrer">
                   <MessageCircle className="mr-2 h-5 w-5" />
                   Chat on WhatsApp
                 </Link>
