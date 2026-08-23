@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ChevronDown } from "lucide-react";
 import type { Destination, Package } from "@urbandetox/utils";
 import { buildQuickAnswers } from "@/lib/quick-answers";
 
@@ -22,15 +23,25 @@ interface QuickAnswersProps {
  *
  * Deliberately a server component with no framer-motion: text that animates in
  * on scroll is text a crawler may sample before it exists.
+ *
+ * Collapsed by default, because fully expanded this was four questions and
+ * eight paragraphs of body copy in the eighth section of an eleven-section
+ * homepage, which made the page feel endless.
+ *
+ * Native <details> rather than a JS accordion on purpose. The answer text stays
+ * in the HTML whether or not the disclosure is open, so it is still there to be
+ * indexed and quoted; a scripted accordion that mounts its panel on click would
+ * ship a page with no answers on it. It is also keyboard operable and
+ * screen-reader labelled with no work from us.
  */
 export function QuickAnswers({ destinations, packages }: QuickAnswersProps) {
   const answers = buildQuickAnswers(destinations, packages);
   if (answers.length === 0) return null;
 
   return (
-    <section className="py-16 sm:py-24 bg-white" aria-labelledby="quick-answers">
+    <section className="py-14 sm:py-20 bg-white" aria-labelledby="quick-answers">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-10 sm:mb-14">
+        <div className="mb-8 sm:mb-10">
           <div className="flex items-center gap-3 mb-5">
             <div className="h-px w-10 bg-brand" />
             <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
@@ -45,31 +56,43 @@ export function QuickAnswers({ destinations, packages }: QuickAnswersProps) {
           </h2>
         </div>
 
-        <div className="space-y-10 sm:space-y-12">
-          {answers.map((a) => (
-            <article key={a.id}>
-              {/* h3 under the section h2: the question is the heading, so the
-                  heading text matches the query it should win. */}
-              <h3 className="text-lg sm:text-xl font-bold mb-3 leading-snug">
-                {a.question}
-              </h3>
-              {a.paragraphs.map((p, i) => (
-                <p
-                  key={i}
-                  className="text-base text-muted-foreground leading-relaxed mb-3 last:mb-0"
-                >
-                  {p}
-                </p>
-              ))}
-              {a.href && (
-                <Link
-                  href={a.href}
-                  className="mt-1 inline-block text-sm font-semibold text-brand underline underline-offset-4 hover:no-underline"
-                >
-                  {a.linkLabel}
-                </Link>
-              )}
-            </article>
+        <div className="divide-y divide-border/60 border-y border-border/60">
+          {answers.map((a, index) => (
+            <details
+              key={a.id}
+              /* First one open so the section reads as answers rather than a
+                 row of closed bars. */
+              open={index === 0}
+              className="group py-4 sm:py-5"
+            >
+              <summary className="flex cursor-pointer list-none items-start justify-between gap-4 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40">
+                {/* h3 under the section h2: the question is the heading, so the
+                    heading text matches the query it should win. */}
+                <h3 className="text-base font-bold leading-snug sm:text-lg">{a.question}</h3>
+                <ChevronDown
+                  aria-hidden="true"
+                  className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-180"
+                />
+              </summary>
+              <div className="pr-9 pt-3">
+                {a.paragraphs.map((p, i) => (
+                  <p
+                    key={i}
+                    className="mb-3 text-sm leading-relaxed text-muted-foreground last:mb-0 sm:text-base"
+                  >
+                    {p}
+                  </p>
+                ))}
+                {a.href && (
+                  <Link
+                    href={a.href}
+                    className="mt-2 inline-block text-sm font-semibold text-brand underline underline-offset-4 hover:no-underline"
+                  >
+                    {a.linkLabel}
+                  </Link>
+                )}
+              </div>
+            </details>
           ))}
         </div>
       </div>

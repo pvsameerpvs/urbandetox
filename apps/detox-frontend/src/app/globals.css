@@ -47,3 +47,12 @@
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
+/*
+ * The QuickAnswers section on the homepage uses native <details> so its answer
+ * text stays in the HTML while collapsed. Tailwind's list-none hides the marker
+ * in Firefox; WebKit needs its own pseudo-element.
+ */
+summary::-webkit-details-marker {
+  display: none;
+}
