@@ -134,7 +134,7 @@ export function buildQuickAnswers(
         capIsUniform
           ? `Every Urban Detox departure is capped at ${modalCap} travellers.`
           : `Urban Detox caps ${atCap} of its ${live.length} trips at ${modalCap} travellers; the exceptions are private university and corporate charters, which are booked as a whole group and run larger.`,
-        `The cap is the product, not a target — it is what lets a trip use family-run stays and a single vehicle instead of a hotel block and a coach.`,
+        `The cap is the product, not a target. It is what lets a trip use family-run stays and a single vehicle instead of a hotel block and a coach.`,
       ],
       href: "/faqs",
       linkLabel: "Read the full FAQs",

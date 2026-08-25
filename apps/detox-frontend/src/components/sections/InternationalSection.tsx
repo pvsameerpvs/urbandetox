@@ -37,27 +37,27 @@ export function InternationalSection({ destinations, packages }: InternationalSe
           <div>
             <div className="mb-3 flex items-center gap-2">
               <Globe2 className="h-4 w-4 text-brand" />
-              <span className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
+              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
                 Beyond India
               </span>
             </div>
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+            <h2 className="text-xl font-bold tracking-tight sm:text-3xl">
               We travel <span className="text-brand">outside India</span> too
             </h2>
-            <p className="mt-2 max-w-lg text-sm text-muted-foreground">
+            <p className="mt-2 max-w-lg text-xs sm:text-sm text-muted-foreground">
               Same small groups and the same arranged-for-you approach, on trips
               that leave the country.
             </p>
           </div>
           <Link
             href="/detox?scope=international"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand transition-colors hover:text-brand/80"
+            className="inline-flex items-center gap-1.5 py-3 -my-3 text-sm font-semibold text-brand transition-colors hover:text-brand/80"
           >
             See international trips <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+        <div className="grid grid-cols-2 gap-3 sm:gap-5">
           {dests.map((dest, i) => {
             const trips = packages.filter((p) => p.destinationSlug === dest.slug);
             const from = trips.length
@@ -72,27 +72,28 @@ export function InternationalSection({ destinations, packages }: InternationalSe
                 transition={{ duration: 0.5, delay: i * 0.1 }}
               >
                 <Link href={`/detox/${dest.slug}`} className="group block">
-                  <div className="relative h-[300px] overflow-hidden rounded-2xl shadow-lg shadow-black/[0.04] sm:h-[360px]">
+                  <div className="relative h-[190px] overflow-hidden rounded-2xl shadow-lg shadow-black/[0.04] sm:h-[360px]">
                     <Image
                       src={safeImageUrl(dest.image)}
                       alt={dest.imageAlt || `${dest.name} trip`}
                       fill
-                      sizes="(max-width: 1024px) 100vw, 50vw"
+                      sizes="(max-width: 1024px) 50vw, 50vw"
                       className="object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/55 to-transparent" />
-                    <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6">
-                      <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm">
+                    <div className="absolute inset-x-0 bottom-0 p-3.5 sm:p-6">
+                      <span className="mb-2 sm:mb-3 inline-flex items-center gap-1.5 rounded-full bg-black/60 px-2 sm:px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm">
                         <Plane className="h-3 w-3" /> {dest.country}
                       </span>
-                      <h3 className="text-xl font-bold text-white sm:text-2xl">{dest.name}</h3>
-                      <div className="mt-1.5 flex items-center justify-between">
-                        <span className="text-sm text-white/85">
+                      <h3 className="line-clamp-2 text-sm leading-tight font-bold text-white sm:text-2xl sm:leading-tight">{dest.name}</h3>
+                      <div className="mt-1.5 flex flex-col items-start gap-0.5 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
+                        <span className="text-[11px] sm:text-sm text-white/85">
                           {trips.length} {trips.length === 1 ? "trip" : "trips"}
                           {from > 0 ? ` · from ${formatPrice(from)}` : ""}
                         </span>
-                        <span className="inline-flex items-center gap-1 text-sm font-semibold text-brand-on-media transition-all group-hover:gap-2">
-                          Explore <ArrowRight className="h-4 w-4" />
+                        <span className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-brand-on-media transition-all group-hover:gap-2">
+                          <span className="hidden sm:inline">Explore</span>
+                          <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                         </span>
                       </div>
                     </div>

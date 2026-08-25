@@ -75,7 +75,7 @@ export function HeroTextContent({ heroText }: HeroTextContentProps) {
         <motion.div variants={itemVariants} className="mt-7 flex flex-wrap items-center justify-center gap-3">
           <Button
             size="lg"
-            className="bg-[var(--button-lime)] text-[var(--button-lime-text)] hover:bg-[var(--button-lime-text)] hover:text-[var(--button-lime)] font-bold px-5 sm:px-7 h-10 sm:h-11 text-xs sm:text-sm shadow-lg shadow-[var(--button-lime)]/10 tracking-wide"
+            className="bg-[var(--button-lime)] text-[var(--button-lime-text)] hover:bg-[var(--button-lime-text)] hover:text-[var(--button-lime)] font-bold px-5 sm:px-7 h-11 text-xs sm:text-sm shadow-lg shadow-[var(--button-lime)]/10 tracking-wide"
             asChild
           >
             <Link href="/detox">
@@ -85,7 +85,7 @@ export function HeroTextContent({ heroText }: HeroTextContentProps) {
           <Button
             size="lg"
             variant="outline"
-            className="border-white/60 text-white hover:bg-black/55 hover:text-white bg-black/40 h-10 sm:h-11 px-4 sm:px-5 text-xs sm:text-sm"
+            className="border-white/60 text-white hover:bg-black/55 hover:text-white bg-black/40 h-11 px-4 sm:px-5 text-xs sm:text-sm"
             asChild
           >
             <Link href="/detox">{heroText.ctaSecondary}</Link>

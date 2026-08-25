@@ -29,12 +29,12 @@ export function HeroSearchRow() {
           onChange={(e) => setTerm(e.target.value)}
           placeholder="Search all detox trips"
           aria-label="Search all detox trips"
-          className="h-10 w-full rounded-xl border border-border bg-background pl-9 pr-3 text-sm outline-none transition-colors focus:border-brand/50 focus-visible:ring-2 focus-visible:ring-brand/20"
+          className="h-12 w-full rounded-xl border border-border bg-background pl-9 pr-3 text-sm outline-none transition-colors focus:border-brand/50 focus-visible:ring-2 focus-visible:ring-brand/20"
         />
       </div>
       <button
         type="submit"
-        className="h-10 shrink-0 rounded-xl bg-brand px-4 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+        className="h-12 shrink-0 rounded-xl bg-brand px-4 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
       >
         Search
       </button>

@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import { BRAND, cn, whatsappLink } from "@urbandetox/utils";
+import { cn, whatsappLink } from "@urbandetox/utils";
 import { Button } from "@urbandetox/ui";
 
 export function FinalCTASection() {
@@ -32,30 +32,30 @@ export function FinalCTASection() {
             {/* Editorial line accent */}
 
 
-            <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-5xl">
+            <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-5xl">
               Need a break, <br></br>but don&apos;t know where to go?
             </h2>
 
-            <p className="mx-auto mt-5 max-w-xl text-lg text-white/80">
+            <p className="mx-auto mt-4 sm:mt-5 max-w-xl text-sm sm:text-lg text-white/80">
               Chat with us. We&apos;ll help you find the right offbeat detox without overthinking it.
             </p>
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+            <div className="mt-6 sm:mt-10 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
               <Button
                 size="lg"
                 className={cn(
-                  "bg-[var(--button-lime)] text-[var(--button-lime-text)] hover:bg-[var(--button-lime-text)] hover:text-[var(--button-lime)] font-medium px-8 h-12 text-base shadow-lg shadow-[var(--button-lime)]/10"
+                  "bg-[var(--button-lime)] text-[var(--button-lime-text)] hover:bg-[var(--button-lime-text)] hover:text-[var(--button-lime)] font-medium px-5 sm:px-8 h-11 sm:h-12 text-sm sm:text-base shadow-lg shadow-[var(--button-lime)]/10"
                 )}
                 asChild
               >
                 <Link href={whatsappLink("Hi, I need help choosing an Urban Detox trip.")} target="_blank" rel="noopener noreferrer">
-                  <MessageCircle className="mr-2 h-5 w-5" />
+                  <MessageCircle className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                   Chat on WhatsApp
                 </Link>
               </Button>
               <Button
                 size="lg"
                 variant="outline"
-                className="border-white/30 text-white hover:bg-white/10 bg-transparent h-12 px-6"
+                className="border-white/30 text-white hover:bg-white/10 bg-transparent h-11 sm:h-12 px-4 sm:px-6 text-sm sm:text-base"
                 asChild
               >
                 <Link href="/guide">

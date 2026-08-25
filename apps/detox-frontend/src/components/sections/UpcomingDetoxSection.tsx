@@ -68,10 +68,16 @@ export function UpcomingDetoxSection({ departures }: UpcomingDetoxSectionProps) 
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-80px" }}
-          className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3"
         >
-          {display.map((dep) => (
-            <UpcomingDetoxCard key={dep.id} dep={dep} pkg={dep.pkg} dest={dep.dest} />
+          {display.map((dep, i) => (
+            <UpcomingDetoxCard
+              key={dep.id}
+              dep={dep}
+              pkg={dep.pkg}
+              dest={dep.dest}
+              className={activeDuration === null && i >= 4 ? "hidden sm:block" : undefined}
+            />
           ))}
         </motion.div>
 
@@ -110,7 +116,7 @@ export function UpcomingDetoxSection({ departures }: UpcomingDetoxSectionProps) 
         <div className="mt-10 sm:hidden text-center">
           <Link
             href="/detox"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-brand hover:text-brand/80 transition-colors group"
+            className="inline-flex items-center gap-2 py-3 -my-3 text-sm font-semibold text-brand hover:text-brand/80 transition-colors group"
           >
             <span className="uppercase tracking-wider">View All Detox</span>
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />

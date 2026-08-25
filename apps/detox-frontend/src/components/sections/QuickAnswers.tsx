@@ -42,15 +42,15 @@ export function QuickAnswers({ destinations, packages }: QuickAnswersProps) {
     <section className="py-14 sm:py-20 bg-white" aria-labelledby="quick-answers">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8 sm:mb-10">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="h-px w-10 bg-brand" />
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
+          <div className="flex items-center gap-2 mb-2.5 sm:gap-3 sm:mb-5">
+            <div className="h-px w-6 sm:w-10 bg-brand" />
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-brand">
               Straight Answers
             </span>
           </div>
           <h2
             id="quick-answers"
-            className="text-3xl sm:text-4xl font-bold tracking-tight leading-[1.15]"
+            className="text-xl sm:text-4xl font-bold tracking-tight leading-[1.15]"
           >
             What people ask before they book
           </h2>
