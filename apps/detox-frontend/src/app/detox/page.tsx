@@ -89,8 +89,16 @@ export default async function DetoxBrowsePage({ searchParams }: PageProps) {
     .filter((d) => Number.isFinite(d) && d > 0)
     .sort((a, b) => a - b);
 
-  // Any active filter narrows the rendered list, so the enumerating ItemList is
-  // suppressed. See lib/seo/collection.ts.
+  /**
+   * Any active filter narrows the rendered list, so the enumerating ItemList is
+   * suppressed. See lib/seo/collection.ts.
+   *
+   * The node is built from `scoped`, the same array DetoxResults renders, not
+   * from `packages`. Building it from the wider list meant the India and
+   * International views each enumerated all seventeen trips: the international
+   * view showed one trip and marked up seventeen, sixteen of which were not on
+   * the page. Both of those URLs are in the sitemap.
+   */
   const isFiltered = Object.entries(filters).some(([k, v]) =>
     k === "weekend" ? v === true : Array.isArray(v) ? v.length > 0 : v !== undefined
   );
@@ -100,7 +108,7 @@ export default async function DetoxBrowsePage({ searchParams }: PageProps) {
       <JsonLd
         id="ld-detox-browse"
         nodes={[
-          ...buildTripCollectionNodes(packages, destinations, isFiltered),
+          ...buildTripCollectionNodes(scoped, destinations, isFiltered),
           buildBreadcrumbNode("/detox", [
             { name: "Home", path: "/" },
             { name: "Explore Detox", path: "/detox" },

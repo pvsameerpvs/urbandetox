@@ -25,7 +25,18 @@ export function PackageFAQsSection({ faqs }: PackageFAQsSectionProps) {
         <span className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">Questions</span>
       </div>
       <h2 className="text-2xl sm:text-3xl font-bold mb-6">Trip <span className="text-brand">FAQs</span></h2>
-      <Accordion className="space-y-3">
+      <Accordion
+        /* hiddenUntilFound keeps the answers in the DOM using
+           hidden="until-found" instead of unmounting the panel. Base UI
+           defaults keepMounted and hiddenUntilFound to false, so the answers
+           were only mounted on click: this page emitted FAQPage markup whose
+           acceptedAnswer text appeared nowhere in the rendered HTML, which is
+           the invisible-marked-up-content case Google's guidelines forbid, and
+           it forfeited the whole reason for emitting FAQPage — machine-readable
+           answers for AI summarisers. It also lets browser find-in-page reach
+           a collapsed answer. */
+        hiddenUntilFound
+       className="space-y-3">
         {faqs.map((faq, i) => (
           <AccordionItem key={i} value={`faq-${i}`} className="border-0 shadow-lg shadow-black/[0.03] bg-white rounded-2xl overflow-hidden">
             <AccordionTrigger className="px-5 sm:px-6 py-5 hover:no-underline text-left text-sm font-bold">

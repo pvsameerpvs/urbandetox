@@ -57,7 +57,18 @@ export function FaqsClient({ categories, faqs }: FaqsClientProps) {
           ))}
         </div>
 
-        <Accordion className="space-y-3">
+        <Accordion
+        /* hiddenUntilFound keeps the answers in the DOM using
+           hidden="until-found" instead of unmounting the panel. Base UI
+           defaults keepMounted and hiddenUntilFound to false, so the answers
+           were only mounted on click: this page emitted FAQPage markup whose
+           acceptedAnswer text appeared nowhere in the rendered HTML, which is
+           the invisible-marked-up-content case Google's guidelines forbid, and
+           it forfeited the whole reason for emitting FAQPage — machine-readable
+           answers for AI summarisers. It also lets browser find-in-page reach
+           a collapsed answer. */
+        hiddenUntilFound
+       className="space-y-3">
           {filtered.map((faq) => (
             <AccordionItem key={faq.id} value={faq.id} className="rounded-xl border border-border/60 bg-card px-1">
               <AccordionTrigger className="px-4 py-4 hover:no-underline text-left text-sm font-medium">
