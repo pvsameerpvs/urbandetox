@@ -39,7 +39,7 @@ export function UpcomingDetoxSection({ departures }: UpcomingDetoxSectionProps) 
   }, [departures, activeDuration]);
 
   return (
-    <section className="py-24 sm:py-32 bg-secondary/[0.02]">
+    <section className="py-16 sm:py-24 bg-secondary/[0.02]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <UpcomingDetoxHeader />
 

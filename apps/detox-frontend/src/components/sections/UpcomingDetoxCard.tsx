@@ -45,7 +45,7 @@ export function UpcomingDetoxCard({ dep, pkg, dest }: UpcomingDetoxCardProps) {
           "hover:shadow-xl transition-all duration-500"
         )}
       >
-        <div className="relative h-[200px] sm:h-[220px] overflow-hidden rounded-t-2xl shrink-0">
+        <div className="relative h-[180px] sm:h-[200px] overflow-hidden rounded-t-2xl shrink-0">
           <Image
             src={dep.image || pkg.coverImage}
             alt={pkg.title}
@@ -58,7 +58,7 @@ export function UpcomingDetoxCard({ dep, pkg, dest }: UpcomingDetoxCardProps) {
           />
         </div>
 
-        <CardContent className="p-5 sm:p-6 flex-1 flex flex-col">
+        <CardContent className="p-5 flex-1 flex flex-col">
           <div className="flex-1">
             <p className="text-sm font-semibold text-muted-foreground tracking-wide mb-2">
               {formatCardDateRange(dep.startDate, dep.endDate)}
@@ -72,7 +72,7 @@ export function UpcomingDetoxCard({ dep, pkg, dest }: UpcomingDetoxCardProps) {
             </p>
 
             <h3 className="text-lg font-bold leading-snug mb-1.5">{pkg.title}</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+            <p className="line-clamp-2 text-sm text-muted-foreground leading-relaxed mb-3">
               {pkg.subtitle}
             </p>
 
@@ -80,7 +80,7 @@ export function UpcomingDetoxCard({ dep, pkg, dest }: UpcomingDetoxCardProps) {
               <span>{dep.seatsLeft} seats left</span>
               <span>{dep.seatsTotal} max</span>
             </div>
-            <div className="h-1 w-full bg-muted rounded-full overflow-hidden mb-5">
+            <div className="h-1 w-full bg-muted rounded-full overflow-hidden mb-4">
               <div
                 className="h-full bg-brand/20 rounded-full transition-all"
                 style={{ width: `${seatsPercent}%` }}
@@ -88,7 +88,7 @@ export function UpcomingDetoxCard({ dep, pkg, dest }: UpcomingDetoxCardProps) {
             </div>
           </div>
 
-          <div className="border-t border-border mb-5" />
+          <div className="border-t border-border mb-4" />
 
           <div className="flex items-end justify-between gap-3">
             <div>

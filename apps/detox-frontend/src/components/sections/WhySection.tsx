@@ -61,22 +61,22 @@ function ReasonCard({
         {/* Subtle top accent line */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand/40 via-brand/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-        <CardContent className="p-8 sm:p-10">
+        <CardContent className="p-6 sm:p-7">
           {/* Number + Icon row */}
-          <div className="flex items-start justify-between mb-6">
-            <span className="text-4xl sm:text-5xl font-bold text-brand/10 group-hover:text-brand/20 transition-colors duration-500">
+          <div className="flex items-start justify-between mb-4">
+            <span className="text-3xl sm:text-4xl font-bold text-brand/10 group-hover:text-brand/20 transition-colors duration-500">
               {num}
             </span>
-            <div className="rounded-2xl bg-brand/8 p-3.5 group-hover:bg-brand/12 transition-colors duration-500">
+            <div className="rounded-2xl bg-brand/8 p-3 group-hover:bg-brand/12 transition-colors duration-500">
               <Icon className="h-6 w-6 text-brand" />
             </div>
           </div>
 
           {/* Title */}
-          <h3 className="text-xl font-bold mb-3 leading-snug">{title}</h3>
+          <h3 className="text-lg font-bold mb-2 leading-snug">{title}</h3>
 
           {/* Description */}
-          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+          <p className="text-sm text-muted-foreground leading-relaxed">
             {description}
           </p>
         </CardContent>
@@ -87,10 +87,10 @@ function ReasonCard({
 
 export function WhySection() {
   return (
-    <section className="py-24 sm:py-32 bg-white">
+    <section className="py-16 sm:py-24 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 mb-16 sm:mb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 mb-10 sm:mb-12">
           <div>
             <div className="flex items-center gap-3 mb-5">
               <div className="h-px w-10 bg-brand" />

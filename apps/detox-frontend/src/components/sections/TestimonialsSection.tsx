@@ -22,10 +22,17 @@ export function TestimonialsSection({
   googleTotal,
   googleUrl,
 }: TestimonialsSectionProps) {
+  /**
+   * One clean row, not a row plus an orphan. The grid is four across at lg and
+   * there are five real testimonials after the duplicated rows were removed,
+   * so rendering all of them left a single card stranded on its own line.
+   */
+  const shown = testimonials.slice(0, 4);
+
   return (
-    <section className="py-24 sm:py-32 bg-white">
+    <section className="py-16 sm:py-24 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 mb-16 sm:mb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 mb-10 sm:mb-12">
           <div>
             <div className="flex items-center gap-3 mb-5">
               <div className="h-px w-10 bg-brand" />
@@ -56,7 +63,7 @@ export function TestimonialsSection({
           viewport={{ once: true, margin: "-80px" }}
           className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
         >
-          {testimonials.map((t) => (
+          {shown.map((t) => (
             <motion.div key={t.id} variants={itemVariants}>
               <Card
                 className={cn(

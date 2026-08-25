@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 
 export function UpcomingDetoxHeader() {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 mb-16 sm:mb-20">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 mb-10 sm:mb-12">
       <div>
         <div className="flex items-center gap-3 mb-5">
           <div className="h-px w-10 bg-brand" />

@@ -15,9 +15,9 @@ interface GuideHighlightsSectionProps {
 
 export function GuideHighlightsSection({ guides }: GuideHighlightsSectionProps) {
   return (
-    <section className="py-24 sm:py-32 bg-secondary/[0.02]">
+    <section className="py-16 sm:py-24 bg-secondary/[0.02]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 mb-16 sm:mb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 mb-10 sm:mb-12">
           <div>
             <div className="flex items-center gap-3 mb-5">
               <div className="h-px w-10 bg-brand" />

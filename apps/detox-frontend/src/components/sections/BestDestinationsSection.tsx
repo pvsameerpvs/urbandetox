@@ -99,11 +99,27 @@ function DestinationCard({
   );
 }
 
+/**
+ * How many destinations the homepage shows.
+ *
+ * This section rendered all 16 in a two-column grid of 380px cards, which is
+ * eight rows on desktop and made it 5,979px, 27.7% of the entire homepage. The
+ * homepage is a shop window; /detox is the catalogue, and it already lists
+ * every destination with filters and scope tabs.
+ *
+ * Six divides evenly by both 2 and 3, so no row is ever left with a single
+ * orphan card at any breakpoint.
+ */
+const HOMEPAGE_LIMIT = 6;
+
 export function BestDestinationsSection({ destinations, packageCounts }: BestDestinationsSectionProps) {
+  const shown = destinations.slice(0, HOMEPAGE_LIMIT);
+  const remaining = Math.max(0, destinations.length - shown.length);
+
   return (
-    <section className="py-24 sm:py-32 bg-white">
+    <section className="py-16 sm:py-24 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 mb-16 sm:mb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 mb-10 sm:mb-12">
           <div>
             <div className="flex items-center gap-3 mb-5">
               <div className="h-px w-10 bg-brand" />
@@ -121,14 +137,16 @@ export function BestDestinationsSection({ destinations, packageCounts }: BestDes
               href="/detox"
               className="hidden sm:inline-flex items-center gap-2 text-sm font-semibold text-brand hover:text-brand/80 transition-colors group"
             >
-              <span className="uppercase tracking-wider">View All Destinations</span>
+              <span className="uppercase tracking-wider">
+                {remaining > 0 ? `View all ${destinations.length} destinations` : "View all destinations"}
+              </span>
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          {destinations.map((dest, i) => (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {shown.map((dest, i) => (
             <DestinationCard
               key={dest.id}
               destination={dest}
