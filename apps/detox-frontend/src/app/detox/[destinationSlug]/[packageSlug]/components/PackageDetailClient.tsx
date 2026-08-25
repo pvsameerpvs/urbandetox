@@ -71,7 +71,7 @@ export function PackageDetailClient({ pkg, dest, departures, guides, reviews, se
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="lg:col-span-2 space-y-14">
             <OverviewSection description={dest.description} durationLabel={pkg.durationLabel} subtitle={pkg.subtitle} />
             <HighlightsSection highlights={pkg.highlights} />
-            <GallerySection images={pkg.gallery || []} />
+            <GallerySection images={pkg.gallery || []} destinationName={dest.name} />
             <ItinerarySection itinerary={pkg.itinerary} />
             <InclusionsSection included={pkg.included || []} notIncluded={pkg.notIncluded || []} />
             <TripLogisticsSection pkg={pkg} />

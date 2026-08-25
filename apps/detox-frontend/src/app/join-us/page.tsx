@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { routeSeo } from "@/lib/metadata";
 import { fetchDestinations } from "@/lib/api";
 import { JoinHero } from "./components/JoinHero";
 import { GuideApplicationForm } from "./components/GuideApplicationForm";
@@ -9,6 +10,9 @@ export const metadata: Metadata = {
   title: "Become a Guide",
   description:
     "Apply to guide Urban Detox trips. Tell us the destinations you know and the languages you speak.",
+  // Without this the page had no canonical of its own and its og:url pointed
+  // at the homepage, inherited from the root layout.
+  ...routeSeo({ path: "/join-us" }),
 };
 
 const EXPECTATIONS = [

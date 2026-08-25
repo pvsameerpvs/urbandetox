@@ -30,6 +30,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: dbTitle(guide.seoTitle, guide.title),
     description: clamp(guide.seoDescription || guide.excerpt),
     ...routeSeo({
+      // Editorial content with an Article node, so og:type is article, not
+      // the website default.
+      type: "article",
       path: `/guide/${guide.slug}`,
       image: guide.image,
       imageAlt: guide.imageAlt || guide.title,
@@ -72,6 +75,7 @@ export default async function GuideDetailPage({ params }: PageProps) {
         title={guide.title}
         excerpt={guide.excerpt}
         content={guide.content}
+        imageAlt={guide.imageAlt}
         category={guide.category}
         image={guide.image}
         destName={dest?.name}

@@ -79,8 +79,10 @@ export function routeSeo(input: {
   path: string;
   image?: string | null;
   imageAlt?: string | null;
+  /** "article" for editorial pages; everything else is a website. */
+  type?: "website" | "article";
 }): Pick<Metadata, "alternates" | "openGraph"> {
-  const { path, image, imageAlt } = input;
+  const { path, image, imageAlt, type = "website" } = input;
   /**
    * Falls back to the brand card rather than omitting images.
    *
@@ -96,7 +98,7 @@ export function routeSeo(input: {
     alternates: { canonical: path },
     openGraph: {
       ...OG_BASE,
-      type: "website",
+      type,
       url: path,
       images,
     },

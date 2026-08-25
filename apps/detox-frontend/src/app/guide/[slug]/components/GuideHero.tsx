@@ -13,17 +13,19 @@ interface GuideHeroProps {
   excerpt: string;
   /** Article body, for the reading estimate. */
   content: string;
+  /** Human-written alt. Was only reaching og:image:alt, never the <img>. */
+  imageAlt?: string | null;
   category: string;
   image: string;
   destName?: string;
   featured?: boolean;
 }
 
-export function GuideHero({ title, excerpt, content, category, image, destName, featured }: GuideHeroProps) {
+export function GuideHero({ title, excerpt, content, category, image, imageAlt, destName, featured }: GuideHeroProps) {
   return (
     <div className="relative">
       <div className="relative h-[45vh] min-h-[320px] max-h-[520px] overflow-hidden">
-        <Image src={safeImageUrl(image)} alt={title} fill className="object-cover" sizes="100vw" priority />
+        <Image src={safeImageUrl(image)} alt={imageAlt || title} fill className="object-cover" sizes="100vw" priority />
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/65 to-black/40" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60" />
       </div>
