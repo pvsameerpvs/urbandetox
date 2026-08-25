@@ -1,4 +1,5 @@
 import type { Departure, Destination, Package } from "@urbandetox/utils";
+import { getTodayDateKey } from "@/lib/departure-availability";
 import { destinationPlace } from "./place";
 import { ORG_ID, absoluteUrl, publishablePrice } from "./site";
 import { packagePath, tripId } from "./trip";
@@ -28,6 +29,23 @@ function eventStatus(dep: Departure): string {
   if (dep.tripStatus === "canceled") return "https://schema.org/EventCancelled";
   if (dep.tripStatus === "postponed") return "https://schema.org/EventPostponed";
   return "https://schema.org/EventScheduled";
+}
+
+/**
+ * Whether this departure should be described as an Event at all.
+ *
+ * schema.org has no status meaning "already happened", so a finished or past
+ * departure would be published as EventScheduled with a date in the past. That
+ * reached the markup through a deep link: selectVisibleDepartures unshifts the
+ * ?departure= code regardless of bookability, so /...?departure=NKL-001
+ * resurrected a trip that ran two months ago and marked it as scheduled.
+ *
+ * Omitting is always safe; over-claiming is not. The row is still rendered on
+ * the page, it is simply not asserted as an upcoming event.
+ */
+function isEventPublishable(dep: Departure, todayKey: string): boolean {
+  if (dep.tripStatus === "finished") return false;
+  return dep.startDate >= todayKey;
 }
 
 /**
@@ -67,8 +85,9 @@ export function buildDepartureEventNodes(
   departures: Departure[]
 ): JsonLdNode[] {
   const url = absoluteUrl(packagePath(pkg));
+  const todayKey = getTodayDateKey();
 
-  return departures.map((dep) => {
+  return departures.filter((dep) => isEventPublishable(dep, todayKey)).map((dep) => {
     const price = publishablePrice(dep.offerPrice ?? dep.price);
     const seats = seatCountsArePublishable(dep);
     return prune({
@@ -76,6 +95,14 @@ export function buildDepartureEventNodes(
       "@id": `${url}#departure-${dep.code}`,
       name: `${pkg.title} — ${dep.startDate}`,
       url: `${url}?departure=${encodeURIComponent(dep.code)}`,
+      /**
+       * image is what decides whether an event result renders with a thumbnail,
+       * and Event is the only rich result this site can win, so it is the
+       * highest-value property on this node. Falls back through the departure's
+       * own photo, the trip cover, then the destination.
+       */
+      image: [dep.image, pkg.coverImage, dest.image].filter(Boolean).slice(0, 1),
+      description: pkg.subtitle || undefined,
       about: { "@id": tripId(pkg) },
       organizer: { "@id": ORG_ID },
       // Dates are already YYYY-MM-DD in the departures table. Times are
@@ -92,18 +119,28 @@ export function buildDepartureEventNodes(
       // markup honest even where the marketing copy says "groups of 10".
       maximumAttendeeCapacity: dep.seatsTotal > 0 ? dep.seatsTotal : undefined,
       remainingAttendeeCapacity: seats ? dep.seatsLeft : undefined,
-      // Price is gated: see publishablePrice. Availability is always true, so
-      // the Offer still carries it when both price and seat count are withheld.
-      offers: prune({
-        "@type": "Offer",
-        url: absoluteUrl(`/book/${dep.code}`),
-        availability: availability(dep),
-        inventoryLevel: seats
-          ? prune({ "@type": "QuantitativeValue", value: dep.seatsLeft })
-          : undefined,
-        price: price ?? undefined,
-        priceCurrency: price ? "INR" : undefined,
-      }),
+      /**
+       * The whole Offer is omitted when no price is publishable.
+       *
+       * Google's Event spec makes price and priceCurrency required once offers
+       * is present, and 41 of 46 departures sit at the placeholder, so this
+       * node previously shipped an incomplete Offer on every trip page. Nothing
+       * is lost by dropping it: availability is already carried by eventStatus
+       * and remainingAttendeeCapacity, and Event is the only rich result this
+       * site is eligible for, so it is worth keeping valid.
+       */
+      offers: price
+        ? prune({
+            "@type": "Offer",
+            url: absoluteUrl(`/book/${dep.code}`),
+            availability: availability(dep),
+            inventoryLevel: seats
+              ? prune({ "@type": "QuantitativeValue", value: dep.seatsLeft })
+              : undefined,
+            price,
+            priceCurrency: "INR",
+          })
+        : undefined,
     });
   });
 }
