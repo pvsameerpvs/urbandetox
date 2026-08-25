@@ -3,6 +3,7 @@ import { clamp, routeSeo } from "@/lib/metadata";
 import { fetchDestinations } from "@/lib/api";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildBreadcrumbNode } from "@/lib/seo/breadcrumb";
+import { buildLocalGuideServiceNode } from "@/lib/seo/service";
 import { LocalGuidesHero } from "./components/LocalGuidesHero";
 import { HowItWorks } from "./components/HowItWorks";
 import { GuideRequestForm } from "./components/GuideRequestForm";
@@ -28,12 +29,16 @@ export const metadata: Metadata = {
  */
 export default async function LocalGuidesPage() {
   const destinations = await fetchDestinations().catch(() => []);
+  const countries = [...new Set(destinations.map((d) => d.country).filter(Boolean))] as string[];
 
   return (
     <div className="min-h-screen bg-white">
       <JsonLd
         id="ld-local-guides"
         nodes={[
+          // Countries we actually operate in, taken from the live destinations
+          // rather than hardcoded, so it cannot drift.
+          buildLocalGuideServiceNode(countries),
           buildBreadcrumbNode("/local-guides", [
             { name: "Home", path: "/" },
             { name: "Hire a Local Guide", path: "/local-guides" },

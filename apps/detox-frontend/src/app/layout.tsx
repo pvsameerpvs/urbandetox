@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import {
   DEFAULT_DESCRIPTION,
+  DEFAULT_OG_IMAGE,
   DEFAULT_TITLE,
   METADATA_BASE,
   OG_BASE,
@@ -45,6 +46,7 @@ export const metadata: Metadata = {
     ...OG_BASE,
     type: "website",
     url: "/",
+    images: [DEFAULT_OG_IMAGE],
   },
   twitter: { card: "summary_large_image" },
   icons: {
