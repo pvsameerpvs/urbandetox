@@ -40,14 +40,14 @@ export const faqs: FaqItem[] = [
     id: "faq-6",
     question: "What is the group size?",
     answer:
-      "Most detoxes are 6 to 12 people. We keep groups small to maintain intimacy, safety, and a low environmental footprint.",
+      "Public departures are capped at 10 travellers. Small groups are the point rather than a constraint: it is what lets a trip use a family-run stay and a single vehicle instead of a hotel block and a coach. Private corporate and university charters are booked as a whole group and can run larger.",
     category: "Experience",
   },
   {
     id: "faq-7",
     question: "Are the stays comfortable?",
     answer:
-      "We use local cottages, homestays, and family-run properties. Rooms are clean and safe, but not luxury hotel-level. The focus is on authenticity, not opulence.",
+      "We use local cottages, homestays and family-run properties. Rooms are simple and clean rather than luxury hotel standard, and the focus is on somewhere real to stay rather than somewhere expensive. Power and signal can be patchy at village stays, which is part of why they are quiet.",
     category: "Experience",
   },
   {

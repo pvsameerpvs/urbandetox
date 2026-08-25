@@ -132,7 +132,7 @@ Packing light is part of the mindset. Here is the essential list for a hill stat
 Most Urban Detox travelers join solo. Here is why it works and what to expect.
 
 **Why solo works**
-- Small groups (6-12) feel intimate, not overwhelming
+- Groups are capped at 10, which is small enough that everyone ends up at the same table
 - Shared intention creates instant connection
 - No pre-formed friend groups to break into
 - Solo travelers often make the closest bonds
