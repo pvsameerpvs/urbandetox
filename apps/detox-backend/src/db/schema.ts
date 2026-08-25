@@ -1,14 +1,15 @@
 import {
-  pgTable,
-  uuid,
-  varchar,
-  text,
-  integer,
   boolean,
-  timestamp,
+  integer,
   jsonb,
   numeric,
   pgEnum,
+  pgTable,
+  text,
+  timestamp,
+  uniqueIndex,
+  uuid,
+  varchar,
 } from "drizzle-orm/pg-core";
 
 export const departureStatusEnum = pgEnum("departure_status", [
@@ -157,23 +158,36 @@ export const guides = pgTable("guides", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
-export const faqs = pgTable("faqs", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  question: text("question").notNull(),
-  answer: text("answer").notNull(),
-  category: varchar("category", { length: 100 }).notNull(),
-});
+export const faqs = pgTable(
+  "faqs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    question: text("question").notNull(),
+    answer: text("answer").notNull(),
+    category: varchar("category", { length: 100 }).notNull(),
+  },
+  // Same reason as testimonials: without this the seed duplicated every FAQ.
+  (t) => [uniqueIndex("faqs_question_key").on(t.question)]
+);
 
-export const testimonials = pgTable("testimonials", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  name: varchar("name", { length: 255 }).notNull(),
-  location: varchar("location", { length: 255 }).notNull(),
-  quote: text("quote").notNull(),
-  image: text("image"),
-  destinationSlug: varchar("destination_slug", { length: 255 }),
-  tripDate: varchar("trip_date", { length: 20 }),
-  rating: integer("rating").notNull(),
-});
+export const testimonials = pgTable(
+  "testimonials",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: varchar("name", { length: 255 }).notNull(),
+    location: varchar("location", { length: 255 }).notNull(),
+    quote: text("quote").notNull(),
+    image: text("image"),
+    destinationSlug: varchar("destination_slug", { length: 255 }),
+    tripDate: varchar("trip_date", { length: 20 }),
+    rating: integer("rating").notNull(),
+  },
+  /**
+   * The seed strips the id, so ON CONFLICT DO NOTHING had no constraint to
+   * catch and every run appended a second copy of every row. See 0017.
+   */
+  (t) => [uniqueIndex("testimonials_name_quote_key").on(t.name, t.quote)]
+);
 
 export const seasonalTags = pgTable("seasonal_tags", {
   id: uuid("id").primaryKey().defaultRandom(),
