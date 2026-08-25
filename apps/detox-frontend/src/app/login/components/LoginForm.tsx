@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUserProfile } from "@/lib/user-profile";
 import { ArrowRight, Loader2 } from "lucide-react";
@@ -32,7 +32,7 @@ export function LoginForm() {
   const busy = useRef(false);
 
   const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginFormSchema),
+    resolver: standardSchemaResolver(loginFormSchema),
     defaultValues: { name: "", email: "", password: "", phone: "" },
   });
   const { formState: { errors, isSubmitting }, register, handleSubmit, reset, getValues } = form;

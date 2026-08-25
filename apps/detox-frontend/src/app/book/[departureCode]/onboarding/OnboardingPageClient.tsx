@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo, startTransition } from "react";
 import { useSearchParams } from "next/navigation";
 import { useForm, FormProvider, type Resolver, type FieldPath } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { motion, AnimatePresence } from "framer-motion";
 import { BookingHeader } from "../../components/BookingHeader";
 import { BookingHero } from "../../components/BookingHero";
@@ -51,7 +51,7 @@ export function OnboardingPageClient({ code, departure, pkg, dest }: OnboardingP
   const [hydrated, setHydrated] = useState(false);
 
   const form = useForm<OnboardingFormValues>({
-    resolver: zodResolver(onboardingFormSchema) as Resolver<OnboardingFormValues>,
+    resolver: standardSchemaResolver(onboardingFormSchema) as Resolver<OnboardingFormValues>,
     defaultValues: {
       travelers: [],
       groupNote: "",

@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { CheckCircle2, Loader2, Send } from "lucide-react";
 import { Button, Input, Label, Textarea } from "@urbandetox/ui";
 import type { Destination } from "@urbandetox/utils";
@@ -25,7 +25,7 @@ export function GuideApplicationForm({ destinations }: GuideApplicationFormProps
   const sendingRef = useRef(false);
 
   const form = useForm<GuideApplicationValues>({
-    resolver: zodResolver(guideApplicationSchema),
+    resolver: standardSchemaResolver(guideApplicationSchema),
     defaultValues: {
       fullName: "", email: "", phone: "", city: "",
       destinations: [], languages: [], experienceYears: 0,

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 import { fetchTestimonials } from "@/lib/api";
 import { LOGIN_IMAGE } from "./login-image";
 import { LoginHero } from "./components/LoginHero";
@@ -39,7 +40,9 @@ export default async function LoginPage() {
         viewport shorter than about 700px, taking the submit button with it.
       */}
       <div className="flex-1 flex flex-col justify-center items-center px-5 py-10 sm:px-8 lg:px-10">
-        <LoginForm />
+        <Suspense fallback={<div className="w-full max-w-[380px]" />}>
+          <LoginForm />
+        </Suspense>
       </div>
     </div>
   );

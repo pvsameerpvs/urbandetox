@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { motion } from "framer-motion";
 import { Clock, CheckCircle2, Send, Loader2 } from "lucide-react";
 import { Button, Input, Label, Textarea } from "@urbandetox/ui"
@@ -15,7 +15,7 @@ export function ContactForm() {
   const sendingRef = useRef(false);
 
   const form = useForm<ContactFormValues>({
-    resolver: zodResolver(contactFormSchema),
+    resolver: standardSchemaResolver(contactFormSchema),
     defaultValues: { name: "", email: "", subject: "", message: "" },
   });
 
