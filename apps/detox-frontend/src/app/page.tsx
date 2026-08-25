@@ -17,6 +17,9 @@ import { UpcomingDetoxSection } from "@/components/sections/UpcomingDetoxSection
 import { WhySection } from "@/components/sections/WhySection";
 import { QuickAnswers } from "@/components/sections/QuickAnswers";
 import { InternationalSection } from "@/components/sections/InternationalSection";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { buildFaqPageNode } from "@/lib/seo/faq";
+import { buildQuickAnswers } from "@/lib/quick-answers";
 import { SeasonalSection } from "@/components/sections/SeasonalSection";
 import { GuideHighlightsSection } from "@/components/sections/GuideHighlightsSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
@@ -79,8 +82,25 @@ export default async function Home() {
     };
   });
 
+  /**
+   * The FAQPage node is built from buildQuickAnswers, the exact same call the
+   * QuickAnswers section renders from, so the markup can never describe
+   * questions the page does not show. Its answers sit inside <details>, which
+   * counts as visible: the text is in the DOM collapsed, not injected on click.
+   *
+   * Worth being clear about the payoff: Google restricted FAQ rich results to
+   * well-known government and health sites, so this will not draw an accordion
+   * in the SERP. The value is machine-readable answers for AI summarisers.
+   */
+  const quickAnswers = buildQuickAnswers(destinations, packages);
+  const faqNode = buildFaqPageNode(
+    "/",
+    quickAnswers.map((a) => ({ question: a.question, answer: a.paragraphs.join(" ") }))
+  );
+
   return (
     <>
+      {faqNode && <JsonLd id="ld-home-faq" nodes={[faqNode]} />}
       <HeroSection
         departures={enrichedDepartures}
         availableDurations={availableDurations}

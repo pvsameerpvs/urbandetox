@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import { clamp, dbTitle, routeSeo } from "@/lib/metadata";
 import { notFound } from "next/navigation";
-import { fetchPackageBySlug, fetchDeparturesByPackage, fetchGuides, fetchDestinationBySlug } from "@/lib/api";
+import { fetchPackageBySlug, fetchDeparturesByPackage, fetchGuides, fetchDestinationBySlug, fetchTestimonials } from "@/lib/api";
 import { selectVisibleDepartures } from "@/lib/departure-visibility";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildTouristTripNode, packagePath } from "@/lib/seo/trip";
 import { buildDepartureEventNodes } from "@/lib/seo/departure";
 import { buildBreadcrumbNode } from "@/lib/seo/breadcrumb";
 import { buildFaqPageNode } from "@/lib/seo/faq";
+import { buildReviewNodes, testimonialsForDestination } from "@/lib/seo/reviews";
+import { tripId } from "@/lib/seo/trip";
 import { PackageDetailClient } from "./components/PackageDetailClient";
 
 interface PageProps {
@@ -55,6 +57,8 @@ export default async function DetoxDetailPage({ params, searchParams }: PageProp
   const dest = pkg ? await fetchDestinationBySlug(pkg.destinationSlug) : undefined;
   const departures = pkg ? await fetchDeparturesByPackage(pkg.slug) : [];
   const guides = pkg ? (await fetchGuides()).filter((g) => g.destinationSlug === pkg.destinationSlug).slice(0, 3) : [];
+  // Degrades to none: reviews are a bonus, never a reason to fail the page.
+  const allTestimonials = await fetchTestimonials(50).catch(() => []);
 
   // Validate: URL destinationSlug must match package's actual destination
   if (!pkg || !dest || dest.slug !== destinationSlug) {
@@ -64,6 +68,16 @@ export default async function DetoxDetailPage({ params, searchParams }: PageProp
   // Same list the page renders, so no Event node describes a hidden departure.
   const visibleDepartures = selectVisibleDepartures(departures, selectedDepartureCode);
   const path = packagePath(pkg);
+
+  /**
+   * Exactly the reviews TripReviewsSection renders, and nothing wider. Google
+   * drops, and can manually action, Review markup for reviews that are not
+   * visible on the same page, so this array is the single source for both.
+   *
+   * No AggregateRating: reviews.ts suppresses it below three, and no
+   * destination has three, so an average here would be manufactured.
+   */
+  const reviews = testimonialsForDestination(allTestimonials, dest.slug);
 
   return (
     <>
@@ -79,9 +93,10 @@ export default async function DetoxDetailPage({ params, searchParams }: PageProp
             { name: pkg.title, path },
           ]),
           buildFaqPageNode(path, pkg.faqs ?? []),
+          ...buildReviewNodes(tripId(pkg), reviews),
         ]}
       />
-      <PackageDetailClient pkg={pkg} dest={dest} departures={departures} guides={guides} selectedDepartureCode={selectedDepartureCode} />
+      <PackageDetailClient pkg={pkg} dest={dest} departures={departures} guides={guides} reviews={reviews} selectedDepartureCode={selectedDepartureCode} />
     </>
   );
 }

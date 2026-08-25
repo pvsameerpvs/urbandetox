@@ -13,23 +13,26 @@ import { TripLogisticsSection } from "./TripLogisticsSection";
 import { DeparturesSection } from "./DeparturesSection";
 import { RelatedGuidesSection } from "./RelatedGuidesSection";
 import { PackageFAQsSection } from "./PackageFAQsSection";
+import { TripReviewsSection } from "./TripReviewsSection";
 import { PackageSidebar } from "./PackageSidebar";
 import { MobilePackageCTA } from "./MobilePackageCTA";
 
 import { containerVariants } from "@/lib/animations";
 import { isDepartureBookable } from "@/lib/departure-availability";
 import { selectVisibleDepartures } from "@/lib/departure-visibility";
-import type { Package, Departure, GuideArticle, Destination } from "@urbandetox/utils";
+import type { Departure, Destination, GuideArticle, Package, Testimonial } from "@urbandetox/utils";
 
 interface PackageDetailClientProps {
   pkg: Package;
   dest: Destination;
   departures: Departure[];
   guides: GuideArticle[];
+  /** Exactly the reviews the Review schema is built from. */
+  reviews: Testimonial[];
   selectedDepartureCode?: string;
 }
 
-export function PackageDetailClient({ pkg, dest, departures, guides, selectedDepartureCode }: PackageDetailClientProps) {
+export function PackageDetailClient({ pkg, dest, departures, guides, reviews, selectedDepartureCode }: PackageDetailClientProps) {
   const selectedDep = selectedDepartureCode
     ? departures.find((d) => d.code === selectedDepartureCode)
     : undefined;
@@ -73,6 +76,7 @@ export function PackageDetailClient({ pkg, dest, departures, guides, selectedDep
             <InclusionsSection included={pkg.included || []} notIncluded={pkg.notIncluded || []} />
             <TripLogisticsSection pkg={pkg} />
             <DeparturesSection departures={upcomingDepartures} selectedCode={selectedDepartureCode} />
+            <TripReviewsSection reviews={reviews} destinationName={dest.name} />
             <RelatedGuidesSection guides={guides} />
             <PackageFAQsSection faqs={pkg.faqs || []} />
           </motion.div>
