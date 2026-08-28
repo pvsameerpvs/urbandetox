@@ -93,7 +93,9 @@ export function buildDepartureEventNodes(
     return prune({
       "@type": "Event",
       "@id": `${url}#departure-${dep.code}`,
-      name: `${pkg.title} — ${dep.startDate}`,
+      // Comma, not an em dash: this name surfaces in Google Event rich
+      // results, so it is user-facing copy and the brand rules bar them there.
+      name: `${pkg.title}, ${dep.startDate}`,
       url: `${url}?departure=${encodeURIComponent(dep.code)}`,
       /**
        * image is what decides whether an event result renders with a thumbnail,

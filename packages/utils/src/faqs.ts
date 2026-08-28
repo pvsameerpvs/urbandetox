@@ -40,7 +40,7 @@ export const faqs: FaqItem[] = [
     id: "faq-6",
     question: "What is the group size?",
     answer:
-      "Public departures are capped at 10 travellers. Small groups are the point rather than a constraint: it is what lets a trip use a family-run stay and a single vehicle instead of a hotel block and a coach. Private corporate and university charters are booked as a whole group and can run larger.",
+      "It varies by trip and the exact number is listed on every trip page. Most public departures cap at ten travellers and none go beyond a dozen. Small groups are the point rather than a constraint: it is what lets a trip use a family-run stay and a single vehicle instead of a hotel block and a coach. Private corporate and university charters are booked as a whole group and can run larger.",
     category: "Experience",
   },
   {

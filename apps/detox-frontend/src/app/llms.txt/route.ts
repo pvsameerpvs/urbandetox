@@ -50,10 +50,10 @@ export async function GET(): Promise<Response> {
   const livePackages = packages.filter((p) => activeSlugs.has(p.destinationSlug));
 
   /**
-   * The group cap is read from the data rather than hardcoded. Sixteen of the
-   * seventeen live packages are capped at 10; the exception is a university
-   * charter. Asserting a flat "always 10" would be false, and a single wrong
-   * fact is what gets a source dropped.
+   * The group cap is read from the data rather than hardcoded, because it is
+   * genuinely per trip: most sit at 10, Sri Lanka runs 11, and a university
+   * charter runs larger. Asserting a flat "always 10" would be false, and a
+   * single wrong fact is what gets a source dropped.
    */
   const caps = livePackages
     .map((p) => Number(p.groupSize))

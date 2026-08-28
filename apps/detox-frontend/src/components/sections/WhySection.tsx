@@ -20,7 +20,7 @@ const reasons = [
     icon: Users,
     title: "Small Groups Only",
     description:
-      "Each trip is capped at 10 travellers, so the experience stays personal and easy to connect.",
+      "Every trip sets its own cap, usually around ten, so the group stays small enough to actually know each other.",
   },
   {
     num: "03",
