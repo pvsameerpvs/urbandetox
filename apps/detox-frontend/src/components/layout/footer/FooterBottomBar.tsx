@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { MapPin } from "lucide-react";
 
 export function FooterBottomBar() {
@@ -11,20 +10,6 @@ export function FooterBottomBar() {
           <MapPin className="h-3 w-3" />
           <span>Bangalore, India</span>
         </div>
-      </div>
-      <div className="flex items-center gap-4">
-        <Link href="/terms" className="hover:text-footer-foreground transition-colors">
-          Terms
-        </Link>
-        <Link href="/terms#privacy-policy" className="hover:text-footer-foreground transition-colors">
-          Privacy
-        </Link>
-        <Link
-          href="/terms#cancellation-and-refund-policy"
-          className="hover:text-footer-foreground transition-colors"
-        >
-          Cancellation
-        </Link>
       </div>
     </div>
   );

@@ -29,7 +29,7 @@ export function SeasonalRow({ tag, label, icon: Icon, packages, destMap }: Seaso
              which has nothing to do with the mood the row is about. /detox
              already filters on seasonalTag. */
           href={`/detox?seasonalTag=${encodeURIComponent(tag)}`}
-          className="hidden sm:inline-flex items-center gap-1 text-xs font-semibold text-brand hover:text-brand/80 transition-colors group"
+          className="hidden sm:inline-flex items-center gap-1 py-2.5 -my-2.5 text-xs font-semibold text-brand hover:text-brand/80 transition-colors group"
         >
           View all <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
         </Link>

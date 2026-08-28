@@ -86,7 +86,7 @@ export function QuickAnswers({ destinations, packages }: QuickAnswersProps) {
                 {a.href && (
                   <Link
                     href={a.href}
-                    className="mt-2 inline-block text-sm font-semibold text-brand underline underline-offset-4 hover:no-underline"
+                    className="mt-2 inline-block py-2 -my-2 text-sm font-semibold text-brand underline underline-offset-4 hover:no-underline"
                   >
                     {a.linkLabel}
                   </Link>

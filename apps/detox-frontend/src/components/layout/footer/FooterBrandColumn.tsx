@@ -9,7 +9,7 @@ interface FooterBrandColumnProps {
 
 export function FooterBrandColumn({ settings }: FooterBrandColumnProps) {
   return (
-    <div className="sm:col-span-2 lg:col-span-2">
+    <div className="col-span-2">
       <Link href="/" className="inline-block mb-5">
         <Image
           src="/log-detox.png"

@@ -90,7 +90,7 @@ export function UpcomingDetoxSection({ departures }: UpcomingDetoxSectionProps) 
             </p>
             <Link
               href="/detox"
-              className="inline-flex items-center gap-2 text-sm font-semibold text-brand hover:text-brand/80"
+              className="inline-flex items-center gap-2 py-2 -my-2 text-sm font-semibold text-brand hover:text-brand/80"
             >
               Browse the destinations <ArrowRight className="h-4 w-4" />
             </Link>

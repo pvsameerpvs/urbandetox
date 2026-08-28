@@ -59,7 +59,7 @@ export function HeroSearchBar({ departures, availableDurations }: HeroSearchBarP
         <HeroSearchRow />
 
         {/* Month nav */}
-        <div className="grid grid-cols-[2.5rem_1fr_2.5rem] items-center gap-2 px-4 pt-4 sm:px-6 sm:pt-4">
+        <div className="grid grid-cols-[2.5rem_1fr_2.5rem] items-center gap-2 px-4 pt-3 sm:px-6">
           <button
             type="button"
             onClick={() => setVisibleMonth((m) => addMonths(m, -1))}
@@ -87,7 +87,7 @@ export function HeroSearchBar({ departures, availableDurations }: HeroSearchBarP
         </div>
 
         {/* Calendars */}
-        <div className="px-5 pb-5 pt-3 sm:px-9 sm:pb-6">
+        <div className="px-5 pb-4 pt-2 sm:px-9 sm:pb-5">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-10">
             <CalendarMonth
               month={visibleMonth}

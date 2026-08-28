@@ -44,14 +44,14 @@ export function CalendarMonth({ className, month, onDateClick, tripDateMap, acti
     <div className={cn("min-w-0", className)}>
       <div className="grid grid-cols-7 text-center">
         {WEEKDAYS.map((d) => (
-          <span key={d} className="pb-4 text-[11px] font-bold text-brand">
+          <span key={d} className="pb-2 text-[11px] font-bold text-brand">
             {d}
           </span>
         ))}
 
         {days.map((day) => {
           if (!isSameMonth(day, month)) {
-            return <span key={day.toISOString()} className="h-10" />;
+            return <span key={day.toISOString()} className="h-9 sm:h-10 md:h-11" />;
           }
 
           const key = toDateKey(day);
@@ -79,8 +79,8 @@ export function CalendarMonth({ className, month, onDateClick, tripDateMap, acti
               className={cn(
                 // The visible cell stays small so a two-month calendar fits, but a
                 // pseudo-element lifts the tap target towards the 44px minimum.
-                "relative mx-0.5 md:mx-1 mb-2 flex h-8 items-center justify-center text-sm font-semibold transition-colors sm:h-9 md:h-10",
-                "before:absolute before:inset-x-0 before:top-1/2 before:h-11 before:-translate-y-1/2 before:content-['']",
+                "relative mx-0.5 md:mx-1 mb-1 flex h-8 items-center justify-center text-sm font-semibold transition-colors sm:h-9 md:h-10",
+                "before:absolute before:inset-x-0 before:top-1/2 before:h-9 before:-translate-y-1/2 before:content-[''] sm:before:h-10 md:before:h-11",
                 trip
                   ? cn(tripColor(trip), rangeRadius(hasPrev, hasNext), canBook && "hover:brightness-95")
                   : "rounded-md text-brand/75",

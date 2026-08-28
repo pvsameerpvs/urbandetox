@@ -12,7 +12,7 @@ interface DurationBadgesProps {
 
 export function DurationBadges({ availableDurations, activeDuration }: DurationBadgesProps) {
   return (
-    <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-border/70 pt-4">
+    <div className="mt-4 flex flex-wrap items-center gap-2.5 border-t border-border/70 pt-3">
       {availableDurations.map((days) => {
         const style = getDurationStyle(days);
         const isActive = activeDuration === days;
