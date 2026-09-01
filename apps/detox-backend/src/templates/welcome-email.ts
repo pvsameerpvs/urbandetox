@@ -13,7 +13,7 @@ export function welcomeEmailTemplate(data: { fullName: string; email: string }):
     <p><strong>Here is what you can do next:</strong></p>
     <p style="margin-bottom:8px;">1. <a href="${SITE_URL}" style="color:#1c1917; text-decoration:underline;">Browse upcoming trips</a> and book your first detox.</p>
     <p style="margin-bottom:8px;">2. <a href="${SITE_URL}/about" style="color:#1c1917; text-decoration:underline;">Learn more about us</a> and what we stand for.</p>
-    <p style="margin-bottom:8px;">3. <a href="https://urbandetox.in/contact" style="color:#1c1917; text-decoration:underline;">Get in touch</a> if you have any questions.</p>
+    <p style="margin-bottom:8px;">3. <a href="${SITE_URL}/contact" style="color:#1c1917; text-decoration:underline;">Get in touch</a> if you have any questions.</p>
 
     <div class="divider"></div>
     <p style="font-size:13px; color:#78716c;">Need help? Reply to this email or WhatsApp us at <a href="${SUPPORT_WHATSAPP_URL}" style="color:#78716c;">${SUPPORT_PHONE_DISPLAY}</a>.</p>
@@ -24,9 +24,9 @@ export function welcomeEmailTemplate(data: { fullName: string; email: string }):
 Your account has been created and you are now part of a community that believes in disconnecting from the everyday to reconnect with what matters.
 
 Here is what you can do next:
-1. Browse upcoming trips: https://urbandetox.in
+1. Browse upcoming trips: ${SITE_URL}
 2. Learn more about us: ${SITE_URL}/about
-3. Get in touch: https://urbandetox.in/contact
+3. Get in touch: ${SITE_URL}/contact
 
 Need help? Reply to this email or WhatsApp us at ${SUPPORT_PHONE_DISPLAY}.
 

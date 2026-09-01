@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { routeSeo } from "@/lib/metadata";
 import { TermsHero } from "./components/TermsHero";
 import { TermsNav } from "./components/TermsNav";
 import { TermsSection } from "./components/TermsSection";
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
   title: "Terms & Conditions",
   description:
     "Read booking, payment, cancellation, privacy, safety, and refund policies for Urban Detox trips.",
-  alternates: { canonical: "https://www.urbandetox.in/terms" },
+  ...routeSeo({ path: "/terms" }),
 };
 
 const NAV_ITEMS = [

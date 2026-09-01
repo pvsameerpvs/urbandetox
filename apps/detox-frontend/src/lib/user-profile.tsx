@@ -115,7 +115,7 @@ function saveToStorage(profile: UserProfile) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://api.urbandetox.in";
 type SupabaseBrowserClient = ReturnType<typeof createClient>;
 
 async function fetchWithAuth(path: string, options?: RequestInit) {

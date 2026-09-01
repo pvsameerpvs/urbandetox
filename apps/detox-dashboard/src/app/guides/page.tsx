@@ -22,7 +22,7 @@ import {
 
 /** Public site origin. The dashboard has no /guide route of its own. */
 const PUBLIC_SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL || "https://beta.urbandetox.in"
+  process.env.NEXT_PUBLIC_SITE_URL || "https://www.urbandetox.in"
 ).replace(/\/+$/, "");
 
 export default function GuidesPage() {
