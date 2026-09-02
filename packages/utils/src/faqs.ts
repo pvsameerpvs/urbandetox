@@ -33,7 +33,7 @@ export const faqs: FaqItem[] = [
     id: "faq-5",
     question: "What is the cancellation policy?",
     answer:
-      "Full refund if cancelled 14 days before departure. 50% refund if cancelled 7-13 days before. No refund if cancelled within 7 days, but you can transfer your seat to someone else.",
+      "Cancel on or before the Monday of your trip's departure week for a 100% refund. Cancellations made on Tuesday are eligible for a 40% refund. Cancellations from Wednesday onwards, including the day of departure, are non-refundable.",
     category: "Booking",
   },
   {

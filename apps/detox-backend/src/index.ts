@@ -5,6 +5,8 @@ import cron from "node-cron";
 import { createApp } from "@/app";
 import { ENV } from "@/config/env";
 import { sendOnboardingReminders } from "@/cron/onboarding-reminder";
+import { sendDepartureReminders } from "@/cron/departure-reminder";
+import { sendCheckoutRecoveryEmails } from "@/cron/checkout-recovery";
 import { PaymentService } from "@/services/payments";
 
 const app = createApp();
@@ -33,6 +35,24 @@ if (ENV.NODE_ENV === "production") {
     );
   });
   console.log("[Cron] Onboarding reminder job scheduled (every 30 min)");
+
+  // Hourly journey emails: the 48h departure reminder and abandoned-checkout
+  // recovery. Both are idempotent per recipient.
+  const departureReminder = () =>
+    sendDepartureReminders().catch((err) =>
+      console.error("[Cron] Departure reminder failed:", err)
+    );
+  departureReminder();
+  cron.schedule("0 * * * *", departureReminder);
+  console.log("[Cron] Departure reminder job scheduled (hourly)");
+
+  const checkoutRecovery = () =>
+    sendCheckoutRecoveryEmails().catch((err) =>
+      console.error("[Cron] Checkout recovery failed:", err)
+    );
+  checkoutRecovery();
+  cron.schedule("0 * * * *", checkoutRecovery);
+  console.log("[Cron] Checkout recovery job scheduled (hourly)");
 }
 
 app.listen(ENV.PORT, () => {

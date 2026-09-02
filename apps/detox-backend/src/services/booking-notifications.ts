@@ -12,6 +12,8 @@ import {
 import { sendEmail } from "@/services/email";
 import {
   bookingAdminAlertTemplate,
+  bookingCancelledAdminTemplate,
+  bookingCancelledCustomerTemplate,
   bookingConfirmationTemplate,
   bookingRefundedAdminTemplate,
   bookingRefundedTemplate,
@@ -97,7 +99,9 @@ export async function sendBookingNotifications(bookingId: string) {
           : `Your Urban Detox booking is confirmed — ${booking.departureCode}`,
         html: customerEmail.html,
         text: customerEmail.text,
-        idempotencyKey: `booking-customer-${booking.id}`,
+        idempotencyKey: isPaymentReview
+          ? `booking-review-customer-${booking.id}`
+          : `booking-customer-${booking.id}`,
       });
     }
 
@@ -134,7 +138,9 @@ export async function sendBookingNotifications(bookingId: string) {
       ...(booking.email && { replyTo: booking.email }),
       html: adminEmail.html,
       text: adminEmail.text,
-      idempotencyKey: `booking-admin-${booking.id}`,
+      idempotencyKey: isPaymentReview
+        ? `booking-review-admin-${booking.id}`
+        : `booking-admin-${booking.id}`,
     });
   } catch (error) {
     console.error(`[Booking notification] Failed for ${bookingId}:`, error);
@@ -199,6 +205,82 @@ export async function sendBookingRefundNotifications(bookingId: string) {
     });
   } catch (error) {
     console.error(`[Booking refund notification] Failed for ${bookingId}:`, error);
+  }
+}
+
+export async function sendCancellationNotifications(
+  bookingId: string,
+  refundDue: {
+    razorpayPaymentId: string;
+    amountPaise: number;
+    percentage: number;
+    label: string;
+  } | null
+) {
+  try {
+    const [booking] = await db
+      .select()
+      .from(bookings)
+      .where(eq(bookings.id, bookingId));
+    if (!booking) return;
+
+    const [departure] = await db
+      .select()
+      .from(departures)
+      .where(eq(departures.code, booking.departureCode));
+    const [pkg] = departure
+      ? await db
+          .select()
+          .from(packages)
+          .where(eq(packages.slug, departure.packageSlug))
+      : [];
+
+    const packageTitle = pkg?.title || "Urban Detox Trip";
+
+    let refundLine: string | undefined;
+    if (refundDue) {
+      refundLine =
+        refundDue.amountPaise > 0
+          ? `${refundDue.label} (${formatPrice(refundDue.amountPaise / 100)})`
+          : "Non-refundable per the cancellation policy";
+    } else if (booking.paymentStatus === "cod") {
+      refundLine = "Pay on Arrival — no online payment to refund";
+    }
+
+    if (booking.email) {
+      const customerEmail = bookingCancelledCustomerTemplate({
+        fullName: booking.fullName,
+        departureCode: booking.departureCode,
+        packageTitle,
+        refundLine,
+      });
+      await sendEmail({
+        to: booking.email,
+        subject: `Your booking has been canceled — ${booking.departureCode}`,
+        html: customerEmail.html,
+        text: customerEmail.text,
+        idempotencyKey: `booking-cancelled-customer-${booking.id}`,
+      });
+    }
+
+    const adminEmail = bookingCancelledAdminTemplate({
+      fullName: booking.fullName,
+      email: booking.email || undefined,
+      phone: booking.phone,
+      departureCode: booking.departureCode,
+      packageTitle,
+      refundLine,
+    });
+    await sendEmail({
+      to: ENV.ADMIN_EMAIL,
+      subject: `Booking canceled — ${booking.departureCode} — ${booking.fullName}`,
+      ...(booking.email && { replyTo: booking.email }),
+      html: adminEmail.html,
+      text: adminEmail.text,
+      idempotencyKey: `booking-cancelled-admin-${booking.id}`,
+    });
+  } catch (error) {
+    console.error(`[Cancellation notification] Failed for ${bookingId}:`, error);
   }
 }
 
@@ -273,6 +355,7 @@ export async function sendRefundUpdateNotification(input: {
       departureCode: booking.departureCode,
       packageTitle: pkg?.title || "Urban Detox Trip",
       refundAmount: formatPrice(input.amountPaise / 100),
+      bookingStatus: booking.status,
     };
 
     if (input.status === "processed" && booking.email) {

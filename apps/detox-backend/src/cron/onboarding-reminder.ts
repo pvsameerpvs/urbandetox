@@ -1,4 +1,4 @@
-import { eq, lt, and, sql } from "drizzle-orm";
+import { eq, lt, and, inArray, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { bookings, departures, packages, destinations } from "@/db/schema";
 import { sendEmail } from "@/services/email";
@@ -11,26 +11,58 @@ const STEPS_META = [
   { id: 4, label: "Final Confirm" },
 ];
 
+const ACTIVE_STATUSES = ["confirmed", "reserved_cod"];
+
+/** Users who started onboarding but have been idle on a step for this long. */
 const IDLE_HOURS = 1;
+/** Users who booked but never started onboarding get one nudge after this long. */
+const NEVER_STARTED_HOURS = 24;
 
 export async function sendOnboardingReminders() {
-  const cutoff = new Date(Date.now() - IDLE_HOURS * 60 * 60 * 1000).toISOString();
+  const idleCutoff = new Date(Date.now() - IDLE_HOURS * 60 * 60 * 1000).toISOString();
+  const neverStartedCutoff = new Date(Date.now() - NEVER_STARTED_HOURS * 60 * 60 * 1000);
 
-  const rows = await db
+  const startedRows = await db
     .select()
     .from(bookings)
     .where(
       and(
+        inArray(bookings.status, ACTIVE_STATUSES),
         sql`${bookings.details}->>'onboardingComplete' IS DISTINCT FROM 'true'`,
         sql`${bookings.details}->>'onboardingComplete' IS DISTINCT FROM true`,
         sql`${bookings.details}->>'onboardingStep' IS NOT NULL`,
-        lt(sql`${bookings.details}->>'onboardingStepUpdatedAt'`, cutoff),
+        lt(sql`${bookings.details}->>'onboardingStepUpdatedAt'`, idleCutoff),
       )
     );
 
-  for (const booking of rows) {
+  const neverStartedRows = await db
+    .select()
+    .from(bookings)
+    .where(
+      and(
+        inArray(bookings.status, ACTIVE_STATUSES),
+        sql`${bookings.details}->>'onboardingComplete' IS DISTINCT FROM 'true'`,
+        sql`${bookings.details}->>'onboardingComplete' IS DISTINCT FROM true`,
+        sql`${bookings.details}->>'onboardingStep' IS NULL`,
+        lt(bookings.createdAt, neverStartedCutoff),
+      )
+    );
+
+  const rows = [
+    ...startedRows.map((booking) => ({
+      booking,
+      step: booking.details?.onboardingStep || 1,
+      keySuffix: `step-${booking.details?.onboardingStep || 1}`,
+    })),
+    ...neverStartedRows.map((booking) => ({
+      booking,
+      step: 1,
+      keySuffix: "start",
+    })),
+  ];
+
+  for (const { booking, step, keySuffix } of rows) {
     try {
-      const step = booking.details?.onboardingStep || 1;
       const stepMeta = STEPS_META.find((s) => s.id === step) || STEPS_META[0];
 
       const [dep] = await db
@@ -62,7 +94,7 @@ export async function sendOnboardingReminders() {
         subject: `Complete your onboarding — Step ${step} of 4 left (${booking.departureCode})`,
         html: email.html,
         text: email.text,
-        idempotencyKey: `onboarding-reminder-${booking.id}-step-${step}`,
+        idempotencyKey: `onboarding-reminder-${booking.id}-${keySuffix}`,
       });
     } catch (error) {
       console.error(`[Onboarding reminder] Failed for booking ${booking.id}:`, error);

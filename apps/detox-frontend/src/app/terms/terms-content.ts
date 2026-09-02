@@ -7,7 +7,7 @@
  * policy changes, update LAST_UPDATED in the same commit.
  */
 
-export const LAST_UPDATED = "June 16, 2026";
+export const LAST_UPDATED = "September 1, 2026";
 
 export const COMPANY = {
   legalName: "UD GLOBAL PRIVATE LIMITED",
@@ -90,9 +90,18 @@ export const TERMS_SECTIONS: TermsSectionData[] = [
     id: "cancellation-and-refund-policy",
     title: "Cancellation and Refund Policy",
     body: [
-      "Cancellation and refund terms may vary depending on the trip, departure date, stay booking, transport booking, and third-party vendor policies.",
-      `If a refund is approved by ${COMPANY.legalName}, it will be processed within 7 working days to the original payment method.`,
+      "At Urban Detox, every trip involves advance planning and confirmed arrangements with our travel partners. Our cancellation policy is designed to ensure clarity for every guest while allowing us to manage these commitments responsibly.",
+      "Cancellations made on or before Monday of the week of departure are eligible for a 100% refund of the amount paid.",
+      "Cancellations made on Tuesday of the week of departure are eligible for a 40% refund of the amount paid.",
+      "Cancellations made from Wednesday onwards, including cancellations on the day of departure, are non-refundable.",
+    ],
+    list: [
+      "The cancellation timeline is based on the departure date of the respective trip. For example, for trips departing on Thursday night: Monday or earlier is a 100% refund, Tuesday is a 40% refund, and Wednesday onwards is no refund.",
+      "Refunds, where applicable, are processed to the original payment method. Processing time may vary depending on the payment gateway and banking partner.",
       "Payment gateway charges, transaction fees, and non-refundable vendor costs may be deducted where applicable.",
+      "By confirming a booking with Urban Detox, the guest acknowledges and agrees to the cancellation and refund policy.",
+    ],
+    bodyAfterList: [
       "Urban Detox may cancel or postpone a trip due to low participation, unsafe weather, local restrictions, transport issues, or other operational reasons. In such cases, travellers may be offered an alternative date, credit adjustment, or refund based on the situation.",
     ],
   },

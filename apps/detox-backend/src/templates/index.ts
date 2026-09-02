@@ -9,6 +9,10 @@ export {
   partialRefundTemplate,
   refundFailedAdminTemplate,
   onboardingReminderTemplate,
+  bookingCancelledCustomerTemplate,
+  bookingCancelledAdminTemplate,
+  departureReminderTemplate,
+  checkoutRecoveryTemplate,
 } from "./booking-emails";
 export {
   contactAutoReplyTemplate,

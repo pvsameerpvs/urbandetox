@@ -33,6 +33,10 @@ router.get(
 // refunds. Any refund is a separate, deliberate admin action.
 router.post("/:id/cancel", requireAdmin, auditMiddleware, BookingController.cancel);
 
+// Admin only. Confirms a booking that was captured after its seat hold had
+// expired (payment_review), taking the seats and emailing the confirmation.
+router.post("/:id/resolve-review", requireAdmin, auditMiddleware, BookingController.resolveReview);
+
 // Share links are admin-only: they hand out access to a customer's personal
 // details, so issuing one is an admin action and is audited.
 router.post(

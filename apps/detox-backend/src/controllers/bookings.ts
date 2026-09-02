@@ -3,6 +3,10 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { bookings, departures, packages, destinations } from "@/db/schema";
 import { BookingService } from "@/services/bookings";
+import {
+  sendBookingNotifications,
+  sendCancellationNotifications,
+} from "@/services/booking-notifications";
 import { safeImageUrl } from "@urbandetox/utils";
 
 export const BookingController = {
@@ -100,12 +104,24 @@ export const BookingController = {
   },
 
   async cancel(req: Request, res: Response) {
+    const bookingId = String(req.params.id);
     const result = await BookingService.cancel({
       userId: req.user!.id,
-      bookingId: String(req.params.id),
+      bookingId,
       isAdmin: req.user?.role === "admin",
     });
+    await sendCancellationNotifications(bookingId, result.refundDue);
     res.json(result);
+  },
+
+  async resolveReview(req: Request, res: Response) {
+    const bookingId = String(req.params.id);
+    const booking = await BookingService.resolveReview({
+      userId: req.user!.id,
+      bookingId,
+    });
+    await sendBookingNotifications(bookingId);
+    res.json(booking);
   },
 
   async getProgress(req: Request, res: Response) {

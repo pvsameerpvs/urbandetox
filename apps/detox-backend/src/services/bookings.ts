@@ -1,4 +1,5 @@
 import { and, desc, eq, gt, inArray } from "drizzle-orm";
+import { getRefundPolicy } from "@urbandetox/utils";
 import { db } from "@/db";
 import { bookings, checkoutSessions, payments, departures } from "@/db/schema";
 import { getDepartureStatus } from "@/services/payments";
@@ -235,7 +236,12 @@ export const BookingService = {
      * admin-only endpoint at POST /api/payments/:paymentId/refunds, where an
      * amount is chosen deliberately.
      */
-    let refundDue: { razorpayPaymentId: string; amountPaise: number } | null = null;
+    let refundDue: {
+      razorpayPaymentId: string;
+      amountPaise: number;
+      percentage: number;
+      label: string;
+    } | null = null;
     if (booking.paymentStatus === "paid") {
       const [paymentRecord] = await db
         .select()
@@ -245,9 +251,25 @@ export const BookingService = {
       if (!paymentRecord || paymentRecord.status !== "captured") {
         throw new Error("Captured payment not found; cancellation requires support");
       }
+
+      // The eligible refund follows the published cancellation policy, which is
+      // anchored to the Monday of the departure week (100% on/before Monday,
+      // 40% on Tuesday, non-refundable from Wednesday onwards).
+      const [departureRecord] = await db
+        .select({ startDate: departures.startDate })
+        .from(departures)
+        .where(eq(departures.code, booking.departureCode));
+
+      const policy = departureRecord?.startDate
+        ? getRefundPolicy(departureRecord.startDate, new Date())
+        : { percentage: 100 as const, label: "100% refund" as const };
+
+      const remaining = paymentRecord.amountPaise - paymentRecord.amountRefundedPaise;
       refundDue = {
         razorpayPaymentId: paymentRecord.razorpayPaymentId,
-        amountPaise: paymentRecord.amountPaise - paymentRecord.amountRefundedPaise,
+        amountPaise: Math.round((remaining * policy.percentage) / 100),
+        percentage: policy.percentage,
+        label: policy.label,
       };
     }
 
@@ -303,6 +325,61 @@ export const BookingService = {
       // The admin still has to issue any refund explicitly.
       refundDue,
     };
+  },
+
+  async resolveReview(input: { userId: string; bookingId: string }) {
+    const [booking] = await db
+      .select()
+      .from(bookings)
+      .where(eq(bookings.id, input.bookingId));
+
+    if (!booking || booking.status !== "payment_review") {
+      throw new Error("Booking is not under payment review");
+    }
+
+    await db.transaction(async (tx) => {
+      const [currentBooking] = await tx
+        .select()
+        .from(bookings)
+        .where(eq(bookings.id, booking.id))
+        .for("update");
+
+      if (!currentBooking || currentBooking.status !== "payment_review") {
+        throw new Error("Booking is not under payment review");
+      }
+
+      const [departure] = await tx
+        .select()
+        .from(departures)
+        .where(eq(departures.code, currentBooking.departureCode))
+        .for("update");
+
+      if (!departure) throw new Error("Departure not found");
+      const seatsLeft = Number(departure.seatsLeft);
+      if (seatsLeft < currentBooking.travelers) {
+        throw new Error(`Only ${seatsLeft} seats are available`);
+      }
+
+      await tx
+        .update(bookings)
+        .set({ status: "confirmed", updatedAt: new Date() })
+        .where(eq(bookings.id, currentBooking.id));
+
+      await tx
+        .update(departures)
+        .set({
+          seatsLeft: seatsLeft - currentBooking.travelers,
+          status: getDepartureStatus(departure.status, seatsLeft - currentBooking.travelers),
+          updatedAt: new Date(),
+        })
+        .where(eq(departures.id, departure.id));
+    });
+
+    const [updated] = await db
+      .select()
+      .from(bookings)
+      .where(eq(bookings.id, booking.id));
+    return updated;
   },
 
   async getProgress(input: { userId: string; bookingId: string }) {

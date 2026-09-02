@@ -392,7 +392,12 @@ export function partialRefundTemplate(data: {
   departureCode: string;
   packageTitle: string;
   refundAmount: string;
+  bookingStatus?: string;
 }): EmailContent {
+  const bookingStatusLine =
+    data.bookingStatus === "canceled"
+      ? "Your booking has been canceled."
+      : "Your booking remains active.";
   const htmlContent = `
     <h2>Your partial refund was processed</h2>
     <p>Hi ${escapeHtml(data.fullName.split(" ")[0] || "Traveler")}, a partial refund has been processed for your Urban Detox booking.</p>
@@ -401,7 +406,7 @@ export function partialRefundTemplate(data: {
       <div class="details-row"><span class="details-label">Departure Code</span><span class="details-value">${escapeHtml(data.departureCode)}</span></div>
       <div class="details-row"><span class="details-label">Refund Amount</span><span class="details-value">${escapeHtml(data.refundAmount)}</span></div>
     </div>
-    <p>Your booking remains active. The refund may take several business days to appear.</p>
+    <p>${bookingStatusLine} The refund may take several business days to appear.</p>
   `;
 
   return {
@@ -412,7 +417,7 @@ Trip: ${data.packageTitle}
 Departure Code: ${data.departureCode}
 Refund Amount: ${data.refundAmount}
 
-Your booking remains active. The refund may take several business days to appear.`,
+${bookingStatusLine} The refund may take several business days to appear.`,
   };
 }
 
@@ -521,6 +526,218 @@ hello@urbandetox.in | ${SITE_URL}
 
   return {
     html: baseTemplate("Finish Your Onboarding — Urban Detox", htmlContent),
+    text: textContent,
+  };
+}
+
+export function bookingCancelledCustomerTemplate(data: {
+  fullName: string;
+  departureCode: string;
+  packageTitle: string;
+  refundLine?: string;
+}): EmailContent {
+  const firstName = escapeHtml(data.fullName.split(" ")[0] || "Traveler");
+  const htmlContent = `
+    <h2>Your booking has been canceled, ${firstName}</h2>
+    <p>We're sorry to see you go. Your Urban Detox booking has been canceled.</p>
+    <div class="badge">Booking Canceled</div>
+    <div class="details">
+      <div class="details-row">
+        <span class="details-label">Trip</span>
+        <span class="details-value">${escapeHtml(data.packageTitle)}</span>
+      </div>
+      <div class="details-row">
+        <span class="details-label">Departure Code</span>
+        <span class="details-value">${escapeHtml(data.departureCode)}</span>
+      </div>
+      ${data.refundLine ? `
+      <div class="details-row">
+        <span class="details-label">Refund</span>
+        <span class="details-value">${escapeHtml(data.refundLine)}</span>
+      </div>` : ""}
+    </div>
+    ${data.refundLine ? "<p>Refunds, where applicable, are processed to the original payment method and may take several business days to appear.</p>" : ""}
+    <p>For any questions about this cancellation, reply to this email or WhatsApp us at <a href="${SUPPORT_WHATSAPP_URL}" style="color:#78716c;">${SUPPORT_PHONE_DISPLAY}</a>.</p>
+  `;
+
+  const textContent = `Your booking has been canceled, ${data.fullName.split(" ")[0] || "Traveler"}.
+
+Your Urban Detox booking has been canceled.
+
+BOOKING CANCELED
+
+Trip: ${data.packageTitle}
+Departure Code: ${data.departureCode}
+${data.refundLine ? `Refund: ${data.refundLine}\n` : ""}
+${data.refundLine ? "Refunds, where applicable, are processed to the original payment method and may take several business days to appear.\n" : ""}
+For any questions about this cancellation, reply to this email or WhatsApp us at ${SUPPORT_PHONE_DISPLAY}.
+
+Urban Detox - Bangalore, India
+hello@urbandetox.in | ${SITE_URL}
+`;
+
+  return {
+    html: baseTemplate("Booking Canceled — Urban Detox", htmlContent),
+    text: textContent,
+  };
+}
+
+export function bookingCancelledAdminTemplate(data: {
+  fullName: string;
+  email?: string;
+  phone: string;
+  departureCode: string;
+  packageTitle: string;
+  refundLine?: string;
+}): EmailContent {
+  const htmlContent = `
+    <h2>Booking Canceled</h2>
+    <p>A booking was canceled by an admin. The booking is closed and its seats were released.</p>
+    <div class="details">
+      <div class="details-row"><span class="details-label">Customer</span><span class="details-value">${escapeHtml(data.fullName)}</span></div>
+      <div class="details-row"><span class="details-label">Email</span><span class="details-value">${data.email ? escapeHtml(data.email) : "—"}</span></div>
+      <div class="details-row"><span class="details-label">Phone</span><span class="details-value">${escapeHtml(data.phone)}</span></div>
+      <div class="details-row"><span class="details-label">Trip</span><span class="details-value">${escapeHtml(data.packageTitle)}</span></div>
+      <div class="details-row"><span class="details-label">Departure Code</span><span class="details-value">${escapeHtml(data.departureCode)}</span></div>
+      ${data.refundLine ? `<div class="details-row"><span class="details-label">Refund</span><span class="details-value">${escapeHtml(data.refundLine)}</span></div>` : ""}
+    </div>
+    <p style="font-size:13px; color:#78716c;">Any refund must be issued deliberately from the payment record.</p>
+  `;
+
+  const textContent = `BOOKING CANCELED
+
+A booking was canceled by an admin. Its seats were released.
+
+Customer: ${data.fullName}
+Email: ${data.email || "—"}
+Phone: ${data.phone}
+Trip: ${data.packageTitle}
+Departure Code: ${data.departureCode}
+${data.refundLine ? `Refund: ${data.refundLine}\n` : ""}
+Any refund must be issued deliberately from the payment record.
+
+Urban Detox - Bangalore, India
+hello@urbandetox.in | ${SITE_URL}
+`;
+
+  return {
+    html: baseTemplate("Booking Canceled — Admin Alert", htmlContent),
+    text: textContent,
+  };
+}
+
+export function departureReminderTemplate(data: {
+  fullName: string;
+  departureCode: string;
+  packageTitle: string;
+  destinationName: string;
+  startDate: string;
+  startTime?: string;
+  endDate: string;
+  meetingPoint: string;
+  onboardingIncomplete?: boolean;
+}): EmailContent {
+  const firstName = escapeHtml(data.fullName.split(" ")[0] || "Traveler");
+  const departureLine = data.startTime
+    ? `${escapeHtml(data.startDate)} at ${escapeHtml(data.startTime)}`
+    : escapeHtml(data.startDate);
+  const onboardingUrl = `${SITE_URL}/book/${data.departureCode}/onboarding`;
+  const onboardingNudge = data.onboardingIncomplete
+    ? `
+    <div class="details">
+      <div class="details-row">
+        <span class="details-label">Still to do</span>
+        <span class="details-value">Add traveller details before the trip</span>
+      </div>
+    </div>
+    <p style="text-align:center;">
+      <a href="${onboardingUrl}" class="cta">Add Traveller Details</a>
+    </p>`
+    : "";
+
+  const htmlContent = `
+    <h2>Your detox departs in 2 days, ${firstName}!</h2>
+    <p>Here are the final details for your Urban Detox trip.</p>
+    <div class="badge">Departing Soon</div>
+    <div class="details">
+      <div class="details-row"><span class="details-label">Trip</span><span class="details-value">${escapeHtml(data.packageTitle)}</span></div>
+      <div class="details-row"><span class="details-label">Destination</span><span class="details-value">${escapeHtml(data.destinationName)}</span></div>
+      <div class="details-row"><span class="details-label">Departure</span><span class="details-value">${departureLine}</span></div>
+      <div class="details-row"><span class="details-label">Return</span><span class="details-value">${escapeHtml(data.endDate)}</span></div>
+      <div class="details-row"><span class="details-label">Departure Code</span><span class="details-value">${escapeHtml(data.departureCode)}</span></div>
+      <div class="details-row"><span class="details-label">Meeting Point</span><span class="details-value">${escapeHtml(data.meetingPoint)}</span></div>
+    </div>
+    ${onboardingNudge}
+    <p>Our team will reach out with any last-minute updates. For any questions, reply to this email or WhatsApp us at <a href="${SUPPORT_WHATSAPP_URL}" style="color:#78716c;">${SUPPORT_PHONE_DISPLAY}</a>.</p>
+  `;
+
+  const textContent = `Your detox departs in 2 days, ${data.fullName.split(" ")[0] || "Traveler"}!
+
+DEPARTING SOON
+
+Trip: ${data.packageTitle}
+Destination: ${data.destinationName}
+Departure: ${data.startDate}${data.startTime ? ` at ${data.startTime}` : ""}
+Return: ${data.endDate}
+Departure Code: ${data.departureCode}
+Meeting Point: ${data.meetingPoint}
+${data.onboardingIncomplete ? `Still to do: add traveller details here - ${onboardingUrl}\n` : ""}
+Our team will reach out with any last-minute updates. For questions, reply to this email or WhatsApp us at ${SUPPORT_PHONE_DISPLAY}.
+
+Urban Detox - Bangalore, India
+hello@urbandetox.in | ${SITE_URL}
+`;
+
+  return {
+    html: baseTemplate("Departure Reminder — Urban Detox", htmlContent),
+    text: textContent,
+  };
+}
+
+export function checkoutRecoveryTemplate(data: {
+  fullName: string;
+  packageTitle: string;
+  departureCode: string;
+  startDate: string;
+  totalPrice: string;
+  packageUrl: string;
+}): EmailContent {
+  const firstName = escapeHtml(data.fullName.split(" ")[0] || "Traveler");
+  const htmlContent = `
+    <h2>Your seat hold expired, ${firstName}</h2>
+    <p>You started booking an Urban Detox trip, but the payment was not completed before the seat hold expired. The seats have been released and are available for others to book.</p>
+    <div class="details">
+      <div class="details-row"><span class="details-label">Trip</span><span class="details-value">${escapeHtml(data.packageTitle)}</span></div>
+      <div class="details-row"><span class="details-label">Departure</span><span class="details-value">${escapeHtml(data.startDate)}</span></div>
+      <div class="details-row"><span class="details-label">Departure Code</span><span class="details-value">${escapeHtml(data.departureCode)}</span></div>
+      <div class="details-row"><span class="details-label">Amount</span><span class="details-value">${escapeHtml(data.totalPrice)}</span></div>
+    </div>
+    <p>No payment was taken from you. If you still want to join this trip, you can book again before the remaining seats fill up.</p>
+    <p style="text-align:center;">
+      <a href="${escapeHtml(data.packageUrl)}" class="cta">View Trip &amp; Book Again</a>
+    </p>
+    <p>If you paid and see a debit for this amount, do not pay again immediately. Contact us with the bank reference so we can verify it.</p>
+  `;
+
+  const textContent = `Your seat hold expired, ${data.fullName.split(" ")[0] || "Traveler"}.
+
+You started booking an Urban Detox trip, but the payment was not completed before the seat hold expired. The seats have been released.
+
+Trip: ${data.packageTitle}
+Departure: ${data.startDate}
+Departure Code: ${data.departureCode}
+Amount: ${data.totalPrice}
+
+No payment was taken from you. If you still want to join, book again before the remaining seats fill up: ${data.packageUrl}
+
+If you paid and see a debit for this amount, do not pay again immediately; contact us with the bank reference so we can verify it.
+
+Urban Detox - Bangalore, India
+hello@urbandetox.in | ${SITE_URL}
+`;
+
+  return {
+    html: baseTemplate("Seat Hold Expired — Urban Detox", htmlContent),
     text: textContent,
   };
 }
