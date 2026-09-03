@@ -149,6 +149,38 @@ export async function fetchBookings<T = unknown>(): Promise<T[]> {
   return api("/api/bookings");
 }
 
+// Admin only. Cancelling releases seats and closes the booking; it never
+// refunds. Any refund is a separate, deliberate admin action.
+export async function cancelBooking(bookingId: string) {
+  return api<{ status: string; refundDue?: { razorpayPaymentId: string; amountPaise: number; percentage: number; label: string } | null; note?: string }>(
+    `/api/bookings/${bookingId}/cancel`,
+    { method: "POST" }
+  );
+}
+
+// Admin only. Confirms a payment_review booking, taking its seats.
+export async function resolveBookingReview(bookingId: string) {
+  return api<{ id: string; status: string }>(
+    `/api/bookings/${bookingId}/resolve-review`,
+    { method: "POST" }
+  );
+}
+
+// Admin only. Issues a refund against a captured payment.
+export async function refundPayment(
+  paymentId: string,
+  amountPaise?: number
+) {
+  const idempotencyKey = `dashboard-${paymentId}-${Date.now()}`;
+  return api<{ id: string; status: string; amountPaise: number }>(
+    `/api/payments/${paymentId}/refunds`,
+    {
+      method: "POST",
+      body: JSON.stringify({ amountPaise, idempotencyKey }),
+    }
+  );
+}
+
 // ─── FAQs ──────────────────────────────────────────
 export async function fetchFaqs<T = unknown>(): Promise<T[]> {
   return api("/api/faqs");

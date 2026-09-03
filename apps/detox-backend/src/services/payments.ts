@@ -20,6 +20,7 @@ import {
 import {
   sendBookingNotifications,
   sendBookingRefundNotifications,
+  sendCancellationNotifications,
   sendPaymentFailedNotification,
   sendRefundUpdateNotification,
 } from "@/services/booking-notifications";
@@ -202,6 +203,71 @@ async function releaseHoldForSession(checkoutSessionId: string, status: string) 
       })
       .where(eq(departures.id, departure.id));
   });
+}
+
+/**
+ * Pay on Arrival deducts seats immediately and has no seatHolds row (the
+ * reservation is the booking itself). When the 24h reservation window lapses,
+ * cancel the booking and restore the seats so the departure is bookable again.
+ */
+async function expireCodReservation(checkoutSessionId: string) {
+  await db.transaction(async (tx) => {
+    const [session] = await tx
+      .select()
+      .from(checkoutSessions)
+      .where(eq(checkoutSessions.id, checkoutSessionId))
+      .for("update");
+    if (!session || session.status !== "cod_reserved") return;
+
+    const [booking] = await tx
+      .select()
+      .from(bookings)
+      .where(eq(bookings.checkoutSessionId, checkoutSessionId))
+      .for("update");
+    if (!booking || booking.status !== "reserved_cod") return;
+
+    const [departure] = await tx
+      .select()
+      .from(departures)
+      .where(eq(departures.code, session.departureCode))
+      .for("update");
+    if (!departure) return;
+
+    const seatsLeft = Math.min(
+      departure.seatsTotal,
+      Number(departure.seatsLeft) + booking.travelers
+    );
+
+    await tx
+      .update(bookings)
+      .set({ status: "canceled", updatedAt: new Date() })
+      .where(eq(bookings.id, booking.id));
+
+    await tx
+      .update(checkoutSessions)
+      .set({ status: "expired", updatedAt: new Date() })
+      .where(eq(checkoutSessions.id, checkoutSessionId));
+
+    await tx
+      .update(departures)
+      .set({
+        seatsLeft,
+        status: getDepartureStatus(departure.status, seatsLeft),
+        updatedAt: new Date(),
+      })
+      .where(eq(departures.id, departure.id));
+  });
+
+  // The customer's 24h reservation window lapsed, so their seat was released.
+  // Tell them after the transaction commits; sending mail inside it would
+  // hold the row locks for the duration of a network call.
+  const [booking] = await db
+    .select({ id: bookings.id })
+    .from(bookings)
+    .where(eq(bookings.checkoutSessionId, checkoutSessionId));
+  if (booking) {
+    await sendCancellationNotifications(booking.id, null);
+  }
 }
 
 function calculateAmount(
@@ -607,7 +673,22 @@ export const PaymentService = {
       });
     }
 
-    return staleHolds.length;
+    // COD reservations have no seatHolds row, so they need their own sweep.
+    const staleCodSessions = await db
+      .select({ id: checkoutSessions.id })
+      .from(checkoutSessions)
+      .where(
+        and(
+          eq(checkoutSessions.status, "cod_reserved"),
+          lte(checkoutSessions.expiresAt, new Date())
+        )
+      );
+
+    for (const session of staleCodSessions) {
+      await expireCodReservation(session.id);
+    }
+
+    return staleHolds.length + staleCodSessions.length;
   },
 
   async createCheckout(input: CheckoutRequestInput) {
@@ -822,10 +903,39 @@ export const PaymentService = {
       return { ...session, status: "canceled", bookingId: booking.id };
     }
 
+    // A payment that was captured and then fully refunded (but whose booking
+    // is not canceled, e.g. a partial refund flow) must read as a terminal
+    // state so the payment page stops polling.
+    const [paymentRecord] = await db
+      .select({ status: payments.status, amountRefundedPaise: payments.amountRefundedPaise, amountPaise: payments.amountPaise })
+      .from(payments)
+      .where(eq(payments.checkoutSessionId, session.id))
+      .limit(1);
+    if (
+      paymentRecord &&
+      paymentRecord.status === "refunded" &&
+      paymentRecord.amountRefundedPaise >= paymentRecord.amountPaise
+    ) {
+      return { ...session, status: "refunded", bookingId: booking?.id };
+    }
+
     if (
       session.expiresAt <= new Date() &&
       !["paid", "payment_review", "expired", "canceled"].includes(session.status)
     ) {
+      if (session.status === "cod_reserved") {
+        await expireCodReservation(session.id);
+        const [expiredBooking] = await db
+          .select({ id: bookings.id, status: bookings.status })
+          .from(bookings)
+          .where(eq(bookings.checkoutSessionId, session.id));
+        return {
+          ...session,
+          status: "expired",
+          bookingId: expiredBooking?.id,
+        };
+      }
+
       await releaseHoldForSession(session.id, "expired");
       await db
         .update(checkoutSessions)

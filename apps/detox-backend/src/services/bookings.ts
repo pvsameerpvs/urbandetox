@@ -248,29 +248,31 @@ export const BookingService = {
         .from(payments)
         .where(eq(payments.checkoutSessionId, booking.checkoutSessionId));
 
-      if (!paymentRecord || paymentRecord.status !== "captured") {
-        throw new Error("Captured payment not found; cancellation requires support");
+      // A captured payment is not strictly required to cancel: releasing the
+      // seats and closing the booking must never be blocked by a missing or
+      // uncaptured payment row. If there is no captured payment there is also
+      // nothing to refund, so the admin just gets the booking closed.
+      if (paymentRecord && paymentRecord.status === "captured") {
+        // The eligible refund follows the published cancellation policy, which is
+        // anchored to the Monday of the departure week (100% on/before Monday,
+        // 40% on Tuesday, non-refundable from Wednesday onwards).
+        const [departureRecord] = await db
+          .select({ startDate: departures.startDate })
+          .from(departures)
+          .where(eq(departures.code, booking.departureCode));
+
+        const policy = departureRecord?.startDate
+          ? getRefundPolicy(departureRecord.startDate, new Date())
+          : { percentage: 100 as const, label: "100% refund" as const };
+
+        const remaining = paymentRecord.amountPaise - paymentRecord.amountRefundedPaise;
+        refundDue = {
+          razorpayPaymentId: paymentRecord.razorpayPaymentId,
+          amountPaise: Math.round((remaining * policy.percentage) / 100),
+          percentage: policy.percentage,
+          label: policy.label,
+        };
       }
-
-      // The eligible refund follows the published cancellation policy, which is
-      // anchored to the Monday of the departure week (100% on/before Monday,
-      // 40% on Tuesday, non-refundable from Wednesday onwards).
-      const [departureRecord] = await db
-        .select({ startDate: departures.startDate })
-        .from(departures)
-        .where(eq(departures.code, booking.departureCode));
-
-      const policy = departureRecord?.startDate
-        ? getRefundPolicy(departureRecord.startDate, new Date())
-        : { percentage: 100 as const, label: "100% refund" as const };
-
-      const remaining = paymentRecord.amountPaise - paymentRecord.amountRefundedPaise;
-      refundDue = {
-        razorpayPaymentId: paymentRecord.razorpayPaymentId,
-        amountPaise: Math.round((remaining * policy.percentage) / 100),
-        percentage: policy.percentage,
-        label: policy.label,
-      };
     }
 
     await db.transaction(async (tx) => {
@@ -322,8 +324,14 @@ export const BookingService = {
 
     return {
       status: "canceled",
-      // The admin still has to issue any refund explicitly.
+      // The admin still has to issue any refund explicitly. When the booking
+      // was marked paid but no captured payment exists, there is nothing to
+      // refund and the note tells the admin why.
       refundDue,
+      note:
+        booking.paymentStatus === "paid" && !refundDue
+          ? "Booking was marked paid but no captured payment was found; no refund is due."
+          : undefined,
     };
   },
 

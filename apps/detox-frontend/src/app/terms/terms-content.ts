@@ -47,8 +47,8 @@ export const TERMS_SECTIONS: TermsSectionData[] = [
     id: "booking-and-payment",
     title: "Booking and Payment",
     body: [
-      "Bookings are confirmed only after successful payment of the required advance amount or full trip amount, as communicated for the respective trip.",
-      "Payments made through the website may be processed using third-party payment gateways such as PhonePe or other payment partners. By making a payment, you also agree to the applicable terms and policies of the payment gateway provider.",
+      "Bookings are confirmed after successful payment of the required amount for the respective trip. Where a Pay on Arrival option is offered, the booking is confirmed as a reservation with no amount charged at checkout, and the full payment is collected in cash at the meeting point.",
+      "Payments made through the website are processed using Razorpay, a third-party payment gateway, or any other payment partner we may engage from time to time. By making a payment, you also agree to the applicable terms and policies of the payment gateway provider.",
       "Urban Detox does not store your card PIN, UPI PIN, net banking password, CVV, or any sensitive payment authentication details.",
     ],
   },
@@ -98,7 +98,8 @@ export const TERMS_SECTIONS: TermsSectionData[] = [
     list: [
       "The cancellation timeline is based on the departure date of the respective trip. For example, for trips departing on Thursday night: Monday or earlier is a 100% refund, Tuesday is a 40% refund, and Wednesday onwards is no refund.",
       "Refunds, where applicable, are processed to the original payment method. Processing time may vary depending on the payment gateway and banking partner.",
-      "Payment gateway charges, transaction fees, and non-refundable vendor costs may be deducted where applicable.",
+      "Refunds are calculated on the paid amount as per the percentages above, without any additional deduction of gateway or processing charges.",
+      "Pay on Arrival bookings carry no advance payment, so no refund is due if such a booking is canceled.",
       "By confirming a booking with Urban Detox, the guest acknowledges and agrees to the cancellation and refund policy.",
     ],
     bodyAfterList: [

@@ -25,7 +25,7 @@ import type { CommonDetails, Departure, Destination, Package, Traveler } from "@
 
 type PaymentMethod = "razorpay" | "cod";
 type PaymentStatus = "idle" | "processing" | "success" | "review" | "uncertain" | "failure";
-const FAILED_CHECKOUT_STATUSES = ["payment_failed", "expired", "order_failed", "canceled"];
+const FAILED_CHECKOUT_STATUSES = ["payment_failed", "expired", "order_failed", "canceled", "refunded"];
 const RESETTABLE_CHECKOUT_STATUSES = ["expired", "order_failed", "canceled"];
 const DEFAULT_COMMON: CommonDetails = { groupNote: "", modeOfArrival: "", needsTravelHelp: false };
 
@@ -172,7 +172,7 @@ export function PaymentPageClient({ code, departure, pkg, dest }: PaymentPageCli
             paymentStatus: nextStep.paymentStatus,
             onboardingStep: nextStep.onboardingStep,
           });
-          window.location.href = `/book/${code}/success`;
+          window.location.href = `/book/${code}/onboarding?step=${nextStep.onboardingStep}`;
           return;
         }
 

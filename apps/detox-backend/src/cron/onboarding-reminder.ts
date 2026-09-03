@@ -29,7 +29,6 @@ export async function sendOnboardingReminders() {
       and(
         inArray(bookings.status, ACTIVE_STATUSES),
         sql`${bookings.details}->>'onboardingComplete' IS DISTINCT FROM 'true'`,
-        sql`${bookings.details}->>'onboardingComplete' IS DISTINCT FROM true`,
         sql`${bookings.details}->>'onboardingStep' IS NOT NULL`,
         lt(sql`${bookings.details}->>'onboardingStepUpdatedAt'`, idleCutoff),
       )
@@ -42,7 +41,6 @@ export async function sendOnboardingReminders() {
       and(
         inArray(bookings.status, ACTIVE_STATUSES),
         sql`${bookings.details}->>'onboardingComplete' IS DISTINCT FROM 'true'`,
-        sql`${bookings.details}->>'onboardingComplete' IS DISTINCT FROM true`,
         sql`${bookings.details}->>'onboardingStep' IS NULL`,
         lt(bookings.createdAt, neverStartedCutoff),
       )

@@ -23,6 +23,7 @@ import { PaymentInfoBlock } from "./components/PaymentInfoBlock";
 import { PaymentDetailsCard } from "./components/PaymentDetailsCard";
 import { TravelerDetailCard } from "./components/TravelerDetailCard";
 import { ShareLinkCard } from "./components/ShareLinkCard";
+import { AdminBookingActions } from "./components/AdminBookingActions";
 import type { Package as PackageType, Destination, Departure } from "@urbandetox/utils";
 import type { BookingWithMeta } from "@/lib/bookings";
 
@@ -63,6 +64,14 @@ export default function BookingDetailPage() {
 
     load();
   }, [bookingId]);
+
+  const reload = () => {
+    setLoading(true);
+    getBooking(bookingId).then((fetchedBooking) => {
+      setBooking(fetchedBooking);
+      setLoading(false);
+    });
+  };
 
   if (loading) {
     return (
@@ -137,6 +146,13 @@ export default function BookingDetailPage() {
         travelerCount={booking.travelerCount}
         payment={booking.payment}
         bookingStatus={booking.bookingStatus}
+      />
+
+      <AdminBookingActions
+        bookingId={booking.id}
+        bookingStatus={booking.bookingStatus}
+        payment={booking.payment}
+        onChanged={reload}
       />
 
       <ShareLinkCard
