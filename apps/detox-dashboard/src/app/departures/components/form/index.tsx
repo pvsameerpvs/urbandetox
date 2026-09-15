@@ -2,6 +2,7 @@
 
 import { useForm, FormProvider, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { Input } from "@urbandetox/ui";
 import {
   FormField,
@@ -70,6 +71,19 @@ export function DepartureForm({
     name: "packageSlug",
   });
   const selectedPkg = packages.find((p) => p.slug === selectedPackageSlug);
+
+  /**
+   * The trip price lives on the package and every date batch inherits it, so
+   * this field is read-only and is kept in step with the chosen package. The
+   * old free-text price input let a batch drift from its trip, which is what
+   * made the listing and the detail/booking pages show different numbers.
+   */
+  useEffect(() => {
+    if (selectedPkg) {
+      // The API returns numeric columns as strings; the form validates a number.
+      form.setValue("price", Number(selectedPkg.startingPrice), { shouldValidate: false });
+    }
+  }, [selectedPkg, form]);
 
   return (
     <FormProvider {...form}>
@@ -215,8 +229,22 @@ function TimeRangeFields({ control }: { control: import("react-hook-form").Contr
 function PricingFields({ control }: { control: import("react-hook-form").Control<DepartureFormData> }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-      <NumberField control={control} name="price" label="Price (₹)" min={0} />
-      <NumberField control={control} name="offerPrice" label="Offer Price (₹)" min={1} optional />
+      <NumberField
+        control={control}
+        name="price"
+        label="Price (₹)"
+        min={0}
+        readOnly
+        hint="Set on the package and inherited by every date batch."
+      />
+      <NumberField
+        control={control}
+        name="offerPrice"
+        label="Offer Price (₹)"
+        min={1}
+        optional
+        hint="Optional discount for this date only."
+      />
     </div>
   );
 }
@@ -236,6 +264,8 @@ function NumberField({
   label,
   min,
   optional,
+  readOnly,
+  hint,
 }: {
   control: import("react-hook-form").Control<DepartureFormData>;
   name: "price" | "offerPrice" | "seatsTotal" | "seatsLeft";
@@ -243,6 +273,9 @@ function NumberField({
   min: number;
   /** When true an empty input means undefined rather than being coerced to min. */
   optional?: boolean;
+  /** Read-only fields are driven by another field (the package price). */
+  readOnly?: boolean;
+  hint?: string;
 }) {
   return (
     <FormField
@@ -257,6 +290,7 @@ function NumberField({
               className="h-11 rounded-xl"
               min={min}
               {...field}
+              readOnly={readOnly}
               value={field.value ?? ""}
               onChange={(e) => {
                 const raw = e.target.value;
@@ -269,6 +303,7 @@ function NumberField({
               }}
             />
           </FormControl>
+          {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
           <FormMessage />
         </FormItem>
       )}

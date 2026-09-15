@@ -120,7 +120,9 @@ export function usePackageForm(initialDestinationSlug: string, initialData?: Ini
     subtitle: initialData?.subtitle || "",
     destinationSlug: initialData?.destinationSlug || initialDestinationSlug,
     duration: initialData?.duration || 2,
-    startingPrice: initialData?.startingPrice || 0,
+    // The API returns numeric columns as strings, but the form validates a
+    // number, so an untouched price field used to fail validation on save.
+    startingPrice: Number(initialData?.startingPrice) || 0,
     // 10 is the published maximum, so the default cannot suggest 12.
     groupSize: initialData?.groupSize || "6 to 10",
     style: initialData?.style || "",

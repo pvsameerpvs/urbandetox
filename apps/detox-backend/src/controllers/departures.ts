@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { eq, like } from "drizzle-orm";
 import { db } from "@/db";
-import { departures, destinations } from "@/db/schema";
+import { departures, destinations, packages } from "@/db/schema";
 
 async function generateDepartureCode(destinationSlug: string): Promise<string> {
   const [dest] = await db
@@ -64,6 +64,18 @@ export const DepartureController = {
     const body = req.body;
     if (!body.code && body.destinationSlug) {
       body.code = await generateDepartureCode(body.destinationSlug);
+    }
+    /**
+     * A batch inherits its trip's price, so a new date can never start life at
+     * a stale placeholder that disagrees with the listing. The admin can still
+     * send an explicit price, but when it is omitted the package wins.
+     */
+    if ((body.price === undefined || body.price === null) && body.packageSlug) {
+      const [pkg] = await db
+        .select()
+        .from(packages)
+        .where(eq(packages.slug, body.packageSlug));
+      if (pkg) body.price = pkg.startingPrice;
     }
     const [record] = await db.insert(departures).values(body).returning();
     res.status(201).json(record);

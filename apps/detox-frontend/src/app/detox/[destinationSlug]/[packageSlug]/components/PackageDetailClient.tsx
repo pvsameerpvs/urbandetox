@@ -47,6 +47,12 @@ export function PackageDetailClient({ pkg, dest, departures, guides, reviews, se
     : (bookableDepartures[0] ?? null);
   const selectedDepartureIsBookable = Boolean(selectedDep && isDepartureBookable(selectedDep));
 
+  // Exactly what PackageSidebar renders, so the sticky mobile bar cannot quote
+  // a different number than the desktop panel for the same trip.
+  const displayPrice = sidebarDeparture
+    ? (sidebarDeparture.offerPrice ?? sidebarDeparture.price)
+    : pkg.startingPrice;
+
   return (
     <div className="min-h-screen bg-white pb-24 md:pb-0">
       <PackageHero
@@ -93,7 +99,7 @@ export function PackageDetailClient({ pkg, dest, departures, guides, reviews, se
       </div>
 
       <MobilePackageCTA
-        startingPrice={pkg.startingPrice}
+        price={displayPrice}
         nextDepartureCode={sidebarDeparture && isDepartureBookable(sidebarDeparture) ? sidebarDeparture.code : null}
         selectedDepartureCode={selectedDepartureIsBookable ? selectedDepartureCode : undefined}
       />

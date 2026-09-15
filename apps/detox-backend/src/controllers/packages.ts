@@ -2,8 +2,14 @@ import { Request, Response } from "express";
 import { and, eq, gte, lte, or, ilike, sql, type SQL } from "drizzle-orm";
 import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import { db } from "@/db";
-import { packages } from "@/db/schema";
+import { departures, packages } from "@/db/schema";
 import { BUDGET_BANDS } from "@urbandetox/utils";
+
+/**
+ * Flat stand-in the seed wrote into many departure offers; it is never a real
+ * price. Mirrors PLACEHOLDER_PRICE in the frontend's lib/seo/site.ts.
+ */
+const PLACEHOLDER_PRICE = "10000";
 
 /** Comma-separated query value -> trimmed, non-empty list. */
 function list(value: unknown): string[] {
@@ -150,6 +156,39 @@ export const PackageController = {
       res.status(404).json({ error: "Package not found" });
       return;
     }
+
+    /**
+     * The trip price is the single source of truth for money, so every date
+     * batch inherits it. Previously starting_price and each departure's own
+     * price were edited and stored independently, so the listing (package
+     * price) and the detail/booking pages (departure price) advertised
+     * different numbers for the same trip. Saving the package now writes its
+     * price down to all of its departures.
+     *
+     * A genuine per-batch discount survives; a stored "offer" that is not
+     * actually below the batch price was never a discount (the seed left many
+     * at the flat placeholder), so it is cleared. The offer clearing runs
+     * first, against the pre-update price, before price is rewritten.
+     */
+    if (req.body && req.body.startingPrice !== undefined) {
+      await db
+        .update(departures)
+        .set({ offerPrice: null })
+        .where(
+          and(
+            eq(departures.packageSlug, slug),
+            or(
+              gte(departures.offerPrice, departures.price),
+              eq(departures.offerPrice, PLACEHOLDER_PRICE)
+            )
+          )
+        );
+      await db
+        .update(departures)
+        .set({ price: record.startingPrice })
+        .where(eq(departures.packageSlug, slug));
+    }
+
     res.json(record);
   },
 

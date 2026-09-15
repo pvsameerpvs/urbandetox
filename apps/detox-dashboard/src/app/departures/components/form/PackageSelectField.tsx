@@ -79,7 +79,7 @@ export function PackageSelectField({
                   const pkg = packages.find((p) => p.slug === slug);
                   if (pkg) {
                     setValue("destinationSlug", pkg.destinationSlug, { shouldValidate: false });
-                    setValue("price", pkg.startingPrice, { shouldValidate: false });
+                    setValue("price", Number(pkg.startingPrice), { shouldValidate: false });
                     if (mode === "create") {
                       const currentImage = control._formValues.image;
                       if (!currentImage && pkg.coverImage) {
@@ -109,7 +109,7 @@ export function PackageSelectField({
                               <span className="font-medium">{pkg.title}</span>
                               <span className="text-muted-foreground">· {pkg.durationLabel}</span>
                               <span className="text-[10px] text-muted-foreground">
-                                ₹{pkg.startingPrice.toLocaleString("en-IN")}
+                                ₹{Number(pkg.startingPrice).toLocaleString("en-IN")}
                               </span>
                             </span>
                           </SelectItem>
@@ -157,7 +157,7 @@ export function PackageSelectField({
             </InfoRow>
             <InfoRow icon={<Users className="h-3.5 w-3.5" />}>{selectedPkg.groupSize}</InfoRow>
             <InfoRow icon={<CreditCard className="h-3.5 w-3.5" />}>
-              From ₹{selectedPkg.startingPrice.toLocaleString("en-IN")}
+              From ₹{Number(selectedPkg.startingPrice).toLocaleString("en-IN")}
             </InfoRow>
           </div>
           {selectedPkg.seasonalTag && (

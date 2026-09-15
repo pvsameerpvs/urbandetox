@@ -6,12 +6,13 @@ import { formatPrice } from "@urbandetox/utils";
 import { ArrowRight } from "lucide-react";
 
 interface MobilePackageCTAProps {
-  startingPrice: number;
+  /** The same resolved price the desktop sidebar shows, so the two cannot differ. */
+  price: number;
   nextDepartureCode: string | null;
   selectedDepartureCode?: string;
 }
 
-export function MobilePackageCTA({ startingPrice, nextDepartureCode, selectedDepartureCode }: MobilePackageCTAProps) {
+export function MobilePackageCTA({ price, nextDepartureCode, selectedDepartureCode }: MobilePackageCTAProps) {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border/40 bg-white/95 backdrop-blur-md p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] lg:hidden">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
@@ -24,7 +25,7 @@ export function MobilePackageCTA({ startingPrice, nextDepartureCode, selectedDep
           ) : (
             <>
               <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider">Starting from</p>
-              <p className="text-xl font-bold text-brand">{formatPrice(startingPrice)}</p>
+              <p className="text-xl font-bold text-brand">{formatPrice(price)}</p>
             </>
           )}
         </div>
