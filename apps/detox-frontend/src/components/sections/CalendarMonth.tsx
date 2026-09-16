@@ -11,6 +11,7 @@ import {
   startOfWeek,
 } from "date-fns";
 import { cn } from "@urbandetox/utils";
+import { getTodayDateKey } from "@/lib/departure-availability";
 import {
   WEEKDAYS,
   WEEK_STARTS_ON,
@@ -40,6 +41,13 @@ export function CalendarMonth({ className, month, onDateClick, tripDateMap, acti
     });
   }, [month]);
 
+  /**
+   * Same IST-aware "today" the bookability check uses, so the highlighted day
+   * and the day trips are considered upcoming can never disagree. A plain
+   * `new Date()` here would follow the visitor's device timezone instead.
+   */
+  const todayKey = useMemo(() => getTodayDateKey(), []);
+
   return (
     <div className={cn("min-w-0", className)}>
       <div className="grid grid-cols-7 text-center">
@@ -67,6 +75,7 @@ export function CalendarMonth({ className, month, onDateClick, tripDateMap, acti
           const hasPrev = hasNeighbor(tripDateMap, day, trip, "prev");
           const hasNext = hasNeighbor(tripDateMap, day, trip, "next");
           const dur = trip ? getDurationDays(trip) : 0;
+          const isToday = key === todayKey;
 
           return (
             <button
@@ -74,6 +83,7 @@ export function CalendarMonth({ className, month, onDateClick, tripDateMap, acti
               type="button"
               disabled={!canBook}
               onClick={() => onDateClick(day)}
+              aria-current={isToday ? "date" : undefined}
               aria-label={trip ? `${format(day, "MMMM d")} — ${trip.code}` : format(day, "MMMM d")}
               title={trip ? `${trip.code} · ${dur} day${dur !== 1 ? "s" : ""}` : undefined}
               className={cn(
@@ -81,9 +91,14 @@ export function CalendarMonth({ className, month, onDateClick, tripDateMap, acti
                 // pseudo-element lifts the tap target towards the 44px minimum.
                 "relative mx-0.5 md:mx-1 mb-1 flex h-8 items-center justify-center text-sm font-semibold transition-colors sm:h-9 md:h-10",
                 "before:absolute before:inset-x-0 before:top-1/2 before:h-9 before:-translate-y-1/2 before:content-[''] sm:before:h-10 md:before:h-11",
-                trip
+                trip && !isToday
                   ? cn(tripColor(trip), rangeRadius(hasPrev, hasNext), canBook && "hover:brightness-95")
-                  : "rounded-md text-brand/75",
+                  : null,
+                !trip && !isToday && "rounded-md text-brand/75",
+                // Today wins over a trip colour so the marker is always legible.
+                // The trip styling is dropped for that cell rather than relying
+                // on class-merge order to override the background.
+                isToday && "rounded-md bg-[var(--button-lime)] font-bold text-[var(--button-lime-text)] shadow-sm",
                 !canBook && "cursor-default"
               )}
             >
