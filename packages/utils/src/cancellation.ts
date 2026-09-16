@@ -5,6 +5,13 @@
  *  - on or before that Monday  -> 100% refund
  *  - on the Tuesday            ->  40% refund
  *  - Wednesday onwards (incl. the day of departure) -> non-refundable
+ *
+ * Calendar days are resolved in the business timezone (Asia/Kolkata). The
+ * cancellation instant used to be reduced to a date in the server's timezone,
+ * which is UTC on Railway: cancelling on Tuesday 00:00-05:29 IST was scored as
+ * Monday and refunded in full, and the same window on Wednesday was scored as
+ * Tuesday and refunded 40%. Passing a date-only value (YYYY-MM-DD) is treated
+ * as an already-localised calendar day and used as-is.
  */
 
 export interface CancellationRefundPolicy {
@@ -18,13 +25,39 @@ export interface CancellationRefundPolicy {
 
 type DateLike = string | number | Date;
 
-function parseDay(value: DateLike): Date {
-  const date = new Date(value);
+const BUSINESS_TIME_ZONE = "Asia/Kolkata";
+
+/** The calendar day (YYYY-MM-DD) an instant falls on, in the business tz. */
+function businessDayKey(value: DateLike): string {
   if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
-    const [y, m, d] = value.split("-").map(Number);
-    return new Date(y, m - 1, d);
+    return value;
   }
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return "invalid";
+
+  const parts = new Intl.DateTimeFormat("en", {
+    timeZone: BUSINESS_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+
+  const year = parts.find((part) => part.type === "year")?.value;
+  const month = parts.find((part) => part.type === "month")?.value;
+  const day = parts.find((part) => part.type === "day")?.value;
+
+  if (!year || !month || !day) {
+    return date.toISOString().slice(0, 10);
+  }
+
+  return `${year}-${month}-${day}`;
+}
+
+function parseDay(value: DateLike): Date {
+  const [y, m, d] = businessDayKey(value).split("-").map(Number);
+  if (!y || !m || !d) return new Date(NaN);
+  return new Date(y, m - 1, d);
 }
 
 function mondayOfWeek(date: Date): Date {

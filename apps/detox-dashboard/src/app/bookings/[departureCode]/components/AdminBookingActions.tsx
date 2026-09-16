@@ -38,6 +38,8 @@ export function AdminBookingActions({
   const [cancelOpen, setCancelOpen] = useState(false);
   const [refundOpen, setRefundOpen] = useState(false);
   const [refundAmount, setRefundAmount] = useState("");
+  /** Stable per refund attempt, so a retry after an error reuses it. */
+  const [refundKey, setRefundKey] = useState<string>();
   const [resultNote, setResultNote] = useState<string>();
 
   const isActive = ["confirmed", "reserved_cod", "payment_review"].includes(bookingStatus);
@@ -89,12 +91,17 @@ export function AdminBookingActions({
     }
     setBusy(true);
     try {
-      await refundPayment(payment!.razorpayPaymentId, amountPaise);
+      const idempotencyKey = refundKey ?? `refund-${crypto.randomUUID()}`;
+      setRefundKey(idempotencyKey);
+      await refundPayment(payment!.razorpayPaymentId, amountPaise, idempotencyKey);
       toast.success(`Refund of ₹${(amountPaise / 100).toLocaleString("en-IN")} initiated`);
       setRefundOpen(false);
       setRefundAmount("");
+      setRefundKey(undefined);
       onChanged();
     } catch (e) {
+      // Keep refundKey so "Refund" retries the same operation instead of
+      // creating a second one.
       toast.error(e instanceof Error ? e.message : "Could not issue refund");
     } finally {
       setBusy(false);
@@ -126,7 +133,15 @@ export function AdminBookingActions({
           )}
 
           {canRefund && (
-            <Button onClick={() => setRefundOpen(true)} disabled={busy} variant="outline" className="h-10 rounded-xl text-xs font-medium">
+            <Button
+              onClick={() => {
+                setRefundKey(`refund-${crypto.randomUUID()}`);
+                setRefundOpen(true);
+              }}
+              disabled={busy}
+              variant="outline"
+              className="h-10 rounded-xl text-xs font-medium"
+            >
               <Banknote className="mr-1.5 h-3.5 w-3.5" />
               Refund ({remainingPaise > 0 ? `₹${(remainingPaise / 100).toLocaleString("en-IN")} left` : "fully refunded"})
             </Button>
@@ -149,7 +164,7 @@ export function AdminBookingActions({
         onCancel={() => setCancelOpen(false)}
       />
 
-      <Dialog open={refundOpen} onOpenChange={(v: boolean) => { if (!v) setRefundOpen(false); }}>
+      <Dialog open={refundOpen} onOpenChange={(v: boolean) => { if (!v) { setRefundOpen(false); setRefundKey(undefined); } }}>
         <DialogContent className="sm:max-w-[420px] p-0 overflow-hidden">
           <div className="p-6 pb-4 space-y-2">
             <DialogTitle className="text-base font-semibold">Issue refund</DialogTitle>
@@ -168,7 +183,7 @@ export function AdminBookingActions({
             />
           </div>
           <div className="flex items-center justify-end gap-3 px-6 py-4 bg-muted/40 border-t">
-            <Button type="button" variant="outline" className="rounded-xl h-9 text-sm px-5" onClick={() => setRefundOpen(false)}>
+            <Button type="button" variant="outline" className="rounded-xl h-9 text-sm px-5" onClick={() => { setRefundOpen(false); setRefundKey(undefined); }}>
               Cancel
             </Button>
             <Button type="button" onClick={doRefund} disabled={busy} className="rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 h-9 text-sm px-5">

@@ -167,11 +167,14 @@ export async function resolveBookingReview(bookingId: string) {
 }
 
 // Admin only. Issues a refund against a captured payment.
+// Admin only. Issues a refund against a captured payment. The idempotency key
+// is generated once per refund attempt by the caller and reused on retry, so a
+// network failure or a double submit can never refund the same money twice.
 export async function refundPayment(
   paymentId: string,
-  amountPaise?: number
+  amountPaise: number | undefined,
+  idempotencyKey: string
 ) {
-  const idempotencyKey = `dashboard-${paymentId}-${Date.now()}`;
   return api<{ id: string; status: string; amountPaise: number }>(
     `/api/payments/${paymentId}/refunds`,
     {

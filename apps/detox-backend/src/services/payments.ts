@@ -551,6 +551,60 @@ async function recordFailedPayment(payment: RazorpayPayment) {
   return result?.session;
 }
 
+/**
+ * Marks a booking fully refunded, cancels it and gives its seats back. Runs
+ * inside the caller's transaction and is idempotent: a booking that is already
+ * refunded is left untouched. Shared by the refund webhook and the admin refund
+ * endpoint so both settle state the same way.
+ */
+async function settleBookingAsRefunded(
+  tx: DbTransaction,
+  bookingId: string
+): Promise<boolean> {
+  const [booking] = await tx
+    .select()
+    .from(bookings)
+    .where(eq(bookings.id, bookingId))
+    .for("update");
+  if (!booking || booking.paymentStatus === "refunded") return false;
+
+  const shouldRestoreSeats =
+    booking.status !== "canceled" && booking.status !== "payment_review";
+  const [departure] = shouldRestoreSeats
+    ? await tx
+        .select()
+        .from(departures)
+        .where(eq(departures.code, booking.departureCode))
+        .for("update")
+    : [];
+
+  await tx
+    .update(bookings)
+    .set({
+      paymentStatus: "refunded",
+      status: "canceled",
+      updatedAt: new Date(),
+    })
+    .where(eq(bookings.id, booking.id));
+
+  if (departure && shouldRestoreSeats) {
+    const seatsLeft = Math.min(
+      departure.seatsTotal,
+      Number(departure.seatsLeft) + booking.travelers
+    );
+    await tx
+      .update(departures)
+      .set({
+        seatsLeft,
+        status: getDepartureStatus(departure.status, seatsLeft),
+        updatedAt: new Date(),
+      })
+      .where(eq(departures.id, departure.id));
+  }
+
+  return true;
+}
+
 async function reconcileRefund(refund: RazorpayRefund) {
   const [payment] = await db
     .select()
@@ -584,46 +638,7 @@ async function reconcileRefund(refund: RazorpayRefund) {
 
   if (payment.bookingId && fetched.amount_refunded >= fetched.amount) {
     await db.transaction(async (tx) => {
-      const [booking] = await tx
-        .select()
-        .from(bookings)
-        .where(eq(bookings.id, payment.bookingId!))
-        .for("update");
-      if (!booking || booking.paymentStatus === "refunded") return;
-
-      const shouldRestoreSeats =
-        booking.status !== "canceled" && booking.status !== "payment_review";
-      const [departure] = shouldRestoreSeats
-        ? await tx
-            .select()
-            .from(departures)
-            .where(eq(departures.code, booking.departureCode))
-            .for("update")
-        : [];
-
-      await tx
-        .update(bookings)
-        .set({
-          paymentStatus: "refunded",
-          status: "canceled",
-          updatedAt: new Date(),
-        })
-        .where(eq(bookings.id, booking.id));
-
-      if (departure && shouldRestoreSeats) {
-        const seatsLeft = Math.min(
-          departure.seatsTotal,
-          Number(departure.seatsLeft) + booking.travelers
-        );
-        await tx
-          .update(departures)
-          .set({
-            seatsLeft,
-            status: getDepartureStatus(departure.status, seatsLeft),
-            updatedAt: new Date(),
-          })
-          .where(eq(departures.id, departure.id));
-      }
+      await settleBookingAsRefunded(tx, payment.bookingId!);
     });
     await sendBookingRefundNotifications(payment.bookingId);
   } else if (payment.bookingId && refund.status === "processed") {
@@ -1094,6 +1109,9 @@ export const PaymentService = {
       throw new Error("Payment not found");
     }
 
+    // Fast idempotent replay: the same key always maps to the same refund, so a
+    // retried request (or a double click that reuses the key) is a no-op and
+    // never moves the balance twice.
     const [existingRefund] = await db
       .select()
       .from(refunds)
@@ -1113,32 +1131,124 @@ export const PaymentService = {
       throw new Error("Only captured payments can be refunded");
     }
 
-    const remaining = payment.amountPaise - payment.amountRefundedPaise;
-    const amountPaise = input.amountPaise ?? remaining;
-    if (amountPaise < 1 || amountPaise > remaining) {
-      throw new Error("Invalid refund amount");
-    }
+    /**
+     * The gateway call and the local write run under one row lock. Two admins
+     * refunding the same payment at once used to read the same remaining
+     * balance and both call Razorpay; the lock serialises them so the second
+     * re-reads the balance after the first commits. The lock covers a single
+     * payment row and refunds are admin-only and rare, so holding it across the
+     * gateway call is the safer trade.
+     */
+    const result = await db.transaction(async (tx) => {
+      const [locked] = await tx
+        .select()
+        .from(payments)
+        .where(eq(payments.id, payment.id))
+        .for("update");
+      if (!locked) throw new Error("Payment not found");
 
-    const refund = await RazorpayService.createRefund({
-      paymentId: payment.razorpayPaymentId,
-      amountPaise,
-      idempotencyKey: input.idempotencyKey,
+      // Re-check under the lock: a concurrent request with the same key may
+      // have committed while this one waited.
+      const [duplicate] = await tx
+        .select()
+        .from(refunds)
+        .where(eq(refunds.idempotencyKey, input.idempotencyKey));
+      if (duplicate) {
+        return {
+          record: duplicate,
+          bookingId: locked.bookingId,
+          replay: true,
+          fullyRefunded: false,
+          refundStatus: duplicate.status,
+        };
+      }
+
+      if (locked.status !== "captured") {
+        throw new Error("Only captured payments can be refunded");
+      }
+
+      const remaining = locked.amountPaise - locked.amountRefundedPaise;
+      const amountPaise = input.amountPaise ?? remaining;
+      if (amountPaise < 1 || amountPaise > remaining) {
+        throw new Error("Invalid refund amount");
+      }
+
+      const refund = await RazorpayService.createRefund({
+        paymentId: locked.razorpayPaymentId,
+        amountPaise,
+        idempotencyKey: input.idempotencyKey,
+      });
+
+      const [record] = await tx
+        .insert(refunds)
+        .values({
+          paymentId: locked.id,
+          razorpayRefundId: refund.id,
+          idempotencyKey: input.idempotencyKey,
+          amountPaise: refund.amount,
+          status: refund.status,
+        })
+        .onConflictDoUpdate({
+          target: refunds.idempotencyKey,
+          set: { status: refund.status, updatedAt: new Date() },
+        })
+        .returning();
+
+      /**
+       * Reflect the refund on the payment immediately instead of waiting for
+       * the webhook. The dashboard derives the remaining balance from
+       * amountRefundedPaise, and a refund that stayed invisible until the
+       * webhook arrived let the same money be refunded twice. A failed refund
+       * does not move the balance, and the refund webhook still overwrites
+       * these values with Razorpay's own amount_refunded, so it can only be
+       * corrected, never double-counted.
+       */
+      const refundedDelta = refund.status === "failed" ? 0 : refund.amount;
+      const amountRefundedPaise = locked.amountRefundedPaise + refundedDelta;
+      const fullyRefunded = amountRefundedPaise >= locked.amountPaise;
+
+      await tx
+        .update(payments)
+        .set({
+          amountRefundedPaise,
+          status: fullyRefunded ? "refunded" : locked.status,
+          updatedAt: new Date(),
+        })
+        .where(eq(payments.id, locked.id));
+
+      if (fullyRefunded && locked.bookingId) {
+        await settleBookingAsRefunded(tx, locked.bookingId);
+      }
+
+      return {
+        record,
+        bookingId: locked.bookingId,
+        replay: false,
+        fullyRefunded,
+        refundStatus: refund.status,
+      };
     });
 
-    const [record] = await db
-      .insert(refunds)
-      .values({
-        paymentId: payment.id,
-        razorpayRefundId: refund.id,
-        idempotencyKey: input.idempotencyKey,
-        amountPaise: refund.amount,
-        status: refund.status,
-      })
-      .onConflictDoUpdate({
-        target: refunds.idempotencyKey,
-        set: { status: refund.status, updatedAt: new Date() },
-      })
-      .returning();
-    return record;
+    if (result.replay) return result.record;
+
+    if (result.bookingId && result.fullyRefunded) {
+      await sendBookingRefundNotifications(result.bookingId);
+    } else if (result.bookingId && result.refundStatus === "failed") {
+      await sendRefundUpdateNotification({
+        bookingId: result.bookingId,
+        refundId: result.record.razorpayRefundId,
+        amountPaise: result.record.amountPaise,
+        status: "failed",
+      });
+    } else if (result.bookingId && result.refundStatus === "processed") {
+      await sendRefundUpdateNotification({
+        bookingId: result.bookingId,
+        refundId: result.record.razorpayRefundId,
+        amountPaise: result.record.amountPaise,
+        status: "processed",
+      });
+    }
+
+    return result.record;
   },
 } as const;
